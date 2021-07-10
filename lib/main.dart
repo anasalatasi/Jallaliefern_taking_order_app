@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'Login_page.dart';
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(home:LoginScreen()));
 }
 
 class MyApp extends StatefulWidget {
@@ -42,7 +42,12 @@ class _MyAppState extends State<MyApp> {
               _selectedIndex = value;
             });
           },
+          type: BottomNavigationBarType.fixed,
           items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'settings',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
               label: 'settings',
