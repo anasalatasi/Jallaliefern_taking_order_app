@@ -5,8 +5,12 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'Constants.dart';
 import 'scaffold.dart';
 import 'welcome_screen.dart';
+
 void main() {
-  runApp(Phoenix(child: MaterialApp(home: WelcomeScreen(),)));
+  runApp(Phoenix(
+      child: MaterialApp(
+    home: WelcomeScreen(),
+  )));
 }
 
 class MyApp extends StatefulWidget {
@@ -17,11 +21,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: orderScaffold()    );
+    return MaterialApp(home: orderScaffold());
   }
 }

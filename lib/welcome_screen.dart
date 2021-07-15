@@ -4,7 +4,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jallaliefern_taking_orders_app/api_url_form.dart';
 
 class WelcomeScreen extends StatefulWidget {
-
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -24,8 +23,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           return Text('this is login screen');
-        }
-        else {
+        } else {
           return APIURLForm();
         }
       },

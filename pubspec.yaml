@@ -33,6 +33,7 @@ dependencies:
   validators: ^3.0.0
   flutter_restart: ^0.0.3
   flutter_phoenix: ^1.0.0
+  http: ^0.13.3
 
 dev_dependencies:
   flutter_test:
