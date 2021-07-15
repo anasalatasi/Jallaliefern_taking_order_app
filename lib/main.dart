@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/page1.dart';
 import 'package:jallaliefern_taking_orders_app/scaffold.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'Constants.dart';
 import 'scaffold.dart';
+import 'welcome_screen.dart';
 void main() {
-  runApp(MyApp());
+  runApp(Phoenix(child: MaterialApp(home: WelcomeScreen(),)));
 }
 
 class MyApp extends StatefulWidget {

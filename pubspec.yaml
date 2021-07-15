@@ -30,6 +30,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_login: ^2.1.0
   flutter_secure_storage: ^4.2.0
+  validators: ^3.0.0
+  flutter_restart: ^0.0.3
+  flutter_phoenix: ^1.0.0
 
 dev_dependencies:
   flutter_test:
