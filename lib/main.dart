@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'Login_page.dart';
+import 'package:jallaliefern_taking_orders_app/page1.dart';
+import 'package:jallaliefern_taking_orders_app/scaffold.dart';
+import 'Constants.dart';
+import 'scaffold.dart';
 void main() {
-  runApp(MaterialApp(home:LoginScreen()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -12,63 +15,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _selectedIndex = 0;
+
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {},
-            )
-          ],
-          elevation: 15.0,
-          backgroundColor: Color(0xFF9a0404),
-          title: Text('Name'),
-        ),
-        body: Text('Hi'),
-        drawer: Drawer(
-          child: ListView(
-            children: [],
-          ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (value) {
-            setState(() {
-              print(_selectedIndex);
-              _selectedIndex = value;
-            });
-          },
-          type: BottomNavigationBarType.fixed,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'settings',
-            ),
-            
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed : (){},
-          child: Icon(Icons.auto_fix_high_outlined),
-
-        ),
-      ),
-    );
+      home: orderScaffold()    );
   }
 }
