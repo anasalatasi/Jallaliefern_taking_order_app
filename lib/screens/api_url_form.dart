@@ -1,5 +1,6 @@
+import 'dart:async';
 import 'dart:io';
-import 'secure_storage.dart';
+import '../secure_storage.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -12,9 +13,13 @@ class _APIURLFormState extends State<APIURLForm> {
   Future<String?> _validateURL(String? value) async {
     if (value == null) return 'url is required';
     if (!isURL(value)) return 'not a valid url';
+    try {
     final response =
-        await http.get(Uri.parse(value + '/api/settings/is_restaurant_open/'));
-    if (response.statusCode != 200) return 'url is not reachable';
+        await http.get(Uri.parse(value + '/api/settings/is_restaurant_open/')).timeout(Duration(seconds: 3));
+        if (response.statusCode != 200) return 'url is not reachable';
+    } on TimeoutException {
+      return 'timed out';
+    }
   }
 
   String? _urlValidator;
@@ -48,8 +53,7 @@ class _APIURLFormState extends State<APIURLForm> {
                       child: ElevatedButton(
                           onPressed: () async {
                             final form = _formkey.currentState;
-                            if (form!.validate()) {
-                              form.save();
+                              form!.save();
                               String? response = await _validateURL(_apiurl);
                               setState(() {
                                 _urlValidator = response;
@@ -60,7 +64,7 @@ class _APIURLFormState extends State<APIURLForm> {
                                 Phoenix.rebirth(context);
                               }
                             }
-                          },
+                          ,
                           child: Text('Save'))),
                 ],
               )),

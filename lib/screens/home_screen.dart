@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import './page0.dart';
-import './page1.dart';
-import './page2.dart';
-import './page3.dart';
+import '../page0.dart';
+import '../page1.dart';
+import '../page2.dart';
+import '../page3.dart';
 
-class orderScaffold extends StatefulWidget {
-  orderScaffold({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _orderScaffoldState createState() => _orderScaffoldState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _orderScaffoldState extends State<orderScaffold> {
+class _HomeScreenState extends State<HomeScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
 
   final List<Widget> pages = [

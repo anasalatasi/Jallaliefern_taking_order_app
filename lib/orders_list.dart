@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'order.dart';
+import 'models/order.dart';
 
-class orders_list extends StatefulWidget {
-  orders_list({Key? key}) : super(key: key);
+class OrdersList extends StatefulWidget {
+  OrdersList({Key? key}) : super(key: key);
 
   @override
-  _orders_listState createState() => _orders_listState();
+  _OrdersListState createState() => _OrdersListState();
 }
 
-class _orders_listState extends State<orders_list> {
+class _OrdersListState extends State<OrdersList> {
   Card _tile(Order order) =>  Card(
     child: ListTile(
   
@@ -35,7 +35,7 @@ class _orders_listState extends State<orders_list> {
         ),
   );
 
-  ListView _orders_list_view(data) {
+  ListView _OrdersList_view(data) {
     return ListView.builder(
       itemCount: data.length,
       itemBuilder: (BuildContext context, int index) {
@@ -67,7 +67,7 @@ class _orders_listState extends State<orders_list> {
       future: _fetch_orders(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          return _orders_list_view(snapshot.data);
+          return _OrdersList_view(snapshot.data);
         } else if (snapshot.hasError) return Text("${snapshot.error}");
         return CircularProgressIndicator();
       },
