@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
+  LoginScreen({Key? key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => new _State();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _State extends State<LoginPage> {
-  final ButtonStyle mystyle =
+class _LoginScreenState extends State<LoginScreen> {
+    final ButtonStyle mystyle =
         ElevatedButton.styleFrom(primary:Color(0xFF9a0404));
 
   TextEditingController nameController = TextEditingController();
