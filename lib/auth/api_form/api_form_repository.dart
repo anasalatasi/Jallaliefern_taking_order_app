@@ -17,6 +17,6 @@ class ApiFormRepository {
   Future<void> save({required String apiUrl}) async {
     final reachUrl = await _testUrl(apiUrl);
     if (!reachUrl) throw Exception('api is not reachable');
-    SecureStorage.write("api_url",apiUrl + '/api/');
+    await SecureStorage.write("api_url",apiUrl + '/api/');
   }
 }

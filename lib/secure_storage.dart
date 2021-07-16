@@ -12,4 +12,13 @@ class SecureStorage {
     var readData = await _storage.read(key: key);
     return readData;
   }
+
+  static Future<bool> haskey(String key) async {
+    var readData = await _storage.containsKey(key: key);
+    return readData;
+  }
+
+  static Future deleteAll() async {
+    await _storage.deleteAll();
+  }
 }

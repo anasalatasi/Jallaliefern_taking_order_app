@@ -2,35 +2,47 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_events.dart';
-import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_repository.dart';
 import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_state.dart';
 import 'package:jallaliefern_taking_orders_app/auth/form_submission_status.dart';
 
 class ApiFormView extends StatelessWidget {
   final _formkey = GlobalKey<FormState>();
 
-  Future<void> _showDialog(BuildContext context,String msg) async {
-    return showDialog(context:context,builder: (context) {
-      return AlertDialog(title: Text('Error'),content: Text(msg),actions: <Widget>[TextButton(child: Text('OK'),onPressed: () {Navigator.of(context).pop();},)],);
-    });
+  Future<void> _showDialog(BuildContext context, String msg) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(msg),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
   }
 
-  Widget _apiForm() =>
-      BlocListener<ApiFormBloc, ApiFormState>(listener: (context, state) {
+  Widget _apiForm() => BlocListener<ApiFormBloc, ApiFormState>(
+      listenWhen: (previous, current) => current.formStatus is SubmissionFailed,
+      listener: (context, state) {
         final formStatus = state.formStatus;
         if (formStatus is SubmissionFailed) {
           _showDialog(context, formStatus.exception.toString());
           context.read<ApiFormBloc>().add(FormInit());
         }
       },
-        child: Form(
-            key: _formkey,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [_apiUrlField(), _saveButton()])))
-      );
+      child: Form(
+          key: _formkey,
+          child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [_apiUrlField(), _saveButton()]))));
 
   Widget _apiUrlField() =>
       BlocBuilder<ApiFormBloc, ApiFormState>(builder: (context, state) {
@@ -56,9 +68,6 @@ class ApiFormView extends StatelessWidget {
       });
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) =>
-            ApiFormBloc(apiFormRepo: context.read<ApiFormRepository>()),
-        child: Scaffold(body: _apiForm()));
+    return Scaffold(body: _apiForm());
   }
 }
