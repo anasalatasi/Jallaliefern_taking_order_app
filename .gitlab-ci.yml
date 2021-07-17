@@ -1,0 +1,15 @@
+stages:
+  - build
+
+flutter-build:
+  image: docker pull cirrusci/flutter:stable
+  stage: build
+  before_script:
+    - flutter packages get
+    - flutter clean
+  script:
+    - flutter doctor --android-licenses
+    - flutter build apk --release
+  artifacts:
+    paths:
+      - "**/**/**/**/**/**/*.apk"
