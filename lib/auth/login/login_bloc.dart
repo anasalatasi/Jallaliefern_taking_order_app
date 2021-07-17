@@ -2,11 +2,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/auth/form_submission_status.dart';
 import 'package:jallaliefern_taking_orders_app/auth/login/login_events.dart';
 import 'package:jallaliefern_taking_orders_app/auth/login/login_state.dart';
-import 'auth_repository.dart';
-class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthRepository authRepo;
+import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
+import 'package:jallaliefern_taking_orders_app/utils/exceptions.dart';
+import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 
-  LoginBloc({required this.authRepo}) : super(LoginState());
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginBloc() : super(LoginState());
 
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
@@ -16,7 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
 
     // password updated
-    else if (event is PasswordChanged){
+    else if (event is PasswordChanged) {
       yield state.copyWith(password: event.password);
     }
 
@@ -24,11 +25,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     else if (event is LoginSubmitted) {
       yield state.copyWith(formStatus: FormSubmitting());
       try {
-        await authRepo.login(username: state.username,password: state.password);
+        await locator<LoginService>()
+            .getToken(username: state.username, password: state.password);
         yield state.copyWith(formStatus: SubmissionSuccess());
-      } on Exception catch(e) {
-      yield state.copyWith(formStatus: SubmissionFailed(e));
+      } on Exception catch (e) {
+        yield state.copyWith(formStatus: SubmissionFailed(e));
+      }
+    } else if (event is LoginInit) {
+      yield state.copyWith(formStatus: InitialFormStatus());
     }
   }
-}
 }

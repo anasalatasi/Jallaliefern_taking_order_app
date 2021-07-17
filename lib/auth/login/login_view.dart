@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jallaliefern_taking_orders_app/auth/login/auth_repository.dart';
-
+import 'package:jallaliefern_taking_orders_app/screens/home_screen.dart';
 import '../form_submission_status.dart';
 import 'login_bloc.dart';
 import 'login_state.dart';
@@ -14,7 +13,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginBloc(authRepo: context.read<AuthRepository>()),
+      create: (context) => LoginBloc(),
       child: Scaffold(
         body: _loginForm(),
       ),
@@ -46,6 +45,8 @@ class LoginView extends StatelessWidget {
           if (formStatus is SubmissionFailed) {
             _showDialog(context, formStatus.exception.toString());
             context.read<LoginBloc>().add(LoginInit());
+          } else if (formStatus is SubmissionSuccess) {
+            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => HomeScreen()));
           }
         },
         child: Form(

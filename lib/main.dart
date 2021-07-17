@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_repository.dart';
-import 'package:jallaliefern_taking_orders_app/auth/login/auth_repository.dart';
 import 'screens/welcome_screen.dart';
-import 'secure_storage.dart';
+import 'utils/service_locator.dart';
 
 void main() {
+  setupLocator();
   runApp(MaterialApp(
       home: MultiRepositoryProvider(
     providers: [
       RepositoryProvider(create: (context) => ApiFormRepository()),
-      RepositoryProvider(create: (context) => AuthRepository())
+      RepositoryProvider(create: (context) => null)
     ],
     child: WelcomeScreen(),
   )));

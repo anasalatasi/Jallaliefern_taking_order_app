@@ -1,24 +1,26 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class SecureStorage {
-  static final _storage = FlutterSecureStorage();
+class SecureStorageService {
+  final _storage = FlutterSecureStorage();
 
-  static Future write(String key, String value) async {
+  Future write(String key, String value) async {
     var writeData = await _storage.write(key: key, value: value);
     return writeData;
   }
 
-  static Future read(String key) async {
+  Future read(String key) async {
     var readData = await _storage.read(key: key);
     return readData;
   }
 
-  static Future<bool> haskey(String key) async {
+  Future<bool> haskey(String key) async {
     var readData = await _storage.containsKey(key: key);
     return readData;
   }
 
-  static Future deleteAll() async {
+  Future deleteAll() async {
     await _storage.deleteAll();
   }
+
+  get apiUrl => read('api_url');
 }

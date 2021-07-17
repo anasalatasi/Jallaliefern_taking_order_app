@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../page0.dart';
 import '../page1.dart';
-import '../page2.dart';
-import '../page3.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -21,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   page1(
     key: PageStorageKey('page1'),
   ),
-  
   ];
   int _selectedIndex = 0;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(
