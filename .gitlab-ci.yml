@@ -2,7 +2,7 @@ stages:
   - build
 
 flutter-build:
-  image: docker pull cirrusci/flutter:stable
+  image: cirrusci/flutter:stable
   stage: build
   before_script:
     - flutter packages get
