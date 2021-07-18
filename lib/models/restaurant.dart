@@ -9,26 +9,28 @@ class Restaurant {
   String? logo;
 
   Restaurant.empty();
-  Restaurant({required this.id,required this.name,required this.logo});
+  Restaurant({required this.id, required this.name, required this.logo});
 
   Future<void> init() async {
-    final rawdata = await locator<ApiService>().getRestaurantInfo();
-    Restaurant rest = Restaurant.fromRawJson(rawdata);
-    id = rest.id;
-    name = rest.name;
-    logo = rest.logo;
+    try {
+      final rawdata = await locator<ApiService>().getRestaurantInfo();
+      Restaurant rest = Restaurant.fromRawJson(rawdata);
+      id = rest.id;
+      name = rest.name;
+      logo = rest.logo;
+    } catch(e) {
+      return Future.value(false);
+    }
+    return Future.value(true);
   }
 
-  factory Restaurant.fromRawJson(String str) => Restaurant.fromJson(json.decode(str));
+  factory Restaurant.fromRawJson(String str) =>
+      Restaurant.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
-    return Restaurant(
-      id: json['id'],
-      name: json['name'],
-      logo: json['logo']
-    );
+    return Restaurant(id: json['id'], name: json['name'], logo: json['logo']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -36,11 +38,4 @@ class Restaurant {
         'name': name,
         'logo': logo,
       };
-
-  get title async {
-    if (id == null) {
-      await init();
-    }
-    return this.name;
-  }
 }

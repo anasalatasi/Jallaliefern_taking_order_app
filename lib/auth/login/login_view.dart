@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
+import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/screens/home_screen.dart';
+import 'package:jallaliefern_taking_orders_app/utils/exceptions.dart';
+import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import '../form_submission_status.dart';
 import 'login_bloc.dart';
 import 'login_state.dart';
@@ -45,7 +48,11 @@ class LoginView extends StatelessWidget {
         listener: (context, state) {
           final formStatus = state.formStatus;
           if (formStatus is SubmissionFailed) {
-            _showDialog(context, formStatus.exception.toString());
+            _showDialog(
+                context,
+                formStatus.exception is MyException
+                    ? formStatus.exception.toString()
+                    : "Unknown Error Occured");
             context.read<LoginBloc>().add(LoginInit());
           } else if (formStatus is SubmissionSuccess) {
             Navigator.pushReplacement(
@@ -55,26 +62,58 @@ class LoginView extends StatelessWidget {
         child: Form(
           key: _formkey,
           child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _usernameField(),
-                SizedBox(height: 8,),
-                _passwordField(),
-                SizedBox(height: 16,),
-                _loginButton(),
-              ],
-            ),
-              ],
-            )
-          ),
+              padding: EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _formTitle(),
+                      _usernameField(),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      _passwordField(),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      _loginButton(),
+                    ],
+                  ),
+                ],
+              )),
         ),
       );
+  Widget _formTitle() {
+    return FutureBuilder(
+      future: locator<Restaurant>().init(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) => Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            child: snapshot.hasData && locator<Restaurant>().logo != null
+                ? Image.network(locator<Restaurant>().logo!)
+                : CircularProgressIndicator(),
+          ),
+          Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.all(10),
+              child: snapshot.hasData
+                  ? Text(
+                      locator<Restaurant>().name ?? "",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20),
+                    )
+                  : CircularProgressIndicator()),
+        ],
+      ),
+    );
+  }
 
   Widget _loginButton() {
     return BlocBuilder<LoginBloc, LoginState>(
@@ -96,8 +135,6 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  
-
   Widget _passwordField() {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
@@ -109,17 +146,16 @@ class LoginView extends StatelessWidget {
                   obscureText: true,
                   cursorColor: Kcolor,
                   decoration: const InputDecoration(
-                    
                     suffixIcon: Icon(
                       Icons.password_rounded,
                       color: Kcolor,
                     ),
-                    border:
-                        OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+                    border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Kcolor)),
                     //enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
-                    focusedBorder:
-                        OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
-            
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Kcolor)),
+
                     labelText: 'Password',
                     labelStyle: TextStyle(
                       color: Kcolor,
@@ -146,7 +182,6 @@ class LoginView extends StatelessWidget {
             child: TextFormField(
               cursorColor: Kcolor,
               decoration: const InputDecoration(
-                  
                   suffixIcon: Icon(
                     Icons.person,
                     color: Kcolor,
