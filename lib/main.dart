@@ -10,7 +10,6 @@ void main() {
       home: MultiRepositoryProvider(
     providers: [
       RepositoryProvider(create: (context) => ApiFormRepository()),
-      RepositoryProvider(create: (context) => null)
     ],
     child: WelcomeScreen(),
   )));

@@ -22,5 +22,5 @@ class SecureStorageService {
     await _storage.deleteAll();
   }
 
-  get apiUrl => read('api_url');
+  get apiUrl async => await read('api_url');
 }
