@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/screens/home_screen.dart';
 import '../form_submission_status.dart';
 import 'login_bloc.dart';
 import 'login_state.dart';
 import 'login_events.dart';
+import '../../Constants.dart';
 
 class LoginView extends StatelessWidget {
   final ButtonStyle mystyle =
@@ -46,7 +48,8 @@ class LoginView extends StatelessWidget {
             _showDialog(context, formStatus.exception.toString());
             context.read<LoginBloc>().add(LoginInit());
           } else if (formStatus is SubmissionSuccess) {
-            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
           }
         },
         child: Form(
@@ -54,14 +57,21 @@ class LoginView extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _fromTitle(),
+                Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
                 _usernameField(),
+                SizedBox(height: 8,),
                 _passwordField(),
+                SizedBox(height: 16,),
                 _loginButton(),
               ],
             ),
+              ],
+            )
           ),
         ),
       );
@@ -86,33 +96,42 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _fromTitle() {
-    return Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(10),
-        child: Text(
-          'Jallaliefern Taking Orders App',
-          style: TextStyle(
-              color: Colors.red, fontWeight: FontWeight.w500, fontSize: 30),
-        ));
-  }
+  
 
   Widget _passwordField() {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
-        return Container(
+        return Padding(
             padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: TextFormField(
-              obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter your Password',
-                ),
-                validator: (value) =>
-                    state.validPassword ? null : 'password is required',
-                onChanged: (value) => context
-                    .read<LoginBloc>()
-                    .add(PasswordChanged(password: value))));
+            child: Card(
+              elevation: 5,
+              child: TextFormField(
+                  obscureText: true,
+                  cursorColor: Kcolor,
+                  decoration: const InputDecoration(
+                    
+                    suffixIcon: Icon(
+                      Icons.password_rounded,
+                      color: Kcolor,
+                    ),
+                    border:
+                        OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+                    //enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+                    focusedBorder:
+                        OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+            
+                    labelText: 'Password',
+                    labelStyle: TextStyle(
+                      color: Kcolor,
+                    ),
+                    hintText: 'Enter your Password',
+                  ),
+                  validator: (value) =>
+                      state.validPassword ? null : 'password is required',
+                  onChanged: (value) => context
+                      .read<LoginBloc>()
+                      .add(PasswordChanged(password: value))),
+            ));
       },
     );
   }
@@ -120,16 +139,36 @@ class LoginView extends StatelessWidget {
   Widget _usernameField() {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
-        return Container(
-            padding: EdgeInsets.all(10),
+        return Padding(
+          padding: EdgeInsets.all(10),
+          child: Card(
+            elevation: 5,
             child: TextFormField(
-                decoration: const InputDecoration(
-                    labelText: 'username', hintText: 'Enter Your username'),
-                validator: (value) =>
-                    state.validUsername ? null : 'username is required',
-                onChanged: (value) => context
-                    .read<LoginBloc>()
-                    .add(UsernameChanged(username: value))));
+              cursorColor: Kcolor,
+              decoration: const InputDecoration(
+                  
+                  suffixIcon: Icon(
+                    Icons.person,
+                    color: Kcolor,
+                  ),
+                  border:
+                      OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+                  //enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+                  focusedBorder:
+                      OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
+                  labelText: 'Username',
+                  labelStyle: TextStyle(
+                    color: Kcolor,
+                  ),
+                  hintText: 'Enter Your username'),
+              validator: (value) =>
+                  state.validUsername ? null : 'username is required',
+              onChanged: (value) => context.read<LoginBloc>().add(
+                    UsernameChanged(username: value),
+                  ),
+            ),
+          ),
+        );
       },
     );
   }

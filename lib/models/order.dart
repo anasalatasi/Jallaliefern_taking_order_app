@@ -6,8 +6,9 @@ class Order{
   final String lastName ;
   final int type ;
   final String email ;
+  final List delivery ;
 
-  Order({required this.id ,required this.email ,required this.firstName ,required this.lastName ,required this.slug ,required this.type });
+  Order({required this.id ,required this.email ,required this.firstName ,required this.lastName ,required this.slug ,required this.type , required this.delivery });
   factory Order.fromJson(Map<String,dynamic>json){
     return Order(
       id: json['id'],
@@ -15,7 +16,8 @@ class Order{
       firstName: json['first_name'],
       lastName: json['last_name'],
       type: json['type'],
-      email: json['email']
+      email: json['email'],
+      delivery : json['delivery'],
     );
   }
   String getType(){
