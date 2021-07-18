@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../page0.dart';
-import '../page1.dart';
+import 'package:jallaliefern_taking_orders_app/Finished_page.dart';
+import 'package:jallaliefern_taking_orders_app/Ready_page.dart';
+import '../New_page.dart';
+import '../Inprog_page.dart';
+import '../../Constants.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -13,22 +16,38 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
 
   final List<Widget> pages = [
-  page0(
-    key: PageStorageKey('page0'),
+  New_Page(
+    key: PageStorageKey('New_Page'),
   ),
-  page1(
-    key: PageStorageKey('page1'),
+  InProg_Page(
+    key: PageStorageKey('InProg_Page'),
   ),
+  Ready_Page(
+    key: PageStorageKey('Ready_Page'),
+  ),
+  Finished_Page(
+    key: PageStorageKey('Finished_Page'),
+  )
   ];
   int _selectedIndex = 0;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(
         onTap: (int index) => setState(() => _selectedIndex = index),
         currentIndex: selectedIndex,
+        selectedItemColor : Kcolor ,
+        unselectedLabelStyle: TextStyle(color: Colors.black38),
+        showUnselectedLabels: true,
+        unselectedItemColor: Colors.black38,
+
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.add), label: 'First Page'),
+              icon: Icon(Icons.request_page_outlined), label: 'New'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.list), label: 'Second Page'),
+              icon: Icon(Icons.watch_later_outlined), label: 'In Progress'),
+        BottomNavigationBarItem(
+              icon: Icon(Icons.done_rounded),label: 'Ready'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.done_all_rounded), label: 'Finished'),
+          
         ],
       );
   @override

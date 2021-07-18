@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class page1 extends StatelessWidget {
-  const page1({Key? key}) : super(key: key);
+class Ready_Page extends StatelessWidget {
+  const Ready_Page({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class page1 extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Hi2ew12rhflusd    dadadodo'
+            'Hi'
           )
         ],
       ),
