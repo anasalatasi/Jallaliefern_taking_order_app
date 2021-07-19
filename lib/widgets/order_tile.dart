@@ -1,10 +1,15 @@
-import 'package:flutter/material.dart';
 import '../models/order.dart';
+import 'package:flutter/material.dart';
 
-class OrdersList extends StatelessWidget {
-  final List<Order> orders;
-  OrdersList({required this.orders});
-  Card _tile(Order order) => Card(
+class OrderTile extends StatelessWidget {
+  const OrderTile({
+    required this.order,
+  });
+
+  final Order order;
+
+  @override
+  Widget build(BuildContext context) => Card(
         child: ListTile(
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -25,16 +30,4 @@ class OrdersList extends StatelessWidget {
           subtitle: Text(order.getType()),
         ),
       );
-
-  ListView _ordersListView() {
-    return ListView.builder(
-      itemCount: orders.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _tile(orders[index]);
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => _ordersListView();
 }

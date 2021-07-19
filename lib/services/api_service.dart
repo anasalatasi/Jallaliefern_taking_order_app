@@ -44,7 +44,7 @@ class ApiService {
 
   Future<List<Order>> getNewOrders() async {
     try {
-      final rawData = await _getAuthRequest('orders/order/');
+      final rawData = await _getAuthRequest('orders/order/?filters=(status=1)');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
     } catch (e) {

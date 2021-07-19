@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
-import 'package:jallaliefern_taking_orders_app/widgets/orders_list.dart';
+import 'package:jallaliefern_taking_orders_app/widgets/order_tile.dart';
 import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -17,7 +17,9 @@ class _NewPageState extends State<NewPage> {
   void _onRefresh() async {
     try {
       final tmp = await locator<ApiService>().getNewOrders();
-      setState(() {orders = tmp;});
+      setState(() {
+        orders = tmp;
+      });
       _refreshController.refreshCompleted();
     } catch (e) {
       _refreshController.refreshFailed();
@@ -25,5 +27,14 @@ class _NewPageState extends State<NewPage> {
   }
 
   @override
-  Widget build(BuildContext context) => SmartRefresher(enablePullDown: true,controller: _refreshController,onRefresh: _onRefresh,child: OrdersList(orders: orders));
+  Widget build(BuildContext context) => SmartRefresher(
+      enablePullDown: true,
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        itemCount: orders.length,
+        itemBuilder: (BuildContext context, int index) {
+          return OrderTile(order: orders[index]);
+        },
+      ));
 }
