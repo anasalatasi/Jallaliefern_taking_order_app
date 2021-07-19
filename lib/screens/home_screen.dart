@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jallaliefern_taking_orders_app/Finished_page.dart';
-import 'package:jallaliefern_taking_orders_app/Ready_page.dart';
-import '../New_page.dart';
-import '../Inprog_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
+import 'pages/New_page.dart';
+import 'pages/Inprog_page.dart';
 import '../../Constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,9 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageStorageBucket bucket = PageStorageBucket();
 
   final List<Widget> pages = [
-  New_Page(
-    key: PageStorageKey('New_Page'),
-  ),
+  NewPage(),
   InProg_Page(
     key: PageStorageKey('InProg_Page'),
   ),

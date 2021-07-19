@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 
@@ -24,7 +26,7 @@ class ApiService {
   // returns raw json
   Future<String> _getAuthRequest(String endpoint) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
-    String jwtToken = await locator<LoginService>().token;
+    String jwtToken = await locator<LoginService>().token.access;
     String fullUrl = "$apiUrl$endpoint";
     final client = http.Client();
     final response = await client.get(Uri.parse(fullUrl),
@@ -39,4 +41,14 @@ class ApiService {
 
   Future<String> getRestaurantInfo() async =>
       await _getRequest('settings/restaurant/1/');
+
+  Future<List<Order>> getNewOrders() async {
+    try {
+      final rawData = await _getAuthRequest('orders/order/');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
 }

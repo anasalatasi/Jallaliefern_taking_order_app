@@ -1,27 +1,18 @@
-import 'dart:convert';
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'models/order.dart';
 
-class OrdersList extends StatefulWidget {
-  OrdersList({Key? key}) : super(key: key);
-
-  @override
-  _OrdersListState createState() => _OrdersListState();
-}
-
-class _OrdersListState extends State<OrdersList> {
-  Card _tile(Order order) =>  Card(
-    child: ListTile(
-  
+class OrdersList extends StatelessWidget {
+  final List<Order> orders;
+  OrdersList({required this.orders});
+  Card _tile(Order order) => Card(
+        child: ListTile(
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(order.type==1 ?Icons.delivery_dining : Icons.hail,
-              size: 55.0,              
+              Icon(
+                order.type == 1 ? Icons.delivery_dining : Icons.hail,
+                size: 55.0,
               ),
-              
             ],
           ),
           title: Text(
@@ -30,47 +21,20 @@ class _OrdersListState extends State<OrdersList> {
               fontSize: 30.0,
               fontWeight: FontWeight.bold,
             ),
-            ),
+          ),
           subtitle: Text(order.getType()),
         ),
-  );
+      );
 
-  ListView _OrdersList_view(data) {
+  ListView _ordersListView() {
     return ListView.builder(
-      itemCount: data.length,
+      itemCount: orders.length,
       itemBuilder: (BuildContext context, int index) {
-        return _tile(data[index]);
+        return _tile(orders[index]);
       },
     );
-  }
-
-  Future<List<Order>> _fetch_orders() async {
-    List json_response = jsonDecode("""[{
-    "id": 37,
-    "slug": "2uge5",
-    "first_name": "dada",
-    "last_name": "dodo",
-    "email": "dada@dodo.com",
-    "type": 1},
-    {"id": 78,
-    "slug": "2uye5",
-    "first_name": "dada",
-    "last_name": "dodo",
-    "email": "dada@dodo.com",
-    "type": 2}]""");
-    return json_response.map((order) => new Order.fromJson(order)).toList();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _fetch_orders(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          return _OrdersList_view(snapshot.data);
-        } else if (snapshot.hasError) return Text("${snapshot.error}");
-        return CircularProgressIndicator();
-      },
-    );
-  }
+  Widget build(BuildContext context) => _ordersListView();
 }
