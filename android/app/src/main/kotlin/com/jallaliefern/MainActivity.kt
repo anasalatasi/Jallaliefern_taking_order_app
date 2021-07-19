@@ -1,4 +1,4 @@
-package com.example.jallaliefern_taking_orders_app
+package com.jallaliefern
 
 import io.flutter.embedding.android.FlutterActivity
 

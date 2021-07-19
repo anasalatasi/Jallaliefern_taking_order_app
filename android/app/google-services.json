@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "177457441502",
+    "project_id": "jallaliefern",
+    "storage_bucket": "jallaliefern.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177457441502:android:8e4e32d4518d70b0a7304f",
+        "android_client_info": {
+          "package_name": "com.jallaliefern"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177457441502-r7cu4ootuncstj5vj0df01jlekkki182.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jallaliefern",
+            "certificate_hash": "55e8b2cdc553725ba0638b8d70e5f66054a4bf54"
+          }
+        },
+        {
+          "client_id": "177457441502-dguf1gdb2e280tg8ulv9l14mhjqi9t68.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDPpfqzb1mvXoxh3X4d533vfsTfsd6Yyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177457441502-dguf1gdb2e280tg8ulv9l14mhjqi9t68.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
