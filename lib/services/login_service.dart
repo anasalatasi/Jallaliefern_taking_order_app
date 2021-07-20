@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/exceptions.dart';
 
 import '../models/jwt_token.dart';
@@ -21,7 +22,11 @@ class LoginService {
         headers: _headers,
         body: _loginToJson(username: username, password: password)).timeout(TIMEOUT);
     if (response.statusCode == 401) throw UnauthorizedException();
-    else if (response.statusCode == 200) _token = JwtToken.fromRawJson(response.body);
+    else if (response.statusCode == 200)
+    {
+      _token = JwtToken.fromRawJson(response.body);
+      locator<ApiService>().registerDevice();
+    }
     else throw Exception('Unknown Error');
   }
 
