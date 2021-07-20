@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/widgets/order_tile.dart';
@@ -10,11 +11,37 @@ class NewPage extends StatefulWidget {
   _NewPageState createState() => _NewPageState();
 }
 
-class _NewPageState extends State<NewPage> {
+class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
   RefreshController _refreshController =
       RefreshController(initialRefresh: true);
   List<Order> orders = List<Order>.empty();
-  void _onRefresh() async {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addObserver(this);
+    FirebaseMessaging.instance.getInitialMessage();
+
+    FirebaseMessaging.onMessage.listen((message) {
+      _onRefresh();
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      _onRefresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _onRefresh();
+  }
+
+  Future<void> _onRefresh() async {
     try {
       final tmp = await locator<ApiService>().getNewOrders();
       setState(() {
