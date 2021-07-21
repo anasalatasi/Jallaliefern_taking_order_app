@@ -1,48 +1,61 @@
 import 'dart:convert';
 
-class Order {
-  final int id;
-  final String slug;
-  final String firstName;
-  final String lastName;
-  final int type;
-  final String email;
+import 'package:json_annotation/json_annotation.dart';
+import 'delivery.dart';
+import 'payment.dart';
+import 'item.dart';
+part 'order.g.dart';
 
+
+@JsonSerializable(explicitToJson: true)
+class Order {
   Order(
       {required this.id,
-      required this.email,
+      required this.slug,
       required this.firstName,
       required this.lastName,
-      required this.slug,
-      required this.type});
+      required this.email,
+      required this.phone,
+      required this.type,
+      this.delivery,
+      required this.payment,
+      required this.items,
+      this.serveTime,
+      required this.recieveEmail,
+      required this.totalPrice,
+      this.notes});
+
+  final int id;
+  final String slug;
+  @JsonKey(name: 'first_name')
+  final String firstName;
+  @JsonKey(name: 'last_name')
+  final String lastName;
+  final String email;
+  final String phone;
+  final int type;
+  final Delivery? delivery;
+  final Payment payment;
+  final List<Item> items;
+  @JsonKey(name: 'serve_time')
+  final String? serveTime;
+  @JsonKey(name: 'recieve_email')
+  final bool recieveEmail;
+  @JsonKey(name: 'total_price')
+  final String totalPrice;
+  final String? notes;
 
   factory Order.fromRawJson(String str) => Order.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      id: json['id'],
-      slug: json['slug'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
-      type: json['type'],
-      email: json['email'],
-    );
-  }
+  factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
+  Map<String, dynamic> toJson() => _$OrderToJson(this);
+
   String getType() {
     if (this.type == 1)
       return "Delivery";
     else if (this.type == 2) return "Pickup";
     return "Unknown";
   }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'slug': slug,
-        'first_name': firstName,
-        'last_name': lastName,
-        'type': type,
-        'email': email,
-      };
 }
