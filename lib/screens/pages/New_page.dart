@@ -24,7 +24,7 @@ class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((message) {
       _onRefresh();
     });
-
+    
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _onRefresh();
     });

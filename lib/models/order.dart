@@ -42,7 +42,7 @@ class Order {
   @JsonKey(name: 'recieve_email')
   final bool recieveEmail;
   @JsonKey(name: 'total_price')
-  final String totalPrice;
+  final double totalPrice;
   final String? notes;
 
   factory Order.fromRawJson(String str) => Order.fromJson(json.decode(str));

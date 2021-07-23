@@ -24,7 +24,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
         .toList(),
     serveTime: json['serve_time'] as String?,
     recieveEmail: json['recieve_email'] as bool,
-    totalPrice: json['total_price'] as String,
+    totalPrice: (json['total_price'] as num).toDouble(),
     notes: json['notes'] as String?,
   );
 }

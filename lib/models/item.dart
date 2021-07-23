@@ -12,7 +12,7 @@ class Item {
   final List<Addon>? addons;
   final int quantity;
   @JsonKey(name: 'total_price')
-  final String totalPrice;
+  final double totalPrice;
   final String? notes;
 
   factory Item.fromRawJson(String str) =>

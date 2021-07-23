@@ -10,7 +10,7 @@ Addon _$AddonFromJson(Map<String, dynamic> json) {
   return Addon(
     id: json['id'] as int,
     name: json['name'] as String,
-    price: json['price'] as String,
+    price: (json['price'] as num).toDouble(),
     groupId: json['group'] as int,
   );
 }

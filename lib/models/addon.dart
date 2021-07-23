@@ -8,7 +8,7 @@ class Addon {
   Addon({required this.id,required this.name,required this.price,required this.groupId});
   final int id;
   final String name;
-  final String price;
+  final double price;
   @JsonKey(name:'group')
   final int groupId;
 
