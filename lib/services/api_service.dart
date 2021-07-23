@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:jallaliefern_taking_orders_app/models/meal.dart';
+import 'package:jallaliefern_taking_orders_app/models/meal_category.dart';
+import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
@@ -89,6 +92,33 @@ class ApiService {
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
     } catch (e) {
       return List<Order>.empty();
+    }
+  }
+
+  Future<Meal?> getMeal(int id) async {
+    try{
+      final rawData = await _getAuthRequest('menu/meal/$id/');
+      return Meal.fromRawJson(rawData);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<MealSize?> getMealSize(int id) async {
+    try{
+      final rawData = await _getAuthRequest('menu/meal_size/$id/');
+      return MealSize.fromRawJson(rawData);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<MealCategory?> getCategory(int id) async {
+    try{
+      final rawData = await _getAuthRequest('menu/meal_category/$id/');
+      return MealCategory.fromRawJson(rawData);
+    } catch (e) {
+      return null;
     }
   }
 }
