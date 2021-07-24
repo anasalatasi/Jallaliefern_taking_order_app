@@ -6,6 +6,8 @@ import 'package:jallaliefern_taking_orders_app/models/meal.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_category.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
+import 'package:jallaliefern_taking_orders_app/models/section.dart';
+import 'package:jallaliefern_taking_orders_app/models/zone.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -129,5 +131,15 @@ class ApiService {
 
   Future<void> rejectOrder(int id) async {
     await _postAuthRequest('orders/order/$id/accept/', Acceptation(accepted: false).toRawJson());
+  }
+
+  Future<Zone> getZone(int id) async {
+    final rawData = await _getAuthRequest('settings/zone/$id/');
+    return Zone.fromRawJson(rawData);
+  }
+
+  Future<Section> getSection(int id) async {
+    final rawData = await _getAuthRequest('settings/section/$id/');
+    return Section.fromRawJson(rawData);
   }
 }
