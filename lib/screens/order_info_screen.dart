@@ -19,7 +19,6 @@ class OrderInfo extends StatelessWidget {
         child: Card(
           margin: EdgeInsets.all(10),
           child: Column(
-            
             children: [
               infowidget(),
               Divider(
@@ -57,32 +56,34 @@ class OrderInfo extends StatelessWidget {
                         Text(order.delivery!.address)
                       ],
                     ),
-               Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              primary:Colors.red
-            ),
-            icon: Icon(Icons.add_task),
-            onPressed: () {},
-            label: Center(child: Text('Reject'),),
-          ),
-          SizedBox(width: 16,),
-          ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-              primary:Colors.green
-            ),
-            
-            icon: Icon(Icons.cancel_outlined),
-          //  style: ButtonStyle(backgroundColor: MaterialStateProperty<Color>),
-            onPressed: () {},
-            label: Center(child: Text('Accept'),),
-          ),
-        ],
-      ), 
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.red),
+                    icon: Icon(Icons.add_task),
+                    onPressed: () {},
+                    label: Center(
+                      child: Text('Reject'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
+
+                    icon: Icon(Icons.cancel_outlined),
+                    //  style: ButtonStyle(backgroundColor: MaterialStateProperty<Color>),
+                    onPressed: () {},
+                    label: Center(
+                      child: Text('Accept'),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
