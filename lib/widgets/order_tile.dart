@@ -1,21 +1,29 @@
 import '../models/order.dart';
 import 'package:flutter/material.dart';
 import '../screens/order_info_screen.dart';
+
 class OrderTile extends StatelessWidget {
   const OrderTile({
     required this.order,
+    required this.parentRefresh,
   });
 
   final Order order;
-
+  final Future<void> Function() parentRefresh;
   @override
-  Widget build(BuildContext context) => ElevatedButton(
-    onPressed: (){
-      Navigator.push(context,
-      MaterialPageRoute(builder: (context) => OrderInfo(order: order,),)
-      );
-    },
-    child: Card(
+  Widget build(BuildContext context) => Card(
+        elevation: 3,
+        child: InkWell(
+          onTap: () async {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OrderInfo(
+                    order: order,
+                  ),
+                ));
+            parentRefresh();
+          },
           child: ListTile(
             leading: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -36,5 +44,5 @@ class OrderTile extends StatelessWidget {
             subtitle: Text(order.getType()),
           ),
         ),
-  );
+      );
 }

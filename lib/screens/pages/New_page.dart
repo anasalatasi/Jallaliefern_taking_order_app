@@ -61,7 +61,7 @@ class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
       child: ListView.builder(
         itemCount: orders.length,
         itemBuilder: (BuildContext context, int index) {
-          return OrderTile(order: orders[index]);
+          return OrderTile(order: orders[index],parentRefresh: _onRefresh);
         },
       ));
 }

@@ -197,6 +197,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  duration_picker:
+    dependency: "direct main"
+    description:
+      name: duration_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   file:
     dependency: transitive
     description:
@@ -265,6 +272,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.0.1"
+  flutter_duration_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_duration_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
   flutter_login:
     dependency: "direct main"
     description:

@@ -3,7 +3,6 @@ import 'package:jallaliefern_taking_orders_app/auth/form_submission_status.dart'
 import 'package:jallaliefern_taking_orders_app/auth/login/login_events.dart';
 import 'package:jallaliefern_taking_orders_app/auth/login/login_state.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
-import 'package:jallaliefern_taking_orders_app/utils/exceptions.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {

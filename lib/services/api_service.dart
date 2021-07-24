@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:jallaliefern_taking_orders_app/models/acceptation.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_category.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
@@ -120,5 +121,13 @@ class ApiService {
     } catch (e) {
       return null;
     }
+  }
+
+  Future<void> acceptOrder(int id,Duration? eta) async {
+    await _postAuthRequest('orders/order/$id/accept/', Acceptation(accepted: true,eta: eta != null ? eta.toString():null).toRawJson());
+  }
+
+  Future<void> rejectOrder(int id) async {
+    await _postAuthRequest('orders/order/$id/accept/', Acceptation(accepted: false).toRawJson());
   }
 }
