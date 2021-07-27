@@ -98,6 +98,16 @@ class ApiService {
     }
   }
 
+  Future<List<Order>> getInProgOrders() async {
+    try {
+      final rawData = await _getAuthRequest('orders/order/?filters=(status=3)');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
+
   Future<Meal?> getMeal(int id) async {
     try{
       final rawData = await _getAuthRequest('menu/meal/$id/');

@@ -172,45 +172,54 @@ class OrderInfo extends StatelessWidget {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(primary: Colors.red),
-                      icon: Icon(Icons.cancel_outlined),
-                      onPressed: () async => await _showRejectDialog(context),
-                      label: Center(
-                        child: Text('Reject'),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(primary: Colors.green),
-                      icon: Icon(Icons.add_task),
-                      onPressed: () async => await _showAcceptDialog(context),
-                      label: Center(
-                        child: Text('Accept'),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buttons(context),
         ],
       ),
     );
+  }
+
+  Widget _buttons(BuildContext context) {
+    if (order.status == 1) return _newButtons(context);
+    return Container();
+  }
+
+  Widget _newButtons(BuildContext context) {
+    return Align(
+          alignment: Alignment.bottomCenter,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.red),
+                    icon: Icon(Icons.cancel_outlined),
+                    onPressed: () async => await _showRejectDialog(context),
+                    label: Center(
+                      child: Text('Reject'),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
+                    icon: Icon(Icons.add_task),
+                    onPressed: () async => await _showAcceptDialog(context),
+                    label: Center(
+                      child: Text('Accept'),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
   }
 
   Widget _deliveryWidget() {

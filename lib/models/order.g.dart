@@ -15,6 +15,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
     email: json['email'] as String,
     phone: json['phone'] as String,
     type: json['type'] as int,
+    status: json['status'] as int,
     delivery: json['delivery'] == null
         ? null
         : Delivery.fromJson(json['delivery'] as Map<String, dynamic>),
@@ -37,6 +38,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'email': instance.email,
       'phone': instance.phone,
       'type': instance.type,
+      'status': instance.status,
       'delivery': instance.delivery?.toJson(),
       'payment': instance.payment.toJson(),
       'items': instance.items.map((e) => e.toJson()).toList(),

@@ -17,6 +17,7 @@ class Order {
       required this.email,
       required this.phone,
       required this.type,
+      required this.status,
       this.delivery,
       required this.payment,
       required this.items,
@@ -34,6 +35,7 @@ class Order {
   final String email;
   final String phone;
   final int type;
+  final int status;
   final Delivery? delivery;
   final Payment payment;
   final List<Item> items;
@@ -44,6 +46,11 @@ class Order {
   @JsonKey(name: 'total_price')
   final double totalPrice;
   final String? notes;
+
+  get serveDateTime {
+    if (serveTime == null) return null;
+    return DateTime.parse(serveTime!);
+  }
 
   factory Order.fromRawJson(String str) => Order.fromJson(json.decode(str));
 

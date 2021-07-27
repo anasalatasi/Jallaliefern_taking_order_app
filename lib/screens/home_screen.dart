@@ -17,9 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> pages = [
     NewPage(),
-    InProg_Page(
-      key: PageStorageKey('InProg_Page'),
-    ),
+    InProgPage(),
     Ready_Page(
       key: PageStorageKey('Ready_Page'),
     ),

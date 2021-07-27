@@ -24,7 +24,7 @@ class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
     FirebaseMessaging.onMessage.listen((message) {
       _onRefresh();
     });
-    
+
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _onRefresh();
     });
@@ -61,7 +61,7 @@ class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
       child: ListView.builder(
         itemCount: orders.length,
         itemBuilder: (BuildContext context, int index) {
-          return OrderTile(order: orders[index],parentRefresh: _onRefresh);
+          return OrderTile(order: orders[index], parentRefresh: _onRefresh);
         },
       ));
 }

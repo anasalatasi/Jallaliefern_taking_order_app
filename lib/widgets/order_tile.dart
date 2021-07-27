@@ -1,6 +1,7 @@
 import '../models/order.dart';
 import 'package:flutter/material.dart';
 import '../screens/order_info_screen.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 
 class OrderTile extends StatelessWidget {
   const OrderTile({
@@ -42,6 +43,18 @@ class OrderTile extends StatelessWidget {
               ),
             ),
             subtitle: Text(order.getType()),
+            trailing: order.serveDateTime == null
+                ? SizedBox()
+                : CountdownTimer(
+                    endTime: order.serveDateTime.millisecondsSinceEpoch,
+                    widgetBuilder: (_, time) {
+                      if (time == null) {
+                        return Text('00:00:00');
+                      }
+                      return Text(
+                          '${time.hours ?? 0}:${time.min ?? 0}:${time.sec ?? 0}');
+                    },
+                  ),
           ),
         ),
       );
