@@ -362,7 +362,7 @@ class OrderInfo extends StatelessWidget {
     List<Widget> list = List<Widget>.empty();
     for (var i = 0; i < item.addons!.length; i++) {
       list.add(Text(
-          "${item.addons![i].quantity}x ${(await item.addons![i].getAddon())!.name}"));
+          "${(await item.addons![i].getAddon())!.name}"));
     }
     return Column(
       children: list,

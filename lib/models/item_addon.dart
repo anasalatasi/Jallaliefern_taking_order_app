@@ -9,12 +9,11 @@ part 'item_addon.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class ItemAddon {
-  ItemAddon({required this.addonId,this.quantity = 1,required this.totalPrice});
+  ItemAddon({required this.addonId,required this.totalPrice});
   @JsonKey(name:'addon')
   final int addonId;
   @JsonKey(ignore: true)
   Addon? addon;
-  final int quantity;
   @JsonKey(name:'total_price')
   final double totalPrice;
 
