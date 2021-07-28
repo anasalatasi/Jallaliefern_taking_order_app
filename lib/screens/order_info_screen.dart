@@ -35,47 +35,51 @@ class OrderInfo extends StatelessWidget {
         });
   }
 
-  Future<void> _showConfirmReadyDialog(BuildContext context) async => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-            title: Text("Confirm Order #${order.id} is Ready"),
-            content: Text("Are you sure you want to mark this order as ready?"),
-            actions: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(primary: Colors.red),
-                          child: Text('CANCEL'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: ElevatedButton(
-                          style:
-                              ElevatedButton.styleFrom(primary: Colors.green),
-                          child: Text('CONFIRM'),
-                          onPressed: () async {
-                            try {
-                              await locator<ApiService>().readyOrder(order.id);
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            } catch (e) {
-                              await _showErrorDialog(context, e.toString());
-                            }
-                          }),
-                    ),
+  Future<void> _showConfirmReadyDialog(BuildContext context) async =>
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("Confirm Order #${order.id} is Ready"),
+                content:
+                    Text("Are you sure you want to mark this order as ready?"),
+                actions: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton(
+                              style:
+                                  ElevatedButton.styleFrom(primary: Colors.red),
+                              child: Text('CANCEL'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.green),
+                              child: Text('CONFIRM'),
+                              onPressed: () async {
+                                try {
+                                  await locator<ApiService>()
+                                      .readyOrder(order.id);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                } catch (e) {
+                                  await _showErrorDialog(context, e.toString());
+                                }
+                              }),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ],
-          ));
+              ));
 
   Future<void> _showRejectDialog(BuildContext context) async => showDialog(
       context: context,
@@ -353,6 +357,18 @@ class OrderInfo extends StatelessWidget {
     );
   }
 
+  Future<Widget> _addons(Item item) async {
+    if (item.addons == null) return SizedBox();
+    List<Widget> list = List<Widget>.empty();
+    for (var i = 0; i < item.addons!.length; i++) {
+      list.add(Text(
+          "${item.addons![i].quantity}x ${(await item.addons![i].getAddon())!.name}"));
+    }
+    return Column(
+      children: list,
+    );
+  }
+
   Widget _itemTile(Item item) {
     return Card(
         child: Column(
@@ -395,6 +411,18 @@ class OrderInfo extends StatelessWidget {
         Row(
           children: [Text('Price: ${item.totalPrice}')],
         ),
+        Row(
+          children: [
+            Text('Addons: '),
+            FutureBuilder<Widget>(
+                future: _addons(item),
+                builder:
+                    (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                  if (!snapshot.hasData) return SizedBox();
+                  return snapshot.data!;
+                })
+          ],
+        )
       ],
     ));
   }

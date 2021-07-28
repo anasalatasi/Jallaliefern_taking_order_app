@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         elevation: 15.0,
         backgroundColor: Color(0xFF9a0404),
-        title: Text('Name'),
+        title: Text('OrderSet'),
       ),
       body: PageStorage(
         bucket: bucket,
@@ -66,10 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: _bottomNavigationBar(_selectedIndex),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.auto_fix_high_outlined),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   child: Icon(Icons.auto_fix_high_outlined),
+      // ),
     );
   }
 }

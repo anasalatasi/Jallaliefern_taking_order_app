@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'addon.dart';
+import 'item_addon.dart';
 import 'meal.dart';
 import 'meal_size.dart';
 part 'item.g.dart';
@@ -25,7 +25,7 @@ class Item {
   MealSize? size;
   @JsonKey(name: 'size')
   final int? sizeId;
-  final List<Addon>? addons;
+  final List<ItemAddon>? addons;
   final int quantity;
   @JsonKey(name: 'total_price')
   final double totalPrice;

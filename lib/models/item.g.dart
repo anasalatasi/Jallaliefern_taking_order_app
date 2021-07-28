@@ -11,7 +11,7 @@ Item _$ItemFromJson(Map<String, dynamic> json) {
     mealId: json['meal'] as int,
     sizeId: json['size'] as int?,
     addons: (json['addons'] as List<dynamic>?)
-        ?.map((e) => Addon.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => ItemAddon.fromJson(e as Map<String, dynamic>))
         .toList(),
     quantity: json['quantity'] as int,
     totalPrice: (json['total_price'] as num).toDouble(),

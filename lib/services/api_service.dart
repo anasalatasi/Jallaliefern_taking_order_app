@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:jallaliefern_taking_orders_app/models/acceptation.dart';
+import 'package:jallaliefern_taking_orders_app/models/addon.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_category.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
@@ -122,6 +123,15 @@ class ApiService {
     try{
       final rawData = await _getAuthRequest('menu/meal/$id/');
       return Meal.fromRawJson(rawData);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Addon?> getAddon(int id) async {
+    try{
+      final rawData = await _getAuthRequest('menu/addon/$id/');
+      return Addon.fromRawJson(rawData);
     } catch (e) {
       return null;
     }
