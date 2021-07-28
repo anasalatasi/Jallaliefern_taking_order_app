@@ -35,6 +35,48 @@ class OrderInfo extends StatelessWidget {
         });
   }
 
+  Future<void> _showConfirmReadyDialog(BuildContext context) async => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text("Confirm Order #${order.id} is Ready"),
+            content: Text("Are you sure you want to mark this order as ready?"),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(primary: Colors.red),
+                          child: Text('CANCEL'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                          style:
+                              ElevatedButton.styleFrom(primary: Colors.green),
+                          child: Text('CONFIRM'),
+                          onPressed: () async {
+                            try {
+                              await locator<ApiService>().readyOrder(order.id);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            } catch (e) {
+                              await _showErrorDialog(context, e.toString());
+                            }
+                          }),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ));
+
   Future<void> _showRejectDialog(BuildContext context) async => showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -180,13 +222,14 @@ class OrderInfo extends StatelessWidget {
 
   Widget _buttons(BuildContext context) {
     if (order.status == 1) return _newButtons(context);
+    if (order.status == 3) return _inProgButtons(context);
     return Container();
   }
 
-  Widget _newButtons(BuildContext context) {
+  Widget _inProgButtons(BuildContext context) {
     return Align(
-          alignment: Alignment.bottomCenter,
-          child: Row(
+        alignment: Alignment.bottomCenter,
+        child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -195,31 +238,56 @@ class OrderInfo extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(primary: Colors.red),
-                    icon: Icon(Icons.cancel_outlined),
-                    onPressed: () async => await _showRejectDialog(context),
-                    label: Center(
-                      child: Text('Reject'),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(primary: Colors.green),
                     icon: Icon(Icons.add_task),
-                    onPressed: () async => await _showAcceptDialog(context),
+                    onPressed: () async =>
+                        await _showConfirmReadyDialog(context),
                     label: Center(
-                      child: Text('Accept'),
+                      child: Text('Done'),
                     ),
                   ),
                 ),
               ),
-            ],
+            ]));
+  }
+
+  Widget _newButtons(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(primary: Colors.red),
+                icon: Icon(Icons.cancel_outlined),
+                onPressed: () async => await _showRejectDialog(context),
+                label: Center(
+                  child: Text('Reject'),
+                ),
+              ),
+            ),
           ),
-        );
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(primary: Colors.green),
+                icon: Icon(Icons.add_task),
+                onPressed: () async => await _showAcceptDialog(context),
+                label: Center(
+                  child: Text('Accept'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _deliveryWidget() {

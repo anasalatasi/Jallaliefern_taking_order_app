@@ -18,9 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> pages = [
     NewPage(),
     InProgPage(),
-    Ready_Page(
-      key: PageStorageKey('Ready_Page'),
-    ),
+    ReadyPage(),
     Finished_Page(
       key: PageStorageKey('Finished_Page'),
     )

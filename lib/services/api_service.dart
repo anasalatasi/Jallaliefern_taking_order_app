@@ -108,6 +108,16 @@ class ApiService {
     }
   }
 
+  Future<List<Order>> getReadyOrders() async {
+    try {
+      final rawData = await _getAuthRequest('orders/order/?filters=(status=4)');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
+
   Future<Meal?> getMeal(int id) async {
     try{
       final rawData = await _getAuthRequest('menu/meal/$id/');
@@ -141,6 +151,10 @@ class ApiService {
 
   Future<void> rejectOrder(int id) async {
     await _postAuthRequest('orders/order/$id/accept/', Acceptation(accepted: false).toRawJson());
+  }
+
+  Future<void> readyOrder(int id) async {
+    await _postAuthRequest('orders/order/$id/change_status/', "{\"status\":4}");
   }
 
   Future<Zone> getZone(int id) async {

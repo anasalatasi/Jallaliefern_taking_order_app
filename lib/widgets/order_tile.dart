@@ -43,7 +43,7 @@ class OrderTile extends StatelessWidget {
               ),
             ),
             subtitle: Text(order.getType()),
-            trailing: order.serveDateTime == null
+            trailing: order.status != 3
                 ? SizedBox()
                 : CountdownTimer(
                     endTime: order.serveDateTime.millisecondsSinceEpoch,
