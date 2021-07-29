@@ -13,8 +13,6 @@ class Delivery {
       {required this.address,
       required this.zoneId,
       this.sectionId,
-      this.sectionName,
-      required this.zipcode,
       this.buildingNo});
   final String address;
   @JsonKey(name: 'zone')
@@ -25,9 +23,6 @@ class Delivery {
   final int? sectionId;
   @JsonKey(ignore: true)
   Section? section;
-  @JsonKey(name: 'section_name')
-  final String? sectionName;
-  final String zipcode;
   @JsonKey(name: 'building_no')
   final int? buildingNo;
 

@@ -329,7 +329,7 @@ class OrderInfo extends StatelessWidget {
                   order.delivery!.sectionId == null
                       ? Row(
                           children: [
-                            Text("Section: ${order.delivery!.sectionName}")
+                            Text("Section: no section")
                           ],
                         )
                       : FutureBuilder(
