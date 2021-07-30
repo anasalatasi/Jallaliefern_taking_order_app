@@ -363,7 +363,9 @@ class OrderInfo extends StatelessWidget {
     if (item.addons == null) return SizedBox();
     List<Widget> list = List<Widget>.empty();
     for (var i = 0; i < item.addons!.length; i++) {
-      list.add(Text("${(await item.addons![i].getAddon())!.name}"));
+      var tmp;
+      while(tmp == null) tmp = await item.addons![i].getAddon();
+      list.add(Text("${tmp.name}"));
     }
     return Column(
       children: list,
@@ -438,13 +440,6 @@ class OrderInfo extends StatelessWidget {
       child: ListView.builder(
         itemCount: order.items.length,
         itemBuilder: (BuildContext context, int index) => Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  width: 2.5,
-                  color: Kcolor),
-              ),
-            ),
             child: _itemTile(order.items[index])),
       ),
     );
