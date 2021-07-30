@@ -211,6 +211,10 @@ class OrderInfo extends StatelessWidget {
                         height: 16,
                       ),
                       _deliveryWidget(),
+                      Divider(
+                        height: 16,
+                      ),
+                      SizedBox(height: 32),
                       _itemsListView(),
                     ],
                   ),
@@ -328,9 +332,7 @@ class OrderInfo extends StatelessWidget {
                       }),
                   order.delivery!.sectionId == null
                       ? Row(
-                          children: [
-                            Text("Section: no section")
-                          ],
+                          children: [Text("Section: no section")],
                         )
                       : FutureBuilder(
                           future: order.delivery!.getSection(),
@@ -361,8 +363,7 @@ class OrderInfo extends StatelessWidget {
     if (item.addons == null) return SizedBox();
     List<Widget> list = List<Widget>.empty();
     for (var i = 0; i < item.addons!.length; i++) {
-      list.add(Text(
-          "${(await item.addons![i].getAddon())!.name}"));
+      list.add(Text("${(await item.addons![i].getAddon())!.name}"));
     }
     return Column(
       children: list,
@@ -371,68 +372,80 @@ class OrderInfo extends StatelessWidget {
 
   Widget _itemTile(Item item) {
     return Card(
-        child: Column(
-      children: [
-        Row(
-          children: [
-            Text("Meal: "),
-            FutureBuilder(
-              future: item.getMeal(),
-              builder: (BuildContext context, AsyncSnapshot<Meal?> snapshot) {
-                if (!snapshot.hasData) return Text('Loading');
-                return Text("${snapshot.data!.name}");
-              },
-            ),
-          ],
-        ),
-        item.size == null
-            ? Container()
-            : Row(
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Text('Size: '),
+                  Text("Meal: "),
                   FutureBuilder(
-                    future: item.getMealSize(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<MealSize?> snapshot) {
+                    future: item.getMeal(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<Meal?> snapshot) {
                       if (!snapshot.hasData) return Text('Loading');
                       return Text("${snapshot.data!.name}");
                     },
-                  )
+                  ),
                 ],
               ),
-        Row(
-          children: [Text('Quantity: x${item.quantity}')],
-        ),
-        Row(
-          children: [
-            Text('Notes: ${Utf8Decoder().convert(item.notes!.codeUnits)}')
-          ],
-        ),
-        Row(
-          children: [Text('Price: ${item.totalPrice}')],
-        ),
-        Row(
-          children: [
-            Text('Addons: '),
-            FutureBuilder<Widget>(
-                future: _addons(item),
-                builder:
-                    (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                  if (!snapshot.hasData) return SizedBox();
-                  return snapshot.data!;
-                })
-          ],
-        )
-      ],
-    ));
+              item.size == null
+                  ? Container()
+                  : Row(
+                      children: [
+                        Text('Size: '),
+                        FutureBuilder(
+                          future: item.getMealSize(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<MealSize?> snapshot) {
+                            if (!snapshot.hasData) return Text('Loading');
+                            return Text("${snapshot.data!.name}");
+                          },
+                        )
+                      ],
+                    ),
+              Row(
+                children: [Text('Quantity: x${item.quantity}')],
+              ),
+              Row(
+                children: [
+                  Text('Notes: ${Utf8Decoder().convert(item.notes!.codeUnits)}')
+                ],
+              ),
+              Row(
+                children: [Text('Price: ${item.totalPrice}')],
+              ),
+              Row(
+                children: [
+                  Text('Addons: '),
+                  FutureBuilder<Widget>(
+                      future: _addons(item),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Widget> snapshot) {
+                        if (!snapshot.hasData) return SizedBox();
+                        return snapshot.data!;
+                      })
+                ],
+              )
+            ],
+          ),
+        ));
   }
 
   Widget _itemsListView() {
     return Expanded(
       child: ListView.builder(
         itemCount: order.items.length,
-        itemBuilder: (BuildContext context, int index) =>
-            _itemTile(order.items[index]),
+        itemBuilder: (BuildContext context, int index) => Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  width: 2.5,
+                  color: Kcolor),
+              ),
+            ),
+            child: _itemTile(order.items[index])),
       ),
     );
   }
