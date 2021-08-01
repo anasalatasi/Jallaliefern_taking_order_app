@@ -214,7 +214,7 @@ class OrderInfo extends StatelessWidget {
                       Divider(
                         height: 16,
                       ),
-                      SizedBox(height: 32),
+                      SizedBox(height: 8),
                       _itemsListView(),
                     ],
                   ),
@@ -361,42 +361,49 @@ class OrderInfo extends StatelessWidget {
 
   Future<Widget> _addons(Item item) async {
     if (item.addons == null) return SizedBox();
-    List<Widget> list = List<Widget>.empty();
+    var list = [];
     for (var i = 0; i < item.addons!.length; i++) {
       var tmp;
-      while(tmp == null) tmp = await item.addons![i].getAddon();
-      list.add(Text("${tmp.name}"));
+      while (tmp == null) tmp = await item.addons![i].getAddon();
+      list.add(Expanded(child: Text("${tmp.name}")));
     }
     return Column(
-      children: list,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List<Widget>.from(list),
     );
   }
 
   Widget _itemTile(Item item) {
     return Card(
-        elevation: 10,
+        elevation: 5,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Meal: "),
-                  FutureBuilder(
-                    future: item.getMeal(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<Meal?> snapshot) {
-                      if (!snapshot.hasData) return Text('Loading');
-                      return Text("${snapshot.data!.name}");
-                    },
+                  Text("Meal: ", style: labelTextStyle),
+                  Expanded(
+                    child: FutureBuilder(
+                      future: item.getMeal(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Meal?> snapshot) {
+                        if (!snapshot.hasData) return Text('Loading');
+                        return Text("${snapshot.data!.name}");
+                      },
+                    ),
                   ),
                 ],
+              ),
+              Divider(
+                height: 4,
               ),
               item.size == null
                   ? Container()
                   : Row(
                       children: [
-                        Text('Size: '),
+                        Text('Size: ', style: labelTextStyle),
                         FutureBuilder(
                           future: item.getMealSize(),
                           builder: (BuildContext context,
@@ -407,20 +414,42 @@ class OrderInfo extends StatelessWidget {
                         )
                       ],
                     ),
-              Row(
-                children: [Text('Quantity: x${item.quantity}')],
-              ),
+              item.size == null
+                  ? Container()
+                  : Divider(
+                      height: 4,
+                    ),
               Row(
                 children: [
-                  Text('Notes: ${Utf8Decoder().convert(item.notes!.codeUnits)}')
+                  Text('Quantity: ', style: labelTextStyle),
+                  Text('x${item.quantity}')
                 ],
               ),
-              Row(
-                children: [Text('Price: ${item.totalPrice}')],
+              Divider(
+                height: 4,
               ),
               Row(
                 children: [
-                  Text('Addons: '),
+                  Text('Notes: ', style: labelTextStyle),
+                  Text('${Utf8Decoder().convert(item.notes!.codeUnits)}')
+                ],
+              ),
+              Divider(
+                height: 4,
+              ),
+              Row(
+                children: [
+                  Text('Price:', style: labelTextStyle),
+                  Text('${item.totalPrice}')
+                ],
+              ),
+              Divider(
+                height: 4,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Addons: ', style: labelTextStyle),
                   FutureBuilder<Widget>(
                       future: _addons(item),
                       builder: (BuildContext context,
@@ -439,8 +468,8 @@ class OrderInfo extends StatelessWidget {
     return Expanded(
       child: ListView.builder(
         itemCount: order.items.length,
-        itemBuilder: (BuildContext context, int index) => Container(
-            child: _itemTile(order.items[index])),
+        itemBuilder: (BuildContext context, int index) =>
+            Container(child: _itemTile(order.items[index])),
       ),
     );
   }

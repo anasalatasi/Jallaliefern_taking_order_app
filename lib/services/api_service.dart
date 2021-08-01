@@ -133,6 +133,7 @@ class ApiService {
       final rawData = await _getAuthRequest('menu/addon/$id/');
       return Addon.fromRawJson(rawData);
     } catch (e) {
+      print(e.toString());
       return null;
     }
   }

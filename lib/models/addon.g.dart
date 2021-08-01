@@ -10,7 +10,6 @@ Addon _$AddonFromJson(Map<String, dynamic> json) {
   return Addon(
     id: json['id'] as int,
     name: json['name'] as String,
-    price: (json['price'] as num).toDouble(),
     groupId: json['group'] as int,
   );
 }
@@ -18,6 +17,5 @@ Addon _$AddonFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$AddonToJson(Addon instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'price': instance.price,
       'group': instance.groupId,
     };

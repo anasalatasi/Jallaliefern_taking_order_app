@@ -5,10 +5,9 @@ part 'addon.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Addon {
-  Addon({required this.id,required this.name,required this.price,required this.groupId});
+  Addon({required this.id,required this.name,required this.groupId});
   final int id;
   final String name;
-  final double price;
   @JsonKey(name:'group')
   final int groupId;
 
