@@ -23,9 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     NewPage(),
     InProgPage(),
     ReadyPage(),
-    Finished_Page(
-      key: PageStorageKey('Finished_Page'),
-    )
+    FinishedPage(),
   ];
   int _selectedIndex = 0;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(

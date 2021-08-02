@@ -81,6 +81,52 @@ class OrderInfo extends StatelessWidget {
                 ],
               ));
 
+  Future<void> _showConfirmFinishDialog(BuildContext context) async =>
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("Confirm Order #${order.id} is Finished"),
+                content:
+                    Text("Are you sure you want to mark this order as finished?"),
+                actions: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton(
+                              style:
+                                  ElevatedButton.styleFrom(primary: Colors.red),
+                              child: Text('CANCEL'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.green),
+                              child: Text('CONFIRM'),
+                              onPressed: () async {
+                                try {
+                                  await locator<ApiService>()
+                                      .finishOrder(order.id);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                } catch (e) {
+                                  await _showErrorDialog(context, e.toString());
+                                }
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ));
+
   Future<void> _showRejectDialog(BuildContext context) async => showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -231,6 +277,7 @@ class OrderInfo extends StatelessWidget {
   Widget _buttons(BuildContext context) {
     if (order.status == 1) return _newButtons(context);
     if (order.status == 3) return _inProgButtons(context);
+    if (order.status == 4) return _readyButtons(context);
     return Container();
   }
 
@@ -252,6 +299,31 @@ class OrderInfo extends StatelessWidget {
                         await _showConfirmReadyDialog(context),
                     label: Center(
                       child: Text('Done'),
+                    ),
+                  ),
+                ),
+              ),
+            ]));
+  }
+
+  Widget _readyButtons(BuildContext context) {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
+                    icon: Icon(Icons.add_task),
+                    onPressed: () async =>
+                        await _showConfirmFinishDialog(context),
+                    label: Center(
+                      child: Text('Finish'),
                     ),
                   ),
                 ),
