@@ -59,32 +59,34 @@ class LoginView extends StatelessWidget {
                 context, MaterialPageRoute(builder: (context) => HomeScreen()));
           }
         },
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formkey,
-            child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        _formTitle(),
-                        _usernameField(),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        _passwordField(),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        _loginButton(),
-                      ],
-                    ),
-                  ],
-                )),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formkey,
+              child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          _formTitle(),
+                          _usernameField(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          _passwordField(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          _loginButton(),
+                        ],
+                      ),
+                    ],
+                  )),
+            ),
           ),
         ),
       );

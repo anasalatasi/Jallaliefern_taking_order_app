@@ -9,7 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void registerNotification() async {
   await Firebase.initializeApp();
-
+  FirebaseMessaging.instance.getInitialMessage();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -30,8 +30,7 @@ void registerNotification() async {
       const NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
       await flutterLocalNotificationsPlugin.show(
-          0, message.notification!.title, message.notification!.body, platformChannelSpecifics,
-          payload: 'item x');
+          message.notification.hashCode, message.notification!.title, message.notification!.body, platformChannelSpecifics,);
     }
   });
 }

@@ -49,7 +49,7 @@ class OrderTile extends StatelessWidget {
                     endTime: order.serveDateTime.millisecondsSinceEpoch,
                     widgetBuilder: (_, time) {
                       if (time == null) {
-                        return Text('00:00:00');
+                        return SizedBox();
                       }
                       return Text(
                           '${time.hours ?? 0}:${time.min ?? 0}:${time.sec ?? 0}');
