@@ -138,6 +138,14 @@ class ApiService {
     }
   }
 
+  Future<void> changeEta(int id,Duration eta) async{
+    try{
+      await _postAuthRequest('orders/order/$id/add_eta/', "{\"eta\":\"${eta.toString()}\"}");
+    } catch(e){
+      return null;
+    }
+  }
+
   Future<Addon?> getAddon(int id) async {
     try{
       final rawData = await _getAuthRequest('menu/addon/$id/');

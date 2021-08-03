@@ -225,6 +225,63 @@ class OrderInfo extends StatelessWidget {
         });
       });
 
+  Future<void> _showAddEtaDialog(BuildContext context) async => showDialog(
+      context: context,
+      builder: (context) {
+        Duration _duration = Duration();
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Add ETA for Order #${order.id}'),
+            content: DurationPicker(
+                snapToMins: 5.0,
+                duration: _duration,
+                onChange: (val) {
+                  setState(() => _duration = val);
+                }),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(primary: Colors.red),
+                          child: Text('CANCEL'),
+                          onPressed: () {
+                            setState(() {
+                              Navigator.pop(context);
+                            });
+                          }),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: ElevatedButton(
+                          style:
+                              ElevatedButton.styleFrom(primary: Colors.green),
+                          child: Text('CONFIRM'),
+                          onPressed: () {
+                            setState(() async {
+                              try {
+                                await locator<ApiService>()
+                                    .changeEta(order.id, _duration);
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              } catch (e) {
+                                await _showErrorDialog(context, e.toString());
+                              }
+                            });
+                          }),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        });
+      });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -289,6 +346,20 @@ class OrderInfo extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
+                    icon: Icon(Icons.edit),
+                    onPressed: () async =>
+                        await _showAddEtaDialog(context),
+                    label: Center(
+                      child: Text('Add ETA'),
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
