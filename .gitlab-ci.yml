@@ -4,6 +4,7 @@ stages:
 flutter-build:
   image: cirrusci/flutter:stable
   stage: build
+  when: manual
   before_script:
     - flutter packages get
     - flutter clean
