@@ -11,7 +11,7 @@ Delivery _$DeliveryFromJson(Map<String, dynamic> json) {
     address: json['address'] as String,
     zoneId: json['zone'] as int,
     sectionId: json['section'] as int?,
-    buildingNo: json['building_no'] as int?,
+    buildingNo: json['building_no'] as String?,
   );
 }
 

@@ -24,7 +24,7 @@ class Delivery {
   @JsonKey(ignore: true)
   Section? section;
   @JsonKey(name: 'building_no')
-  final int? buildingNo;
+  final String? buildingNo;
 
   Future<Zone?> getZone() async {
     if (zone == null) {
