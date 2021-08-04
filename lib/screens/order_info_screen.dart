@@ -307,8 +307,19 @@ class OrderInfo extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Kcolor,
-          title: Text(
-            "#${order.id}",
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "#${order.id}",
+              ),
+              Text('${order.totalPrice}'),
+              IconButton(onPressed: (){}, 
+                icon:
+                    Icon(Icons.delete),
+
+              ),
+            ],
           )),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
