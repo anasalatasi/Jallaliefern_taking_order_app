@@ -542,9 +542,10 @@ class OrderInfo extends StatelessWidget {
     for (var i = 0; i < item.addons!.length; i++) {
       var tmp;
       while (tmp == null) tmp = await item.addons![i].getAddon();
-      list.add(Expanded(child: Text("${tmp.name}")));
+      list.add(Text("${tmp.name}"));
     }
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List<Widget>.from(list),
     );
@@ -623,8 +624,7 @@ class OrderInfo extends StatelessWidget {
               Divider(
                 height: 4,
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Addons: ', style: labelTextStyle),
                   FutureBuilder<Widget>(
