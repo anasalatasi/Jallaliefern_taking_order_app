@@ -15,6 +15,26 @@ import '../models/order.dart';
 class OrderInfo extends StatelessWidget {
   final Order order;
   OrderInfo({required this.order});
+  Future<void> showMyNote(BuildContext context) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (context) {
+        return AlertDialog(
+          title: Text('The Note of ${order.id} order :'),
+          content: SingleChildScrollView(child: Text('${order.notes}')),
+          actions: <Widget>[
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(primary: Colors.red),
+                child: Text('CANCEL'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> _showErrorDialog(BuildContext context, String msg) async {
     return showDialog(
@@ -86,8 +106,8 @@ class OrderInfo extends StatelessWidget {
           context: context,
           builder: (context) => AlertDialog(
                 title: Text("Confirm Order #${order.id} is Finished"),
-                content:
-                    Text("Are you sure you want to mark this order as finished?"),
+                content: Text(
+                    "Are you sure you want to mark this order as finished?"),
                 actions: [
                   Row(
                     children: [
@@ -317,6 +337,10 @@ class OrderInfo extends StatelessWidget {
                       Divider(
                         height: 16,
                       ),
+                      ElevatedButton(onPressed: (){} ,child: noteswidget()),
+                      Divider(
+                        height: 16,
+                      ),
                       SizedBox(height: 8),
                       _itemsListView(),
                     ],
@@ -352,8 +376,7 @@ class OrderInfo extends StatelessWidget {
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(primary: Colors.blue),
                     icon: Icon(Icons.edit),
-                    onPressed: () async =>
-                        await _showAddEtaDialog(context),
+                    onPressed: () async => await _showAddEtaDialog(context),
                     label: Center(
                       child: Text('Add ETA'),
                     ),
@@ -649,6 +672,21 @@ class OrderInfo extends StatelessWidget {
           width: 16,
         ),
         Text("${order.firstName} ${order.lastName}"),
+      ],
+    );
+  }
+
+  Row noteswidget() {
+    return Row(
+      children: [
+        Icon(Icons.event_note),
+        SizedBox(
+          width: 16,
+        ),
+        Text(
+          "${order.notes}",
+          overflow: TextOverflow.clip,
+        ),
       ],
     );
   }
