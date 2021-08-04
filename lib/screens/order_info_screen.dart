@@ -337,7 +337,7 @@ class OrderInfo extends StatelessWidget {
                       Divider(
                         height: 16,
                       ),
-                      ElevatedButton(onPressed: (){} ,child: noteswidget()),
+                      ElevatedButton(onPressed: ()async=>await  showMyNote(context) ,child: noteswidget()),
                       Divider(
                         height: 16,
                       ),
@@ -597,7 +597,7 @@ class OrderInfo extends StatelessWidget {
               Row(
                 children: [
                   Text('Notes: ', style: labelTextStyle),
-                  Text('${Utf8Decoder().convert(item.notes!.codeUnits)}')
+                  Expanded(child: Text('${Utf8Decoder().convert(item.notes!.codeUnits)}'))
                 ],
               ),
               Divider(
@@ -683,9 +683,11 @@ class OrderInfo extends StatelessWidget {
         SizedBox(
           width: 16,
         ),
-        Text(
-          "${order.notes}",
-          overflow: TextOverflow.clip,
+        Expanded(
+          child: Text(
+            "${order.notes}",
+            maxLines : 2 ,
+          ),
         ),
       ],
     );
