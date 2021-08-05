@@ -101,6 +101,51 @@ class OrderInfo extends StatelessWidget {
                 ],
               ));
 
+  Future<void> _showConfirmDeleteDialog(BuildContext context) async =>
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("Delete Order #${order.id}"),
+                content: Text("Are you sure you want to delete this order?"),
+                actions: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton(
+                              style:
+                                  ElevatedButton.styleFrom(primary: Colors.red),
+                              child: Text('CANCEL'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              }),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.green),
+                              child: Text('CONFIRM'),
+                              onPressed: () async {
+                                try {
+                                  await locator<ApiService>()
+                                      .deleteOrder(order.id);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                } catch (e) {
+                                  await _showErrorDialog(context, e.toString());
+                                }
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ));
+
   Future<void> _showConfirmFinishDialog(BuildContext context) async =>
       showDialog(
           context: context,
@@ -314,10 +359,9 @@ class OrderInfo extends StatelessWidget {
                 "#${order.id}",
               ),
               Text('${order.totalPrice}'),
-              IconButton(onPressed: (){}, 
-                icon:
-                    Icon(Icons.delete),
-
+              IconButton(
+                onPressed: () async => await _showConfirmDeleteDialog(context),
+                icon: Icon(Icons.delete),
               ),
             ],
           )),
@@ -348,7 +392,9 @@ class OrderInfo extends StatelessWidget {
                       Divider(
                         height: 16,
                       ),
-                      ElevatedButton(onPressed: ()async=>await  showMyNote(context) ,child: noteswidget()),
+                      ElevatedButton(
+                          onPressed: () async => await showMyNote(context),
+                          child: noteswidget()),
                       Divider(
                         height: 16,
                       ),
@@ -609,7 +655,9 @@ class OrderInfo extends StatelessWidget {
               Row(
                 children: [
                   Text('Notes: ', style: labelTextStyle),
-                  Expanded(child: Text('${Utf8Decoder().convert(item.notes!.codeUnits)}'))
+                  Expanded(
+                      child: Text(
+                          '${Utf8Decoder().convert(item.notes!.codeUnits)}'))
                 ],
               ),
               Divider(
@@ -624,7 +672,8 @@ class OrderInfo extends StatelessWidget {
               Divider(
                 height: 4,
               ),
-              Row(                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Addons: ', style: labelTextStyle),
                   FutureBuilder<Widget>(
@@ -697,7 +746,7 @@ class OrderInfo extends StatelessWidget {
         Expanded(
           child: Text(
             "${order.notes}",
-            maxLines : 2 ,
+            maxLines: 2,
           ),
         ),
       ],

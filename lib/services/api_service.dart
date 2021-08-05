@@ -32,6 +32,21 @@ class ApiService {
       throw Exception('Unknown Error');
   }
 
+  Future<String> _deleteAuthRequest(String endpoint) async {
+    String apiUrl = await locator<SecureStorageService>().apiUrl;
+    String jwtToken = await locator<LoginService>().token.access;
+    String fullUrl = "$apiUrl$endpoint";
+    final client = http.Client();
+    final response = await client.delete(Uri.parse(fullUrl),
+        headers: {HttpHeaders.authorizationHeader: 'Bearer $jwtToken'});
+    if (response.statusCode == 401)
+      throw UnauthorizedException();
+    else if (response.statusCode == 200) {
+      return Future.value(response.body);
+    } else
+      throw Exception('Unknown Error');
+  }
+
   // returns raw json
   Future<String> _getAuthRequest(String endpoint) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
@@ -142,6 +157,14 @@ class ApiService {
     try{
       await _postAuthRequest('orders/order/$id/add_eta/', "{\"eta\":\"${eta.toString()}\"}");
     } catch(e){
+      return null;
+    }
+  }
+
+  Future<void> deleteOrder(int id) async {
+    try{
+      await _deleteAuthRequest('orders/order/$id/');
+    } catch (e) {
       return null;
     }
   }
