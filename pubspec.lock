@@ -57,6 +57,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.0.0"
+  blue_thermal_printer:
+    dependency: "direct main"
+    description:
+      name: blue_thermal_printer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.4"
   build:
     dependency: transitive
     description:
@@ -515,13 +522,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  print_bluetooth_thermal:
-    dependency: "direct main"
-    description:
-      name: print_bluetooth_thermal
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   provider:
     dependency: transitive
     description:

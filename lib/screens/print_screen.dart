@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
+import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import '../models/order.dart';
+import 'dart:async';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+import 'package:flutter/services.dart';
 
 class PrintScreen extends StatefulWidget {
   final Order order;
@@ -14,21 +17,132 @@ class PrintScreen extends StatefulWidget {
 }
 
 class _PrintScreenState extends State<PrintScreen> {
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: true);
+  BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
 
-  bool? bluetoothEnabled;
+  List<BluetoothDevice> _devices = [];
+  BluetoothDevice? _device;
+  bool _connected = false;
+  bool _pressed = false;
 
-  Future<void> _onRefresh() async {
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  Future<void> initPlatformState() async {
+    List<BluetoothDevice> devices = [];
+
     try {
-      bool tmp = await PrintBluetoothThermal.bluetoothEnabled;
-      setState(() {
-        bluetoothEnabled = tmp;
-      });
-      _refreshController.refreshCompleted();
-    } catch (e) {
-      _refreshController.refreshFailed();
+      devices = await bluetooth.getBondedDevices();
+    } on PlatformException {
+      print("PLATFORM ERROR");
     }
+
+    bluetooth.onStateChanged().listen((state) {
+      switch (state) {
+        case BlueThermalPrinter.CONNECTED:
+          setState(() {
+            _connected = true;
+            _pressed = false;
+          });
+          break;
+        case BlueThermalPrinter.DISCONNECTED:
+          setState(() {
+            _connected = false;
+            _pressed = false;
+          });
+          break;
+        default:
+          print(state);
+          break;
+      }
+    });
+    if (!mounted) return;
+    setState(() {
+      _devices = devices;
+    });
+  }
+
+  List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
+    List<DropdownMenuItem<BluetoothDevice>> items = [];
+    if (_devices.isEmpty) {
+      items.add(DropdownMenuItem(
+        child: Text('NONE'),
+      ));
+    } else {
+      _devices.forEach((device) {
+        items.add(DropdownMenuItem(
+          child: Text(device.name ?? ""),
+          value: device,
+        ));
+      });
+    }
+    return items;
+  }
+
+  void _connect() {
+    if (_device == null) {
+      show('No device selected.');
+    } else {
+      bluetooth.isConnected.then((isConnected) {
+        if (!isConnected!) {
+          bluetooth.connect(_device!).catchError((error) {
+            show('error occured while connecting to device');
+            print("AAAA $error");
+            setState(() => _pressed = false);
+          });
+          setState(() => _pressed = true);
+        }
+      });
+    }
+  }
+
+  void _disconnect() {
+    bluetooth.disconnect();
+    setState(() => _pressed = true);
+  }
+
+  Future show(
+    String message, {
+    Duration duration: const Duration(seconds: 3),
+  }) async {
+    await new Future.delayed(new Duration(milliseconds: 100));
+    ScaffoldMessenger.of(context).showSnackBar(
+      new SnackBar(
+        content: new Text(
+          message,
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        duration: duration,
+      ),
+    );
+  }
+
+  void _testPrint() async {
+    //SIZE
+    // 0- normal size text
+    // 1- only bold text
+    // 2- bold with medium text
+    // 3- bold with large text
+    //ALIGN
+    // 0- ESC_ALIGN_LEFT
+    // 1- ESC_ALIGN_CENTER
+    // 2- ESC_ALIGN_RIGHT
+    bluetooth.isConnected.then((isConnected) {
+      if (isConnected!) {
+        bluetooth.printCustom(locator<Restaurant>().name!, 3, 1);
+        bluetooth.printNewLine();
+        bluetooth.printLeftRight("Item1", "0.2\$", 1);
+        bluetooth.printLeftRight("Item2", "0.5\$", 1);
+        bluetooth.printNewLine();
+        bluetooth.paperCut();
+      } else {
+        show("connect to device first");
+      }
+    });
   }
 
   @override
@@ -37,15 +151,35 @@ class _PrintScreenState extends State<PrintScreen> {
         backgroundColor: Kcolor,
         title: Text("Print Order #${widget.order.id}"),
       ),
-      body: SmartRefresher(
-          enablePullDown: true,
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _child(context)));
-
-  Widget _child(context) {
-    if (bluetoothEnabled == null) return Text('Checking bluetooth');
-    if (bluetoothEnabled!) return Text('bluetooth is enabled');
-    return Text('bluetooth is disabled');
-  }
+      body: Column(
+        children: [
+          Row(children: [
+            Text('Choose Device: '),
+            DropdownButton<BluetoothDevice>(
+              value: _device,
+              icon: const Icon(Icons.arrow_downward),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+              onChanged: (BluetoothDevice? newValue) {
+                setState(() {
+                  _device = newValue!;
+                });
+              },
+              items: _getDeviceItems(),
+            ),
+          ]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(onPressed: _connect, child: Text('Connect')),
+              ElevatedButton(onPressed: _testPrint, child: Text('Print')),
+            ],
+          )
+        ],
+      ));
 }
