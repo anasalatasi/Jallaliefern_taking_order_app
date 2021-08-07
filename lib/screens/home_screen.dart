@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
+import 'package:jallaliefern_taking_orders_app/screens/print_screen.dart';
 import 'package:jallaliefern_taking_orders_app/models/item.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
@@ -359,6 +360,13 @@ class OrderInfo extends StatelessWidget {
                 "#${order.id}",
               ),
               Text('${order.totalPrice}'),
+              IconButton(
+                  onPressed: () {
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            PrintScreen(order: order));
+                  },
+                  icon: Icon(Icons.print)),
               IconButton(
                 onPressed: () async => await _showConfirmDeleteDialog(context),
                 icon: Icon(Icons.delete),

@@ -50,6 +50,7 @@ dependencies:
   json_serializable: ^4.1.4
   pull_to_refresh: ^2.0.0
   validators: ^3.0.0
+  print_bluetooth_thermal: ^1.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
