@@ -362,9 +362,10 @@ class OrderInfo extends StatelessWidget {
               Text('${order.totalPrice}'),
               IconButton(
                   onPressed: () {
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            PrintScreen(order: order));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PrintScreen(order: order)));
                   },
                   icon: Icon(Icons.print)),
               IconButton(

@@ -21,7 +21,10 @@ class _PrintScreenState extends State<PrintScreen> {
 
   Future<void> _onRefresh() async {
     try {
-      bluetoothEnabled = await PrintBluetoothThermal.bluetoothEnabled;
+      bool tmp = await PrintBluetoothThermal.bluetoothEnabled;
+      setState(() {
+        bluetoothEnabled = tmp;
+      });
       _refreshController.refreshCompleted();
     } catch (e) {
       _refreshController.refreshFailed();
