@@ -6,7 +6,6 @@ import 'payment.dart';
 import 'item.dart';
 part 'order.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class Order {
   Order(
@@ -22,6 +21,7 @@ class Order {
       required this.payment,
       required this.items,
       this.serveTime,
+      required this.createdAt,
       required this.recieveEmail,
       required this.totalPrice,
       this.notes});
@@ -41,6 +41,8 @@ class Order {
   final List<Item> items;
   @JsonKey(name: 'serve_time')
   final String? serveTime;
+  @JsonKey(name: 'created_at')
+  final String createdAt;
   @JsonKey(name: 'recieve_email')
   final bool recieveEmail;
   @JsonKey(name: 'total_price')

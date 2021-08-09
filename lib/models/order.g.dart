@@ -24,6 +24,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
         .map((e) => Item.fromJson(e as Map<String, dynamic>))
         .toList(),
     serveTime: json['serve_time'] as String?,
+    createdAt: json['created_at'] as String,
     recieveEmail: json['recieve_email'] as bool,
     totalPrice: (json['total_price'] as num).toDouble(),
     notes: json['notes'] as String?,
@@ -43,6 +44,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'payment': instance.payment.toJson(),
       'items': instance.items.map((e) => e.toJson()).toList(),
       'serve_time': instance.serveTime,
+      'created_at': instance.createdAt,
       'recieve_email': instance.recieveEmail,
       'total_price': instance.totalPrice,
       'notes': instance.notes,
