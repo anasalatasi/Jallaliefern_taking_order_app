@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/models/acceptation.dart';
 import 'package:jallaliefern_taking_orders_app/models/addon.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal.dart';
@@ -116,7 +117,8 @@ class ApiService {
 
   Future<List<Order>> getInProgOrders() async {
     try {
-      final rawData = await _getAuthRequest('orders/order/?filters=(status=3)');
+      final rawData =
+          await _getAuthRequest('orders/order/?filters=(status=3)|(status=2)');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
     } catch (e) {
@@ -145,7 +147,7 @@ class ApiService {
   }
 
   Future<Meal?> getMeal(int id) async {
-    try{
+    try {
       final rawData = await _getAuthRequest('menu/meal/$id/');
       return Meal.fromRawJson(rawData);
     } catch (e) {
@@ -153,16 +155,17 @@ class ApiService {
     }
   }
 
-  Future<void> changeEta(int id,Duration eta) async{
-    try{
-      await _postAuthRequest('orders/order/$id/add_eta/', "{\"eta\":\"${eta.toString()}\"}");
-    } catch(e){
+  Future<void> changeEta(int id, Duration eta) async {
+    try {
+      await _postAuthRequest(
+          'orders/order/$id/add_eta/', "{\"eta\":\"${eta.toString()}\"}");
+    } catch (e) {
       return null;
     }
   }
 
   Future<void> deleteOrder(int id) async {
-    try{
+    try {
       await _deleteAuthRequest('orders/order/$id/');
     } catch (e) {
       return null;
@@ -170,7 +173,7 @@ class ApiService {
   }
 
   Future<Addon?> getAddon(int id) async {
-    try{
+    try {
       final rawData = await _getAuthRequest('menu/addon/$id/');
       return Addon.fromRawJson(rawData);
     } catch (e) {
@@ -180,7 +183,7 @@ class ApiService {
   }
 
   Future<MealSize?> getMealSize(int id) async {
-    try{
+    try {
       final rawData = await _getAuthRequest('menu/meal_size/$id/');
       return MealSize.fromRawJson(rawData);
     } catch (e) {
@@ -189,7 +192,7 @@ class ApiService {
   }
 
   Future<MealCategory?> getCategory(int id) async {
-    try{
+    try {
       final rawData = await _getAuthRequest('menu/meal_category/$id/');
       return MealCategory.fromRawJson(rawData);
     } catch (e) {
@@ -197,12 +200,16 @@ class ApiService {
     }
   }
 
-  Future<void> acceptOrder(int id,Duration? eta) async {
-    await _postAuthRequest('orders/order/$id/accept/', Acceptation(accepted: true,eta: eta != null ? eta.toString():null).toRawJson());
+  Future<void> acceptOrder(int id, Duration? eta) async {
+    await _postAuthRequest(
+        'orders/order/$id/accept/',
+        Acceptation(accepted: true, eta: eta != null ? eta.toString() : null)
+            .toRawJson());
   }
 
   Future<void> rejectOrder(int id) async {
-    await _postAuthRequest('orders/order/$id/accept/', Acceptation(accepted: false).toRawJson());
+    await _postAuthRequest(
+        'orders/order/$id/accept/', Acceptation(accepted: false).toRawJson());
   }
 
   Future<void> readyOrder(int id) async {

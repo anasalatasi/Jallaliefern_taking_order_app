@@ -51,6 +51,8 @@ dependencies:
   pull_to_refresh: ^2.0.0
   validators: ^3.0.0
   blue_thermal_printer: ^1.1.4
+  path_provider: ^2.0.2
+  intl: ^0.17.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

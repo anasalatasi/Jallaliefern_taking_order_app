@@ -1,3 +1,8 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
+import 'package:path/path.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
@@ -5,6 +10,7 @@ import '../models/order.dart';
 import 'dart:async';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 
 class PrintScreen extends StatefulWidget {
@@ -21,13 +27,26 @@ class _PrintScreenState extends State<PrintScreen> {
 
   List<BluetoothDevice> _devices = [];
   BluetoothDevice? _device;
+  // ignore: unused_field
   bool _connected = false;
+  // ignore: unused_field
   bool _pressed = false;
-
+  String? pathImage;
   @override
   void initState() {
     super.initState();
+    initSavetoPath();
     initPlatformState();
+  }
+
+  initSavetoPath() async {
+    var response = await http.get(Uri.parse(locator<Restaurant>().logo!));
+    Directory documentDirectory = await getApplicationDocumentsDirectory();
+    File file = new File(join(documentDirectory.path, 'logo.png'));
+    await file.writeAsBytes(response.bodyBytes);
+    setState(() {
+      pathImage = file.path;
+    });
   }
 
   Future<void> initPlatformState() async {
@@ -108,7 +127,7 @@ class _PrintScreenState extends State<PrintScreen> {
     Duration duration: const Duration(seconds: 3),
   }) async {
     await new Future.delayed(new Duration(milliseconds: 100));
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(this.context).showSnackBar(
       new SnackBar(
         content: new Text(
           message,
@@ -131,13 +150,44 @@ class _PrintScreenState extends State<PrintScreen> {
     // 0- ESC_ALIGN_LEFT
     // 1- ESC_ALIGN_CENTER
     // 2- ESC_ALIGN_RIGHT
-    bluetooth.isConnected.then((isConnected) {
+    bluetooth.isConnected.then((isConnected) async {
       if (isConnected!) {
-        bluetooth.printCustom(locator<Restaurant>().name!, 3, 1);
+        // HEADER
+        bluetooth.printImage(pathImage!);
         bluetooth.printNewLine();
-        bluetooth.printLeftRight("Item1", "0.2\$", 1);
-        bluetooth.printLeftRight("Item2", "0.5\$", 1);
+        bluetooth.printCustom(
+            DateFormat('yyyy-MM-dd - kk:mm').format(DateTime.now()), 0, 2);
         bluetooth.printNewLine();
+        bluetooth.printCustom(locator<Restaurant>().name ?? "", 3, 1);
+        bluetooth.printNewLine();
+        bluetooth.printCustom(
+            "${locator<Restaurant>().country} - ${locator<Restaurant>().city} - ${locator<Restaurant>().street}",
+            1,
+            1);
+        bluetooth.printNewLine();
+        bluetooth.printCustom(locator<Restaurant>().phone1 ?? "", 1, 1);
+        bluetooth.printCustom(locator<Restaurant>().phone2 ?? "", 1, 1);
+        bluetooth.printNewLine();
+        bluetooth.printCustom(
+            Uri.parse(locator<SecureStorageService>().apiUrl).host, 1, 1);
+        bluetooth.printNewLine();
+
+        // ITEMS
+        for (int i = 0; i < widget.order.items.length; i++) {
+          var item = widget.order.items[i];
+          if (item.size != null) {
+            bluetooth.printLeftRight(
+                "${(await item.getMeal())!.name} - ${item.size!.name} x${item.quantity}",
+                "${item.totalPrice}",
+                1);
+          } else {
+            bluetooth.printLeftRight(
+                "${(await item.getMeal())!.name} x${item.quantity}",
+                "${item.totalPrice}",
+                1);
+          }
+          bluetooth.printNewLine();
+        }
         bluetooth.paperCut();
       } else {
         show("connect to device first");
