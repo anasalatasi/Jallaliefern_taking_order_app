@@ -223,6 +223,7 @@ class OrderInfo extends StatelessWidget {
                             try {
                               await locator<ApiService>().rejectOrder(order.id);
                               Navigator.pop(context);
+                              Navigator.pop(context);
                             } catch (e) {
                               await _showErrorDialog(context, e.toString());
                             }
