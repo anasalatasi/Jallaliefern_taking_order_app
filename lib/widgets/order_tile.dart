@@ -98,23 +98,66 @@ class OrderTile extends StatelessWidget {
                           "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt))}"),
                     ],
                   ),
+                  //green red
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      order.status == 3
+                      order.status == 1
                           ? Text(
-                              "Accepted",
+                              "Pending",
                               style: TextStyle(
-                                  color: Colors.green,
+                                  color: Colors.purple,
                                   fontWeight: FontWeight.bold),
                             )
-                          : Text(
-                              "Rejected",
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
-                            ),
+                          : order.status == 2
+                              ? Text(
+                                  "Rejected",
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : order.status == 3
+                                  ? Text(
+                                      "Accepted",
+                                      style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : order.status == 4
+                                      ? Text(
+                                          "Pending Delivery",
+                                          style: TextStyle(
+                                              color: Colors.purple,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : order.status == 5
+                                          ? Text(
+                                              "Delivering",
+                                              style: TextStyle(
+                                                  color: Colors.cyanAccent,
+                                                  fontWeight: FontWeight.bold),
+                                            )
+                                          : order.status == 6
+                                              ? Text(
+                                                  "Delivered",
+                                                  style: TextStyle(
+                                                      color: Colors.blueGrey,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                )
+                                              : Text(
+                                                  "Done",
+                                                  style: TextStyle(
+                                                      color: Kcolor,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                )
                     ],
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.print),
+                    label: Expanded(child: Center(child: Text("Print"))),
                   )
                 ],
               ),
