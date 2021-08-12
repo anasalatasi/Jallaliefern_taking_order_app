@@ -214,7 +214,8 @@ class ApiService {
   Future<void> acceptOrder(int id, Duration? eta) async {
     await _postAuthRequest(
         'orders/order/$id/accept/',
-        Acceptation(accepted: true, eta: eta != null ? eta.toString() : null)
+        Acceptation(
+                accepted: true, eta: eta != null ? eta.toString() : "00:00:00")
             .toRawJson());
   }
 

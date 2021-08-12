@@ -58,6 +58,32 @@ class OrderTile extends StatelessWidget {
                       )
                     ],
                   ),
+                  (order.status == 3)
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            CountdownTimer(
+                              endTime:
+                                  order.serveDateTime.millisecondsSinceEpoch,
+                              widgetBuilder: (_, time) {
+                                if (time == null) {
+                                  return Text('TIME OUT',
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold));
+                                }
+                                return Text(
+                                    '${time.hours ?? 0}:${time.min ?? 0}:${time.sec ?? 0}',
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold));
+                              },
+                            )
+                          ],
+                        )
+                      : SizedBox(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
