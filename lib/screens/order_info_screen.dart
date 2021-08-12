@@ -402,9 +402,14 @@ class OrderInfo extends StatelessWidget {
                       Divider(
                         height: 16,
                       ),
-                      ElevatedButton(
+                      ElevatedButton(  
                           onPressed: () async => await showMyNote(context),
-                          child: noteswidget()),
+                          child: noteswidget(),
+                          style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) => Kcolor))),
+                    
+                          
                       Divider(
                         height: 16,
                       ),
