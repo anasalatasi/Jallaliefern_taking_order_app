@@ -171,6 +171,9 @@ class _PrintScreenState extends State<PrintScreen> {
         bluetooth.printNewLine();
         bluetooth.printCustom(
             Uri.parse(locator<SecureStorageService>().apiUrl).host, 1, 1);
+
+        bluetooth.printNewLine();
+        bluetooth.printCustom("-" * 20, 3, 1);
         bluetooth.printNewLine();
 
         // Order Details
@@ -206,16 +209,33 @@ class _PrintScreenState extends State<PrintScreen> {
           if (item.size != null) {
             bluetooth.printLeftRight(
                 "${(await item.getMeal())!.name} - ${item.size!.name} x${item.quantity}",
-                "${item.totalPrice}",
+                "${item.totalPrice} ${locator<Restaurant>().currency}",
                 2);
           } else {
             bluetooth.printLeftRight(
                 "${(await item.getMeal())!.name} x${item.quantity}",
-                "${item.totalPrice}",
+                "${item.totalPrice} ${locator<Restaurant>().currency}",
                 2);
           }
-          // bluetooth.printNewLine();
+
+          if (item.addons != null) {
+            for (int j = 0; j < item.addons!.length; j++) {
+              var itemAddon = item.addons![j];
+              bluetooth.printLeftRight(
+                  "    >${(await itemAddon.getAddon())!.name}",
+                  "${itemAddon.totalPrice} ${locator<Restaurant>().currency}    ",
+                  1);
+            }
+          }
+          bluetooth.printNewLine();
         }
+
+        bluetooth.printNewLine();
+        bluetooth.printCustom(
+            "${widget.order.totalPrice} ${locator<Restaurant>().currency}",
+            3,
+            2);
+
         bluetooth.paperCut();
       } else {
         show("connect to device first");
