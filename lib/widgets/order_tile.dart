@@ -99,33 +99,41 @@ class OrderTile extends StatelessWidget {
                     ],
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.print),
-                    label: Expanded(child: Center(child: Text("Print"))),
-                    style: ElevatedButton.styleFrom(
-                    primary: Kcolor ,
-                    ),  
-                  ),
-                  order.status == 1
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.print),
+                            label: Text("Print"),
+                          ),
+                        ),
+                      ),
+                      order.status == 1
                           ? StateWidget(state: 'Pending', color: Colors.purple)
                           : order.status == 2
-                              ? StateWidget(state: 'Rejected', color: Colors.red)
+                              ? StateWidget(
+                                  state: 'Rejected', color: Colors.red)
                               : order.status == 3
-                                  ? StateWidget(state: 'Accepted', color: Colors.green)
+                                  ? StateWidget(
+                                      state: 'Accepted', color: Colors.green)
                                   : order.status == 4
-                                      ? StateWidget(state: 'Pending Delivery', color: Colors.purple)
+                                      ? StateWidget(
+                                          state: 'Pending Delivery',
+                                          color: Colors.deepPurple)
                                       : order.status == 5
-                                          ? StateWidget(state: 'Delivering', color: Colors.cyanAccent)
+                                          ? StateWidget(
+                                              state: 'Delivering',
+                                              color: Colors.cyan)
                                           : order.status == 6
-                                              ? StateWidget(state: "Delivered", color: Colors.blueGrey)
-                                              : StateWidget(state: 'Done', color: Kcolor)
-                      
+                                              ? StateWidget(
+                                                  state: "Delivered",
+                                                  color: Colors.blueGrey)
+                                              : StateWidget(
+                                                  state: 'Done', color: Kcolor)
                     ],
                   ),
-                  
                 ],
               ),
             )),
@@ -133,18 +141,29 @@ class OrderTile extends StatelessWidget {
 }
 
 class StateWidget extends StatelessWidget {
-  StateWidget({required this.state , required this.color});
-  final String state ;
-  final Color color ;
+  StateWidget({required this.state, required this.color});
+  final String state;
+  final Color color;
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        child: Text(state,
-        style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        color: color,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+            onPressed: null,
+            child: Center(
+              child: Text(
+                state,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 13),
+              ),
+            ),
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) => color))),
       ),
     );
-}
+  }
 }

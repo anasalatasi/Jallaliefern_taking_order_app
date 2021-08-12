@@ -154,39 +154,67 @@ class _PrintScreenState extends State<PrintScreen> {
       if (isConnected!) {
         // HEADER
         bluetooth.printImage(pathImage!);
+        bluetooth.printCustom(locator<Restaurant>().name ?? "", 3, 1);
         bluetooth.printNewLine();
         bluetooth.printCustom(
             DateFormat('yyyy-MM-dd - kk:mm').format(DateTime.now()), 0, 2);
         bluetooth.printNewLine();
-        bluetooth.printCustom(locator<Restaurant>().name ?? "", 3, 1);
-        bluetooth.printNewLine();
         bluetooth.printCustom(
-            "${locator<Restaurant>().country} - ${locator<Restaurant>().city} - ${locator<Restaurant>().street}",
+            "${locator<Restaurant>().country}, ${locator<Restaurant>().city}, ${locator<Restaurant>().street}",
             1,
             1);
-        bluetooth.printNewLine();
-        bluetooth.printCustom(locator<Restaurant>().phone1 ?? "", 1, 1);
-        bluetooth.printCustom(locator<Restaurant>().phone2 ?? "", 1, 1);
+        //bluetooth.printNewLine();
+        bluetooth.printCustom(
+            '${locator<Restaurant>().phone1 ?? ""} - ${locator<Restaurant>().phone2 ?? ""}',
+            1,
+            1);
         bluetooth.printNewLine();
         bluetooth.printCustom(
             Uri.parse(locator<SecureStorageService>().apiUrl).host, 1, 1);
         bluetooth.printNewLine();
 
+        // Order Details
+        bluetooth.printCustom("Order Details", 3, 1);
+        bluetooth.printNewLine();
+
+        bluetooth.printCustom("#${widget.order.id}", 2, 0);
+        bluetooth.printCustom(
+            "Full Name: ${widget.order.firstName} ${widget.order.lastName}",
+            1,
+            0);
+        if (widget.order.delivery != null) {
+          if ((await widget.order.delivery!.getSection()) == null) {
+            bluetooth.printCustom(
+                "Address: ${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}",
+                1,
+                0);
+          } else {
+            bluetooth.printCustom(
+                "Address: ${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}",
+                1,
+                0);
+          }
+        }
+
+        bluetooth.printCustom("Phone: ${widget.order.phone}", 1, 0);
+        bluetooth.printNewLine();
+
         // ITEMS
+        bluetooth.printCustom("Items:", 3, 1);
         for (int i = 0; i < widget.order.items.length; i++) {
           var item = widget.order.items[i];
           if (item.size != null) {
             bluetooth.printLeftRight(
                 "${(await item.getMeal())!.name} - ${item.size!.name} x${item.quantity}",
                 "${item.totalPrice}",
-                1);
+                2);
           } else {
             bluetooth.printLeftRight(
                 "${(await item.getMeal())!.name} x${item.quantity}",
                 "${item.totalPrice}",
-                1);
+                2);
           }
-          bluetooth.printNewLine();
+          // bluetooth.printNewLine();
         }
         bluetooth.paperCut();
       } else {
