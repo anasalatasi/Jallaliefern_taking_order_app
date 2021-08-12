@@ -61,31 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
         bucket: bucket,
         child: pages[_selectedIndex],
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: <Color>[Colors.red, Color(0xFF9b0000), Kcolor])),
-              child: Container(
-                child: Column(
-                  children: [
-                    Material(
-                      child: locator<Restaurant>().logo != null
-                          ? Image.network(locator<Restaurant>().logo!,
-                              width: 100, height: 100)
-                          : CircularProgressIndicator(),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            CustomListTile(Icons.settings, () {}, 'Settings'),
-            CustomListTile(Icons.lock, () {}, 'Log Out')
-          ],
-        ),
-      ),
       bottomNavigationBar: _bottomNavigationBar(_selectedIndex),
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {},
