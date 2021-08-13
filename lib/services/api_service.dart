@@ -108,7 +108,7 @@ class ApiService {
   Future<List<Order>> getNewOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toIso8601String()}) & (status=1)";
+          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status=1)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -121,7 +121,7 @@ class ApiService {
   Future<List<Order>> getInProgOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toIso8601String()}) & (status__in=2,3)";
+          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status__in=2,3)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -134,7 +134,7 @@ class ApiService {
   Future<List<Order>> getReadyOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toIso8601String()}) & (status=4)";
+          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status=4)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -147,7 +147,7 @@ class ApiService {
   Future<List<Order>> getFinishedOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toIso8601String()}) & (status=5)";
+          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status=5)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
