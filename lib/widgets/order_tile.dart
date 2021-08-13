@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
+import 'package:jallaliefern_taking_orders_app/screens/print_screen.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 
 import '../models/order.dart';
@@ -130,7 +131,13 @@ class OrderTile extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PrintScreen(order: order)));
+                            },
                             icon: Icon(Icons.print),
                             label: Text("Print"),
                           ),
