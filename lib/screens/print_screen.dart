@@ -163,7 +163,7 @@ class _PrintScreenState extends State<PrintScreen> {
             "${locator<Restaurant>().country}, ${locator<Restaurant>().city}, ${locator<Restaurant>().street}",
             1,
             1);
-        //bluetooth.printNewLine();
+        bluetooth.printNewLine();
         bluetooth.printCustom(
             '${locator<Restaurant>().phone1 ?? ""} - ${locator<Restaurant>().phone2 ?? ""}',
             1,
@@ -181,6 +181,7 @@ class _PrintScreenState extends State<PrintScreen> {
         bluetooth.printNewLine();
 
         bluetooth.printCustom("#${widget.order.id}", 2, 0);
+        bluetooth.printNewLine();
         bluetooth.printCustom(
             "Full Name: ${widget.order.firstName} ${widget.order.lastName}",
             1,
@@ -197,6 +198,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 1,
                 0);
           }
+          bluetooth.printNewLine();
         }
 
         bluetooth.printCustom("Phone: ${widget.order.phone}", 1, 0);
@@ -235,7 +237,7 @@ class _PrintScreenState extends State<PrintScreen> {
             "${widget.order.totalPrice} ${locator<Restaurant>().currency}",
             3,
             2);
-
+        bluetooth.printNewLine();
         bluetooth.paperCut();
       } else {
         show("connect to device first");
