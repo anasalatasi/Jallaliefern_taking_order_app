@@ -153,7 +153,7 @@ class _PrintScreenState extends State<PrintScreen> {
     bluetooth.isConnected.then((isConnected) async {
       if (isConnected!) {
         // HEADER
-        bluetooth.printImage(pathImage!);
+        // bluetooth.printImage(pathImage!);
         bluetooth.printCustom(locator<Restaurant>().name ?? "", 3, 1);
         bluetooth.printNewLine();
         bluetooth.printCustom(
