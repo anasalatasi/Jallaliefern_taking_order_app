@@ -64,7 +64,7 @@ class _PrintScreenState extends State<PrintScreen> {
     final String timestamp = formatter.format(now);
     ticket.text(timestamp, styles: PosStyles(align: PosAlign.center));
 
-    ticket.text(locator<Restaurant>().name,
+    ticket.text(locator<Restaurant>().name!,
         styles: PosStyles(
           align: PosAlign.center,
           height: PosTextSize.size2,
