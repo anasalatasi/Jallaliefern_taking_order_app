@@ -258,7 +258,7 @@ class _PrintScreenState extends State<PrintScreen> {
         stream: printerManager.isScanningStream,
         initialData: false,
         builder: (c, snapshot) {
-          if (snapshot.data != null) {
+          if (snapshot.data!) {
             return FloatingActionButton(
               child: Icon(Icons.stop),
               onPressed: _stopScanDevices,
