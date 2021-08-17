@@ -75,41 +75,47 @@ class _PrintScreenState extends State<PrintScreen> {
     ticket.text(
         '${locator<Restaurant>().street}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}',
         styles: PosStyles(align: PosAlign.center));
-    ticket.text('New Braunfels, TX', styles: PosStyles(align: PosAlign.center));
+
     ticket.text('Tel1: ${locator<Restaurant>().phone1 ?? ""}',
         styles: PosStyles(align: PosAlign.center));
     ticket.text('Tel2: ${locator<Restaurant>().phone2 ?? ""}',
         styles: PosStyles(align: PosAlign.center));
+
     ticket.text(
-        'Web: ${Uri.parse(locator<SecureStorageService>().apiUrl).host}',
+        'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}',
         styles: PosStyles(align: PosAlign.center),
         linesAfter: 1);
-
+    print("AAAAAAAAAA");
     ticket.hr(ch: '=');
     ticket.row([
-      PosColumn(text: 'Full Name:'),
-      PosColumn(text: "${widget.order.firstName} ${widget.order.lastName}")
+      PosColumn(text: 'Full Name:', width: 4),
+      PosColumn(
+          text: "${widget.order.firstName} ${widget.order.lastName}", width: 8)
     ]);
-    ticket.row(
-        [PosColumn(text: 'Order ID:'), PosColumn(text: "#${widget.order.id}")]);
     ticket.row([
-      PosColumn(text: 'Order Slug:'),
-      PosColumn(text: "${widget.order.slug}")
+      PosColumn(text: 'Order ID:', width: 4),
+      PosColumn(text: "#${widget.order.id}", width: 8)
+    ]);
+    ticket.row([
+      PosColumn(text: 'Order Slug:', width: 4),
+      PosColumn(text: "${widget.order.slug}", width: 8)
     ]);
     if (widget.order.delivery != null) {
       if (await widget.order.delivery!.getSection() != null) {
         ticket.row([
-          PosColumn(text: 'Full Address:'),
+          PosColumn(text: 'Full Address:', width: 4),
           PosColumn(
               text:
-                  "${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}")
+                  "${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}",
+              width: 8)
         ]);
       } else {
         ticket.row([
-          PosColumn(text: 'Full Address:'),
+          PosColumn(text: 'Full Address:', width: 4),
           PosColumn(
               text:
-                  "${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}")
+                  "${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}",
+              width: 8)
         ]);
       }
     }
@@ -123,11 +129,11 @@ class _PrintScreenState extends State<PrintScreen> {
       ticket.row([
         PosColumn(text: '${item.quantity}x', width: 1),
         (await item.getMealSize() == null)
-            ? PosColumn(text: '${(await item.getMeal())!.name}', width: 7)
+            ? PosColumn(text: '${(await item.getMeal())!.name}', width: 9)
             : PosColumn(
                 text:
                     '${(await item.getMeal())!.name} - ${(await item.getMealSize())!.name}',
-                width: 7),
+                width: 9),
         PosColumn(
             text: '${item.totalPrice}',
             width: 2,
