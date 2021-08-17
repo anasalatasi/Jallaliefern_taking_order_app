@@ -41,7 +41,7 @@ class OrderTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                          "${DateFormat('kk:mm').format(DateTime.parse(order.createdAt))}",
+                          "${DateFormat('kk:mm').format(DateTime.parse(order.createdAt).toLocal())}",
                           style: orderTileTimeStyle),
                       SizedBox(
                         width: 16,
@@ -122,7 +122,7 @@ class OrderTile extends StatelessWidget {
                     children: [
                       Text("${order.phone}"),
                       Text(
-                          "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt))}"),
+                          "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt).toLocal())}"),
                     ],
                   ),
                   Row(

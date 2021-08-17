@@ -160,7 +160,7 @@ class _PrintScreenState extends State<PrintScreen> {
             DateFormat('yyyy-MM-dd - kk:mm').format(DateTime.now()), 0, 2);
         bluetooth.printNewLine();
         bluetooth.printCustom(
-            "${locator<Restaurant>().country}, ${locator<Restaurant>().city}, ${locator<Restaurant>().street}",
+            "${locator<Restaurant>().street}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}",
             1,
             1);
         bluetooth.printNewLine();
@@ -170,7 +170,7 @@ class _PrintScreenState extends State<PrintScreen> {
             1);
         bluetooth.printNewLine();
         bluetooth.printCustom(
-            Uri.parse(locator<SecureStorageService>().apiUrl).host, 1, 1);
+            Uri.parse(await locator<SecureStorageService>().apiUrl).host, 1, 1);
 
         bluetooth.printNewLine();
         bluetooth.printCustom("-" * 20, 3, 1);
