@@ -28,7 +28,7 @@ class ApiService {
     if (response.statusCode == 401)
       throw UnauthorizedException();
     else if (response.statusCode == 200) {
-      return Future.value(response.body);
+      return Future.value(Utf8Decoder().convert(response.body.codeUnits));
     } else
       throw Exception('Unknown Error');
   }
@@ -43,7 +43,7 @@ class ApiService {
     if (response.statusCode == 401)
       throw UnauthorizedException();
     else if (response.statusCode == 200) {
-      return Future.value(response.body);
+      return Future.value(Utf8Decoder().convert(response.body.codeUnits));
     } else
       throw Exception('Unknown Error');
   }
@@ -59,7 +59,7 @@ class ApiService {
     if (response.statusCode == 401)
       throw UnauthorizedException();
     else if (response.statusCode == 200) {
-      return Future.value(response.body);
+      return Future.value(Utf8Decoder().convert(response.body.codeUnits));
     } else
       throw Exception('Unknown Error');
   }
@@ -78,7 +78,7 @@ class ApiService {
     if (response.statusCode == 401)
       throw UnauthorizedException();
     else if (response.statusCode == 201 || response.statusCode == 200) {
-      return Future.value(response.body);
+      return Future.value(Utf8Decoder().convert(response.body.codeUnits));
     } else
       throw Exception('Unknown Error');
   }
