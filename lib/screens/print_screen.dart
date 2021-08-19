@@ -26,11 +26,11 @@ class PrintScreen extends StatefulWidget {
 class _PrintScreenState extends State<PrintScreen> {
   PrinterBluetoothManager printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
-
+  Future<Ticket>? _ticket;
   @override
   void initState() {
     super.initState();
-
+    _ticket = orderReceipt(PaperSize.mm80);
     printerManager.scanResults.listen((devices) async {
       // print('UI: Devices found ${devices.length}');
       setState(() {
@@ -208,9 +208,7 @@ class _PrintScreenState extends State<PrintScreen> {
   void _testPrint(PrinterBluetooth printer) async {
     printerManager.selectPrinter(printer);
 
-    const PaperSize paper = PaperSize.mm80;
-    final PosPrintResult res =
-        await printerManager.printTicket(await orderReceipt(paper));
+    final PosPrintResult res = await printerManager.printTicket(await _ticket);
 
     showToast(res.msg);
   }
@@ -245,7 +243,7 @@ class _PrintScreenState extends State<PrintScreen> {
                               Text(_devices[index].name ?? ''),
                               Text(_devices[index].address),
                               Text(
-                                'Click to print a test receipt',
+                                'Click to print a receipt',
                                 style: TextStyle(color: Colors.grey[700]),
                               ),
                             ],
