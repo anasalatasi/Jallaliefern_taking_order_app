@@ -85,7 +85,6 @@ class _PrintScreenState extends State<PrintScreen> {
         'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}',
         styles: PosStyles(align: PosAlign.center),
         linesAfter: 1);
-    print("AAAAAAAAAA");
     ticket.hr(ch: '=');
     ticket.row([
       PosColumn(text: 'Full Name:', width: 4),
