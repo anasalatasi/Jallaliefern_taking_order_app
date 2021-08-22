@@ -669,7 +669,7 @@ class OrderInfo extends StatelessWidget {
               Row(
                 children: [
                   Text('Notes: ', style: labelTextStyle),
-                  Expanded(child: Text('${item.notes!.codeUnits}'))
+                  Expanded(child: Text('${item.notes}'))
                 ],
               ),
               Divider(
