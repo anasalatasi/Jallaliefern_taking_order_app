@@ -2,6 +2,7 @@ import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
 import 'pages/New_page.dart';
 import 'pages/Inprog_page.dart';
 import '../../Constants.dart';
@@ -50,7 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()));
+            },
           )
         ],
         elevation: 15.0,
