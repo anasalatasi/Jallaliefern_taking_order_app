@@ -52,72 +52,70 @@ class _PrintScreenState extends State<PrintScreen> {
     final String timestamp = formatter.format(now);
 
     ticket.text(timestamp,
-        styles:
-            PosStyles(align: PosAlign.center, codeTable: PosCodeTable.westEur));
+        styles: PosStyles(
+            align: PosAlign.center, codeTable: PosCodeTable.wpc1252_2));
 
     ticket.text(locator<Restaurant>().name!,
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size2,
             width: PosTextSize.size2,
-            codeTable: PosCodeTable.westEur),
+            codeTable: PosCodeTable.wpc1252_2),
         linesAfter: 1);
-
     ticket.text(
-        String.fromCharCodes(await CharsetConverter.encode("windows1252",
+        String.fromCharCodes(await CharsetConverter.encode("ISO-8859-1",
             '${locator<Restaurant>().street}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}')),
-        styles:
-            PosStyles(align: PosAlign.center, codeTable: PosCodeTable.westEur));
+        styles: PosStyles(
+            align: PosAlign.center, codeTable: PosCodeTable.wpc1252_2));
 
     ticket.text(
         String.fromCharCodes(await CharsetConverter.encode(
-            "windows1252", 'Tel1: ${locator<Restaurant>().phone1 ?? ""}')),
-        styles:
-            PosStyles(align: PosAlign.center, codeTable: PosCodeTable.westEur));
+            "ISO-8859-1", 'Tel1: ${locator<Restaurant>().phone1 ?? ""}')),
+        styles: PosStyles(
+            align: PosAlign.center, codeTable: PosCodeTable.wpc1252_2));
     ticket.text(
         String.fromCharCodes(await CharsetConverter.encode(
-            "windows1252", 'Tel2: ${locator<Restaurant>().phone2 ?? ""}')),
-        styles:
-            PosStyles(align: PosAlign.center, codeTable: PosCodeTable.westEur));
+            "ISO-8859-1", 'Tel2: ${locator<Restaurant>().phone2 ?? ""}')),
+        styles: PosStyles(
+            align: PosAlign.center, codeTable: PosCodeTable.wpc1252_2));
 
     ticket.text(
-        String.fromCharCodes(await CharsetConverter.encode("windows1252",
+        String.fromCharCodes(await CharsetConverter.encode("ISO-8859-1",
             'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}')),
-        styles:
-            PosStyles(align: PosAlign.center, codeTable: PosCodeTable.westEur),
+        styles: PosStyles(
+            align: PosAlign.center, codeTable: PosCodeTable.wpc1252_2),
         linesAfter: 1);
     ticket.hr(ch: '=');
     ticket.row([
       PosColumn(
           text: 'Full Name:',
           width: 4,
-          styles: PosStyles(codeTable: PosCodeTable.westEur)),
+          styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
       PosColumn(
-          text: String.fromCharCodes(await CharsetConverter.encode(
-              "windows1252",
+          text: String.fromCharCodes(await CharsetConverter.encode("ISO-8859-1",
               "${widget.order.firstName} ${widget.order.lastName}")),
           width: 8,
-          styles: PosStyles(codeTable: PosCodeTable.westEur))
+          styles: PosStyles(codeTable: PosCodeTable.wpc1252_2))
     ]);
     ticket.row([
       PosColumn(
           text: 'Order ID:',
           width: 4,
-          styles: PosStyles(codeTable: PosCodeTable.westEur)),
+          styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
       PosColumn(
           text: "#${widget.order.id}",
           width: 8,
-          styles: PosStyles(codeTable: PosCodeTable.westEur))
+          styles: PosStyles(codeTable: PosCodeTable.wpc1252_2))
     ]);
     ticket.row([
       PosColumn(
           text: 'Order Slug:',
           width: 4,
-          styles: PosStyles(codeTable: PosCodeTable.westEur)),
+          styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
       PosColumn(
           text: "${widget.order.slug}",
           width: 8,
-          styles: PosStyles(codeTable: PosCodeTable.westEur))
+          styles: PosStyles(codeTable: PosCodeTable.wpc1252_2))
     ]);
     if (widget.order.delivery != null) {
       if (await widget.order.delivery!.getSection() != null) {
@@ -125,32 +123,32 @@ class _PrintScreenState extends State<PrintScreen> {
           PosColumn(
               text: 'Full Address:',
               width: 4,
-              styles: PosStyles(codeTable: PosCodeTable.westEur)),
+              styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
           PosColumn(
               text: String.fromCharCodes(await CharsetConverter.encode(
-                  "windows1252",
+                  "ISO-8859-1",
                   "${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}")),
               width: 8,
-              styles: PosStyles(codeTable: PosCodeTable.westEur))
+              styles: PosStyles(codeTable: PosCodeTable.wpc1252_2))
         ]);
       } else {
         ticket.row([
           PosColumn(
               text: 'Full Address:',
               width: 4,
-              styles: PosStyles(codeTable: PosCodeTable.westEur)),
+              styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
           PosColumn(
               text: String.fromCharCodes(await CharsetConverter.encode(
-                  "windows1252",
+                  "ISO-8859-1",
                   "${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}")),
               width: 8,
-              styles: PosStyles(codeTable: PosCodeTable.westEur))
+              styles: PosStyles(codeTable: PosCodeTable.wpc1252_2))
         ]);
       }
     }
     ticket.text('Tel1: ${widget.order.phone}',
-        styles:
-            PosStyles(align: PosAlign.center, codeTable: PosCodeTable.westEur));
+        styles: PosStyles(
+            align: PosAlign.center, codeTable: PosCodeTable.wpc1252_2));
 
     ticket.hr();
 
@@ -160,40 +158,40 @@ class _PrintScreenState extends State<PrintScreen> {
         PosColumn(
             text: '${item.quantity}x',
             width: 1,
-            styles: PosStyles(codeTable: PosCodeTable.westEur)),
-        (await item.getMealSize() == null)
+            styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
+        (item.sizeObject == null)
             ? PosColumn(
                 text: String.fromCharCodes(await CharsetConverter.encode(
-                    "windows1252", '${(await item.getMeal())!.name}')),
+                    "ISO-8859-1", '${item.mealObject.name}')),
                 width: 9,
-                styles: PosStyles(codeTable: PosCodeTable.westEur))
+                styles: PosStyles(codeTable: PosCodeTable.wpc1252_2))
             : PosColumn(
                 text: String.fromCharCodes(await CharsetConverter.encode(
-                    "windows1252",
-                    '${(await item.getMeal())!.name} - ${(await item.getMealSize())!.name}')),
+                    "ISO-8859-1",
+                    '${item.mealObject.name} - ${item.sizeObject!.name}')),
                 width: 9,
-                styles: PosStyles(codeTable: PosCodeTable.westEur)),
+                styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
         PosColumn(
             text: '${item.totalPrice}',
             width: 2,
             styles: PosStyles(
-                align: PosAlign.right, codeTable: PosCodeTable.westEur)),
+                align: PosAlign.right, codeTable: PosCodeTable.wpc1252_2)),
       ]);
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];
         ticket.row([
           PosColumn(
-              width: 3, styles: PosStyles(codeTable: PosCodeTable.westEur)),
+              width: 3, styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
           PosColumn(
               text: String.fromCharCodes(await CharsetConverter.encode(
-                  "windows1252", '>${(await itemAddon.getAddon())!.name}')),
+                  "ISO-8859-1", '>${itemAddon.addonObject.name}')),
               width: 7,
-              styles: PosStyles(codeTable: PosCodeTable.westEur)),
+              styles: PosStyles(codeTable: PosCodeTable.wpc1252_2)),
           PosColumn(
               text: '${itemAddon.totalPrice}',
               width: 2,
               styles: PosStyles(
-                  align: PosAlign.right, codeTable: PosCodeTable.westEur)),
+                  align: PosAlign.right, codeTable: PosCodeTable.wpc1252_2)),
         ]);
       }
     }
@@ -207,7 +205,7 @@ class _PrintScreenState extends State<PrintScreen> {
           styles: PosStyles(
               height: PosTextSize.size2,
               width: PosTextSize.size2,
-              codeTable: PosCodeTable.westEur)),
+              codeTable: PosCodeTable.wpc1252_2)),
       PosColumn(
           text: '${widget.order.totalPrice}${locator<Restaurant>().currency}',
           width: 6,
@@ -215,7 +213,7 @@ class _PrintScreenState extends State<PrintScreen> {
               align: PosAlign.right,
               height: PosTextSize.size2,
               width: PosTextSize.size2,
-              codeTable: PosCodeTable.westEur)),
+              codeTable: PosCodeTable.wpc1252_2)),
     ]);
 
     ticket.hr(ch: '=', linesAfter: 1);
@@ -225,7 +223,7 @@ class _PrintScreenState extends State<PrintScreen> {
         styles: PosStyles(
             align: PosAlign.center,
             bold: true,
-            codeTable: PosCodeTable.westEur));
+            codeTable: PosCodeTable.wpc1252_2));
 
     // Print QR Code from image
     // try {

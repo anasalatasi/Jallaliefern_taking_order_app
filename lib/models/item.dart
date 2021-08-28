@@ -16,9 +16,15 @@ class Item {
       this.addons,
       required this.quantity,
       required this.totalPrice,
+      required this.mealObject,
+      this.sizeObject,
       this.notes});
   @JsonKey(name: 'meal')
   final int mealId;
+  @JsonKey(name: 'meal_object')
+  final Meal mealObject;
+  @JsonKey(name: 'size_object')
+  final Meal? sizeObject;
   @JsonKey(ignore: true)
   Meal? meal;
   @JsonKey(ignore: true)

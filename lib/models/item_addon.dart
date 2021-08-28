@@ -9,12 +9,17 @@ part 'item_addon.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class ItemAddon {
-  ItemAddon({required this.addonId,required this.totalPrice});
-  @JsonKey(name:'addon')
+  ItemAddon(
+      {required this.addonId,
+      required this.totalPrice,
+      required this.addonObject});
+  @JsonKey(name: 'addon')
   final int addonId;
+  @JsonKey(name: 'addon_object')
+  Addon addonObject;
   @JsonKey(ignore: true)
   Addon? addon;
-  @JsonKey(name:'total_price')
+  @JsonKey(name: 'total_price')
   final double totalPrice;
 
   Future<Addon?> getAddon() async {
@@ -29,6 +34,7 @@ class ItemAddon {
 
   String toRawJson() => json.encode(toJson());
 
-  factory ItemAddon.fromJson(Map<String,dynamic> json) => _$ItemAddonFromJson(json);
+  factory ItemAddon.fromJson(Map<String, dynamic> json) =>
+      _$ItemAddonFromJson(json);
   Map<String, dynamic> toJson() => _$ItemAddonToJson(this);
 }

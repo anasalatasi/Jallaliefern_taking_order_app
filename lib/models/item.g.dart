@@ -15,14 +15,20 @@ Item _$ItemFromJson(Map<String, dynamic> json) {
         .toList(),
     quantity: json['quantity'] as int,
     totalPrice: (json['total_price'] as num).toDouble(),
-    notes: json['notes'] as String?,
+    mealObject: Meal.fromJson(json['meal_object'] as Map<String, dynamic>),
+    sizeObject: json['size_object'] == null
+        ? null
+        : Meal.fromJson(json['size_object'] as Map<String, dynamic>),
+    notes: json['notes'] as String,
   );
 }
 
 Map<String, dynamic> _$ItemToJson(Item instance) => <String, dynamic>{
       'meal': instance.mealId,
+      'meal_object': instance.mealObject.toJson(),
+      'size_object': instance.sizeObject?.toJson(),
       'size': instance.sizeId,
-      'addons': instance.addons?.map((e) => e.toJson()).toList(),
+      'addons': instance.addons?.map((e) => e?.toJson())?.toList(),
       'quantity': instance.quantity,
       'total_price': instance.totalPrice,
       'notes': instance.notes,
