@@ -596,13 +596,11 @@ class OrderInfo extends StatelessWidget {
     );
   }
 
-  Future<Widget> _addons(Item item) async {
+  Widget _addons(Item item) {
     if (item.addons == null) return SizedBox();
     var list = [];
     for (var i = 0; i < item.addons!.length; i++) {
-      var tmp;
-      while (tmp == null) tmp = await item.addons![i].getAddon();
-      list.add(Text("${tmp.name}"));
+      list.add(Text(item.addons![i].addonObject.name));
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -623,14 +621,7 @@ class OrderInfo extends StatelessWidget {
                 children: [
                   Text("Meal: ", style: labelTextStyle),
                   Expanded(
-                    child: FutureBuilder(
-                      future: item.getMeal(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<Meal?> snapshot) {
-                        if (!snapshot.hasData) return Text('Loading');
-                        return Text("${snapshot.data!.name}");
-                      },
-                    ),
+                    child: Text("${item.mealObject.name}"),
                   ),
                 ],
               ),
@@ -642,14 +633,7 @@ class OrderInfo extends StatelessWidget {
                   : Row(
                       children: [
                         Text('Size: ', style: labelTextStyle),
-                        FutureBuilder(
-                          future: item.getMealSize(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<MealSize?> snapshot) {
-                            if (!snapshot.hasData) return Text('Loading');
-                            return Text("${snapshot.data!.name}");
-                          },
-                        )
+                        Text('${item.sizeObject!.name}')
                       ],
                     ),
               item.size == null
@@ -688,13 +672,7 @@ class OrderInfo extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Addons: ', style: labelTextStyle),
-                  FutureBuilder<Widget>(
-                      future: _addons(item),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<Widget> snapshot) {
-                        if (!snapshot.hasData) return SizedBox();
-                        return snapshot.data!;
-                      })
+                  _addons(item)
                 ],
               )
             ],

@@ -24,7 +24,7 @@ class Item {
   @JsonKey(name: 'meal_object')
   final Meal mealObject;
   @JsonKey(name: 'size_object')
-  final Meal? sizeObject;
+  final MealSize? sizeObject;
   @JsonKey(ignore: true)
   Meal? meal;
   @JsonKey(ignore: true)
