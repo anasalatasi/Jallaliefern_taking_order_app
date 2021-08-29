@@ -274,10 +274,12 @@ class OrderInfo extends StatelessWidget {
                           onPressed: () {
                             setState(() async {
                               try {
-                                await locator<ApiService>()
-                                    .acceptOrder(order.id, _duration);
-                                Navigator.pop(context);
-                                Navigator.pop(context);
+                                locator<ApiService>()
+                                    .acceptOrder(order.id, _duration)
+                                    .then((_) {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                });
                               } catch (e) {
                                 await _showErrorDialog(context, e.toString());
                               }

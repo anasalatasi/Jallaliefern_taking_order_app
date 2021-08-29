@@ -6,6 +6,8 @@ import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../Constants.dart';
+
 class ReadyPage extends StatefulWidget {
   @override
   _ReadyPageState createState() => _ReadyPageState();
@@ -42,6 +44,7 @@ class _ReadyPageState extends State<ReadyPage> with WidgetsBindingObserver {
   }
 
   Future<void> _onRefresh() async {
+    _refreshController.requestRefresh();
     try {
       final tmp = await locator<ApiService>().getReadyOrders();
       setState(() {
@@ -55,6 +58,9 @@ class _ReadyPageState extends State<ReadyPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => SmartRefresher(
+      header: WaterDropMaterialHeader(
+        backgroundColor: Kcolor,
+      ),
       enablePullDown: true,
       controller: _refreshController,
       onRefresh: _onRefresh,

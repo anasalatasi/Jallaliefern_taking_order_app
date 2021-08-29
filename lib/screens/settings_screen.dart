@@ -1,3 +1,4 @@
+import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:jallaliefern_taking_orders_app/services/printer_service.dart';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:flutter/material.dart' hide Image;
@@ -48,43 +49,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Kcolor,
         title: Text("Printer Settings"),
       ),
-      body: ListView.builder(
-          itemCount: _devices.length,
-          itemBuilder: (BuildContext context, int index) {
-            return InkWell(
-              onTap: () => _connectPrinter(_devices[index]),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    height: 60,
-                    padding: EdgeInsets.only(left: 10),
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      children: <Widget>[
-                        Icon(Icons.print),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(_devices[index].name ?? ''),
-                              Text(_devices[index].address),
-                              Text(
-                                'Click to connect to printer',
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Divider(),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(children: [
+              Text(
+                "Encoding: ",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-            );
-          }),
+              DropdownButton(
+                  value: locator<PrinterService>().codetable,
+                  elevation: 16,
+                  onChanged: (PosCodeTable? newValue) {
+                    setState(() {
+                      locator<PrinterService>().codetable = newValue;
+                    });
+                  },
+                  items: locator<PrinterService>().codetablelist),
+            ]),
+            SizedBox(width: 5, height: 5),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: _devices.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return InkWell(
+                      onTap: () => _connectPrinter(_devices[index]),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            height: 60,
+                            padding: EdgeInsets.only(left: 10),
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.print),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(_devices[index].name ?? ''),
+                                      Text(_devices[index].address),
+                                      Text(
+                                        'Click to connect to printer',
+                                        style:
+                                            TextStyle(color: Colors.grey[700]),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: StreamBuilder<bool>(
         stream: printerManager.isScanningStream,
         initialData: false,

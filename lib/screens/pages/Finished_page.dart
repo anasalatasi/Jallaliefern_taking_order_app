@@ -6,12 +6,15 @@ import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../Constants.dart';
+
 class FinishedPage extends StatefulWidget {
   @override
   _FinishedPageState createState() => _FinishedPageState();
 }
 
-class _FinishedPageState extends State<FinishedPage> with WidgetsBindingObserver {
+class _FinishedPageState extends State<FinishedPage>
+    with WidgetsBindingObserver {
   RefreshController _refreshController =
       RefreshController(initialRefresh: true);
   List<Order> orders = List<Order>.empty();
@@ -42,6 +45,7 @@ class _FinishedPageState extends State<FinishedPage> with WidgetsBindingObserver
   }
 
   Future<void> _onRefresh() async {
+    _refreshController.requestRefresh();
     try {
       final tmp = await locator<ApiService>().getFinishedOrders();
       setState(() {
@@ -55,6 +59,9 @@ class _FinishedPageState extends State<FinishedPage> with WidgetsBindingObserver
 
   @override
   Widget build(BuildContext context) => SmartRefresher(
+      header: WaterDropMaterialHeader(
+        backgroundColor: Kcolor,
+      ),
       enablePullDown: true,
       controller: _refreshController,
       onRefresh: _onRefresh,

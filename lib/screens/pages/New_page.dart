@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/widgets/order_tile.dart';
 import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
@@ -42,6 +43,7 @@ class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
   }
 
   Future<void> _onRefresh() async {
+    _refreshController.requestRefresh();
     try {
       final tmp = await locator<ApiService>().getNewOrders();
       setState(() {
@@ -55,6 +57,9 @@ class _NewPageState extends State<NewPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) => SmartRefresher(
+      header: WaterDropMaterialHeader(
+        backgroundColor: Kcolor,
+      ),
       enablePullDown: true,
       controller: _refreshController,
       onRefresh: _onRefresh,
