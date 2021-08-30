@@ -32,6 +32,18 @@ class _PrintScreenState extends State<PrintScreen> {
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
   Future<Ticket>? _ticket;
+
+  String myEncoding(String str) {
+    str.replaceAll("Ä", "A");
+    str.replaceAll("ä", "a");
+    str.replaceAll("Ö", "O");
+    str.replaceAll("ö", "o");
+    str.replaceAll("Ü", "U");
+    str.replaceAll("ẞ", "SS");
+    str.replaceAll("ß", "ss");
+    return str;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,30 +74,26 @@ class _PrintScreenState extends State<PrintScreen> {
         ),
         linesAfter: 1);
     ticket.text(
-        String.fromCharCodes(Utf8Encoder().convert(
-            '${locator<Restaurant>().street}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}')),
+        myEncoding(
+            '${locator<Restaurant>().street}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
+        styles: PosStyles(align: PosAlign.center));
+
+    ticket.text(myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
+        styles: PosStyles(align: PosAlign.center));
+    ticket.text(myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
         styles: PosStyles(align: PosAlign.center));
 
     ticket.text(
-        String.fromCharCodes(Utf8Encoder()
-            .convert('Tel1: ${locator<Restaurant>().phone1 ?? ""}')),
-        styles: PosStyles(align: PosAlign.center));
-    ticket.text(
-        String.fromCharCodes(Utf8Encoder()
-            .convert('Tel2: ${locator<Restaurant>().phone2 ?? ""}')),
-        styles: PosStyles(align: PosAlign.center));
-
-    ticket.text(
-        String.fromCharCodes(Utf8Encoder().convert(
-            'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}')),
+        myEncoding(
+            'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
         styles: PosStyles(align: PosAlign.center),
         linesAfter: 1);
     ticket.hr(ch: '=');
     ticket.row([
       PosColumn(text: 'Full Name:', width: 4),
       PosColumn(
-          text: String.fromCharCodes(Utf8Encoder()
-              .convert("${widget.order.firstName} ${widget.order.lastName}")),
+          text:
+              myEncoding("${widget.order.firstName} ${widget.order.lastName}"),
           width: 8)
     ]);
     ticket.row([
@@ -101,8 +109,8 @@ class _PrintScreenState extends State<PrintScreen> {
         ticket.row([
           PosColumn(text: 'Full Address:', width: 4, styles: PosStyles()),
           PosColumn(
-              text: String.fromCharCodes(Utf8Encoder().convert(
-                  "${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}")),
+              text: myEncoding(
+                  "${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}"),
               width: 8,
               styles: PosStyles())
         ]);
@@ -110,8 +118,8 @@ class _PrintScreenState extends State<PrintScreen> {
         ticket.row([
           PosColumn(text: 'Full Address:', width: 4, styles: PosStyles()),
           PosColumn(
-              text: String.fromCharCodes(Utf8Encoder().convert(
-                  "${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}")),
+              text: myEncoding(
+                  "${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}"),
               width: 8,
               styles: PosStyles())
         ]);
@@ -133,8 +141,8 @@ class _PrintScreenState extends State<PrintScreen> {
                 width: 9,
                 styles: PosStyles())
             : PosColumn(
-                text: String.fromCharCodes(Utf8Encoder().convert(
-                    '${item.mealObject.name} - ${item.sizeObject!.name}')),
+                text: myEncoding(
+                    '${item.mealObject.name} - ${item.sizeObject!.name}'),
                 width: 9,
                 styles: PosStyles()),
         PosColumn(
