@@ -34,13 +34,13 @@ class _PrintScreenState extends State<PrintScreen> {
   Future<Ticket>? _ticket;
 
   String myEncoding(String str) {
-    str.replaceAll("Ä", "A");
-    str.replaceAll("ä", "a");
-    str.replaceAll("Ö", "O");
-    str.replaceAll("ö", "o");
-    str.replaceAll("Ü", "U");
-    str.replaceAll("ẞ", "SS");
-    str.replaceAll("ß", "ss");
+    str = str.replaceAll("Ä", "A");
+    str = str.replaceAll("ä", "a");
+    str = str.replaceAll("Ö", "O");
+    str = str.replaceAll("ö", "o");
+    str = str.replaceAll("Ü", "U");
+    str = str.replaceAll("ẞ", "SS");
+    str = str.replaceAll("ß", "ss");
     return str;
   }
 
