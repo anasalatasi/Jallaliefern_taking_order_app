@@ -38,6 +38,7 @@ class _PrintScreenState extends State<PrintScreen> {
     str = str.replaceAll("ä", "a");
     str = str.replaceAll("Ö", "O");
     str = str.replaceAll("ö", "o");
+    str = str.replaceAll("ü", "u");
     str = str.replaceAll("Ü", "U");
     str = str.replaceAll("ẞ", "SS");
     str = str.replaceAll("ß", "ss");
@@ -223,9 +224,9 @@ class _PrintScreenState extends State<PrintScreen> {
 
   void _print() async {
     try {
-      for (int i = 0;
-          i < (await locator<SecureStorageService>().receiptCopies);
-          i++) await printerManager.printTicket(await _ticket);
+      Ticket? tmp = await _ticket;
+      int n = await locator<SecureStorageService>().receiptCopies;
+      for (int i = 0; i < n; i++) await printerManager.printTicket(tmp);
     } catch (c) {
       showToast("Printer not connected");
     }
