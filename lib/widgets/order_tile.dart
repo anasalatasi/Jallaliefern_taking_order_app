@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/screens/print_screen.dart';
+import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
+import 'package:badges/badges.dart';
 
 import '../models/order.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,9 @@ class OrderTile extends StatelessWidget {
         elevation: 3,
         child: InkWell(
             onTap: () async {
+              if (order.isNew) {
+                locator<ApiService>().unNew(order.id);
+              }
               await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -40,11 +45,24 @@ class OrderTile extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                          "${DateFormat('kk:mm').format(DateTime.parse(order.createdAt).toLocal())}",
-                          style: orderTileTimeStyle),
-                      SizedBox(
-                        width: 16,
+                      Row(
+                        children: [
+                          Text(
+                              "${DateFormat('kk:mm').format(DateTime.parse(order.createdAt).toLocal())}",
+                              style: orderTileTimeStyle),
+                          SizedBox(width: 5),
+                          order.isNew
+                              ? Badge(
+                                  toAnimate: false,
+                                  shape: BadgeShape.square,
+                                  badgeColor: Colors.green,
+                                  borderRadius: BorderRadius.circular(8),
+                                  badgeContent: Text('New Order',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 11)),
+                                )
+                              : SizedBox(width: 16),
+                        ],
                       ),
                       Row(
                         children: [

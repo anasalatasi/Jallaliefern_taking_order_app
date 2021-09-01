@@ -241,7 +241,17 @@ class OrderInfo extends StatelessWidget {
         Duration _duration = Duration();
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            title: Text('Accept Order #${order.id}'),
+            title: Row(children: [
+              Text('Accept Order #${order.id}'),
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PrintScreen(order: order)));
+                  },
+                  icon: Icon(Icons.print))
+            ]),
             content: DurationPicker(
                 snapToMins: 5.0,
                 duration: _duration,

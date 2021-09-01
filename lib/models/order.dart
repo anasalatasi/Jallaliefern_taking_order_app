@@ -24,7 +24,8 @@ class Order {
       required this.createdAt,
       required this.recieveEmail,
       required this.totalPrice,
-      this.notes});
+      this.notes,
+      required this.isNew});
 
   final int id;
   final String slug;
@@ -48,6 +49,8 @@ class Order {
   @JsonKey(name: 'total_price')
   final double totalPrice;
   final String? notes;
+  @JsonKey(name: 'is_new')
+  final bool isNew;
 
   get serveDateTime {
     if (serveTime == null) return null;

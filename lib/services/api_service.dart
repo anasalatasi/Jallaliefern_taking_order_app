@@ -35,7 +35,7 @@ class ApiService {
 
   Future<String> _deleteAuthRequest(String endpoint) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
-    String jwtToken = await locator<LoginService>().token.access;
+    String jwtToken = await locator<SecureStorageService>().accessToken;
     String fullUrl = "$apiUrl$endpoint";
     final client = http.Client();
     final response = await client.delete(Uri.parse(fullUrl),
@@ -51,7 +51,7 @@ class ApiService {
   // returns raw json
   Future<String> _getAuthRequest(String endpoint) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
-    String jwtToken = await locator<LoginService>().token.access;
+    String jwtToken = await locator<SecureStorageService>().accessToken;
     String fullUrl = "$apiUrl$endpoint";
     final client = http.Client();
     final response = await client.get(Uri.parse(fullUrl),
@@ -66,12 +66,29 @@ class ApiService {
 
   Future<String> _postAuthRequest(String endpoint, String rawData) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
-    String jwtToken = await locator<LoginService>().token.access;
+    String jwtToken = await locator<SecureStorageService>().accessToken;
     String fullUrl = "$apiUrl$endpoint";
     final client = http.Client();
     final response = await client.post(Uri.parse(fullUrl),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $jwtToken',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: rawData);
+    if (response.statusCode == 401)
+      throw UnauthorizedException();
+    else if (response.statusCode == 201 || response.statusCode == 200) {
+      return Future.value(Utf8Decoder().convert(response.body.codeUnits));
+    } else
+      throw Exception('Unknown Error');
+  }
+
+  Future<String> _postRequest(String endpoint, String rawData) async {
+    String apiUrl = await locator<SecureStorageService>().apiUrl;
+    String fullUrl = "$apiUrl$endpoint";
+    final client = http.Client();
+    final response = await client.post(Uri.parse(fullUrl),
+        headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: rawData);
@@ -107,8 +124,7 @@ class ApiService {
 
   Future<List<Order>> getNewOrders() async {
     try {
-      String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status=1)";
+      String filters = "(status=1)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -120,8 +136,7 @@ class ApiService {
 
   Future<List<Order>> getInProgOrders() async {
     try {
-      String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status__in=2,3)";
+      String filters = "(status__in=2,3)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -133,8 +148,7 @@ class ApiService {
 
   Future<List<Order>> getReadyOrders() async {
     try {
-      String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status=4)";
+      String filters = "(status=4)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -146,8 +160,7 @@ class ApiService {
 
   Future<List<Order>> getFinishedOrders() async {
     try {
-      String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).toUtc().toIso8601String()}) & (status=5)";
+      String filters = "(status=5)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -244,5 +257,19 @@ class ApiService {
   Future<Section> getSection(int id) async {
     final rawData = await _getAuthRequest('settings/section/$id/');
     return Section.fromRawJson(rawData);
+  }
+
+  Future<void> unNew(int id) async {
+    await _getAuthRequest('orders/order/$id/un_new/');
+  }
+
+  Future<bool> verifyToken() async {
+    try {
+      await _postRequest("token/verify/",
+          "{\"token\":\"${await locator<SecureStorageService>().accessToken}\"}");
+    } catch (c) {
+      return false;
+    }
+    return true;
   }
 }

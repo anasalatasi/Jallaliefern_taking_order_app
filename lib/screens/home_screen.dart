@@ -48,19 +48,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SettingsScreen()));
-            },
-          )
-        ],
-        elevation: 15.0,
-        backgroundColor: Color(0xFF9a0404),
-        title: Text('OrderSet'),
-      ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()));
+              },
+            )
+          ],
+          elevation: 15.0,
+          backgroundColor: Color(0xFF9a0404),
+          title: Row(children: [
+            Text(locator<Restaurant>().name!),
+          ])),
       body: PageStorage(
         bucket: bucket,
         child: pages[_selectedIndex],

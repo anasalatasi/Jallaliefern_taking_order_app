@@ -1,7 +1,9 @@
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter/services.dart';
 import 'package:jallaliefern_taking_orders_app/services/printer_service.dart';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:flutter/material.dart' hide Image;
+import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:oktoast/oktoast.dart';
@@ -14,12 +16,16 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
+  TextEditingController? _controller;
   List<PrinterBluetooth> _devices = [];
   @override
   void initState() {
     super.initState();
     printerManager.scanResults.listen((devices) async {
       // print('UI: Devices found ${devices.length}');
+      _controller = TextEditingController(
+          text:
+              (await locator<SecureStorageService>().receiptCopies).toString());
       setState(() {
         _devices = devices;
       });
@@ -50,25 +56,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text("Printer Settings"),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            // Row(children: [
+            //   Text(
+            //     "Encoding: ",
+            //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            //   ),
+            //   DropdownButton(
+            //       value: locator<PrinterService>().codetable,
+            //       elevation: 16,
+            //       onChanged: (PosCodeTable? newValue) {
+            //         setState(() {
+            //           locator<PrinterService>().codetable = newValue;
+            //         });
+            //       },
+            //       items: locator<PrinterService>().codetablelist),
+            // ]),
+            // SizedBox(width: 5, height: 5),
             Row(children: [
               Text(
-                "Encoding: ",
+                "Receipt copies:",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              DropdownButton(
-                  value: locator<PrinterService>().codetable,
-                  elevation: 16,
-                  onChanged: (PosCodeTable? newValue) {
-                    setState(() {
-                      locator<PrinterService>().codetable = newValue;
-                    });
-                  },
-                  items: locator<PrinterService>().codetablelist),
             ]),
-            SizedBox(width: 5, height: 5),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Flexible(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: "Number of receipts",
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (String str) async {
+                      if (str == "") return;
+                      await locator<SecureStorageService>()
+                          .write("receipt_copies", str);
+                    },
+                    controller: _controller,
+                    maxLength: 1,
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 16),
+            Row(children: [
+              Text(
+                "Choose your Printer:",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ]),
             Expanded(
               child: ListView.builder(
                   itemCount: _devices.length,

@@ -91,31 +91,24 @@ class LoginView extends StatelessWidget {
         ),
       );
   Widget _formTitle() {
-    return FutureBuilder(
-      future: locator<Restaurant>().init(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) => Column(
-        children: [
-          Container(
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.center,
+          child: locator<Restaurant>().logo != null
+              ? Image.network(locator<Restaurant>().logo!)
+              : CircularProgressIndicator(),
+        ),
+        Container(
             alignment: Alignment.center,
-            child: snapshot.hasData && locator<Restaurant>().logo != null
-                ? Image.network(locator<Restaurant>().logo!)
-                : CircularProgressIndicator(),
-          ),
-          Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.all(10),
-              child: snapshot.hasData
-                  ? Text(
-                      locator<Restaurant>().name ?? "",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20),
-                    )
-                  : CircularProgressIndicator()),
-        ],
-      ),
+            padding: EdgeInsets.all(10),
+            child: Text(
+              locator<Restaurant>().name ?? "",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.w500, fontSize: 20),
+            )),
+      ],
     );
   }
 

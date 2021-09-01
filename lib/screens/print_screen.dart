@@ -59,7 +59,7 @@ class _PrintScreenState extends State<PrintScreen> {
     //final Uint8List bytes = data.buffer.asUint8List();
     //final Image image = decodeImage(bytes);
     // ticket.image(image);
-
+    print(locator<Restaurant>());
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
@@ -82,7 +82,6 @@ class _PrintScreenState extends State<PrintScreen> {
         styles: PosStyles(align: PosAlign.center));
     ticket.text(myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
         styles: PosStyles(align: PosAlign.center));
-
     ticket.text(
         myEncoding(
             'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
@@ -136,8 +135,7 @@ class _PrintScreenState extends State<PrintScreen> {
         PosColumn(text: '${item.quantity}x', width: 1, styles: PosStyles()),
         (item.sizeObject == null)
             ? PosColumn(
-                text: String.fromCharCodes(
-                    Utf8Encoder().convert('${item.mealObject.name}')),
+                text: myEncoding('${item.mealObject.name}'),
                 width: 9,
                 styles: PosStyles())
             : PosColumn(
@@ -155,8 +153,7 @@ class _PrintScreenState extends State<PrintScreen> {
         ticket.row([
           PosColumn(width: 3, styles: PosStyles()),
           PosColumn(
-              text: String.fromCharCodes(
-                  Utf8Encoder().convert('>${itemAddon.addonObject.name}')),
+              text: myEncoding('>${itemAddon.addonObject.name}'),
               width: 7,
               styles: PosStyles()),
           PosColumn(
@@ -226,9 +223,9 @@ class _PrintScreenState extends State<PrintScreen> {
 
   void _print() async {
     try {
-      final PosPrintResult res =
-          await printerManager.printTicket(await _ticket);
-      showToast(res.msg);
+      for (int i = 0;
+          i < (await locator<SecureStorageService>().receiptCopies);
+          i++) await printerManager.printTicket(await _ticket);
     } catch (c) {
       showToast("Printer not connected");
     }
