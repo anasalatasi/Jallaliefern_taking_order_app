@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/retry.dart';
 import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/models/acceptation.dart';
 import 'package:jallaliefern_taking_orders_app/models/addon.dart';
@@ -23,7 +24,7 @@ class ApiService {
   Future<String> _getRequest(String endpoint) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
     String fullUrl = "$apiUrl$endpoint";
-    final client = http.Client();
+    final client = RetryClient(http.Client());
     final response = await client.get(Uri.parse(fullUrl));
     if (response.statusCode == 401)
       throw UnauthorizedException();
@@ -37,7 +38,7 @@ class ApiService {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
     String jwtToken = await locator<SecureStorageService>().accessToken;
     String fullUrl = "$apiUrl$endpoint";
-    final client = http.Client();
+    final client = RetryClient(http.Client());
     final response = await client.delete(Uri.parse(fullUrl),
         headers: {HttpHeaders.authorizationHeader: 'Bearer $jwtToken'});
     if (response.statusCode == 401)
@@ -53,7 +54,7 @@ class ApiService {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
     String jwtToken = await locator<SecureStorageService>().accessToken;
     String fullUrl = "$apiUrl$endpoint";
-    final client = http.Client();
+    final client = RetryClient(http.Client());
     final response = await client.get(Uri.parse(fullUrl),
         headers: {HttpHeaders.authorizationHeader: 'Bearer $jwtToken'});
     if (response.statusCode == 401)
@@ -68,7 +69,7 @@ class ApiService {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
     String jwtToken = await locator<SecureStorageService>().accessToken;
     String fullUrl = "$apiUrl$endpoint";
-    final client = http.Client();
+    final client = RetryClient(http.Client());
     final response = await client.post(Uri.parse(fullUrl),
         headers: {
           HttpHeaders.authorizationHeader: 'Bearer $jwtToken',
@@ -86,7 +87,7 @@ class ApiService {
   Future<String> _postRequest(String endpoint, String rawData) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
     String fullUrl = "$apiUrl$endpoint";
-    final client = http.Client();
+    final client = RetryClient(http.Client());
     final response = await client.post(Uri.parse(fullUrl),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
@@ -124,7 +125,8 @@ class ApiService {
 
   Future<List<Order>> getNewOrders() async {
     try {
-      String filters = "(status=1)";
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=1)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -136,7 +138,8 @@ class ApiService {
 
   Future<List<Order>> getInProgOrders() async {
     try {
-      String filters = "(status__in=2,3)";
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=2,3)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -148,7 +151,8 @@ class ApiService {
 
   Future<List<Order>> getReadyOrders() async {
     try {
-      String filters = "(status=4)";
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=4)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -160,7 +164,8 @@ class ApiService {
 
   Future<List<Order>> getFinishedOrders() async {
     try {
-      String filters = "(status=5)";
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=5)";
       filters = Uri(queryParameters: {'filters': filters}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);

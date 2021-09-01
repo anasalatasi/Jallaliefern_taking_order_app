@@ -228,7 +228,11 @@ class _PrintScreenState extends State<PrintScreen> {
       int n = await locator<SecureStorageService>().receiptCopies;
       var res = await printerManager.printTicket(tmp);
       showToast(res.msg);
-      for (int i = 1; i < n; i++) await printerManager.printTicket(tmp);
+      for (int i = 1; i < n; i++) {
+        await Future.delayed(Duration(seconds: 5));
+        await printerManager.printTicket(tmp);
+        showToast("$i");
+      }
     } catch (c) {
       showToast("Printer not connected");
     }
