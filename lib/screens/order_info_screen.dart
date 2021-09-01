@@ -287,8 +287,15 @@ class OrderInfo extends StatelessWidget {
                                 locator<ApiService>()
                                     .acceptOrder(order.id, _duration)
                                     .then((_) {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PrintScreen(order: order)))
+                                      .then((_) {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  });
                                 });
                               } catch (e) {
                                 await _showErrorDialog(context, e.toString());
