@@ -20,13 +20,15 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
           ? null
           : Delivery.fromJson(json['delivery'] as Map<String, dynamic>),
       payment: Payment.fromJson(json['payment'] as Map<String, dynamic>),
-      items: (json['items'] as List<dynamic>)
-          .map((e) => Item.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      itemss: json['items'] == null
+          ? null
+          : (json['items'] as List<dynamic>)
+              .map((e) => Item.fromJson(e as Map<String, dynamic>))
+              .toList(),
       serveTime: json['serve_time'] as String?,
       createdAt: json['created_at'] as String,
       recieveEmail: json['recieve_email'] as bool,
-      totalPrice: (json['total_price'] as num).toDouble(),
+      totalPrice: double.parse(json['total_price']),
       notes: json['notes'] as String?,
       isNew: json['is_new'] as bool);
 }
@@ -42,7 +44,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'status': instance.status,
       'delivery': instance.delivery?.toJson(),
       'payment': instance.payment.toJson(),
-      'items': instance.items.map((e) => e.toJson()).toList(),
+      'items': instance.itemss?.map((e) => e.toJson()).toList(),
       'serve_time': instance.serveTime,
       'created_at': instance.createdAt,
       'recieve_email': instance.recieveEmail,

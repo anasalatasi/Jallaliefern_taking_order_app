@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:json_annotation/json_annotation.dart';
+import '../utils/service_locator.dart';
 import 'delivery.dart';
 import 'payment.dart';
 import 'item.dart';
@@ -19,8 +21,8 @@ class Order {
       required this.status,
       this.delivery,
       required this.payment,
-      required this.items,
       this.serveTime,
+      this.itemss,
       required this.createdAt,
       required this.recieveEmail,
       required this.totalPrice,
@@ -39,7 +41,8 @@ class Order {
   final int status;
   final Delivery? delivery;
   final Payment payment;
-  final List<Item> items;
+  @JsonKey(name: 'items')
+  List<Item>? itemss;
   @JsonKey(name: 'serve_time')
   final String? serveTime;
   @JsonKey(name: 'created_at')
@@ -51,6 +54,12 @@ class Order {
   final String? notes;
   @JsonKey(name: 'is_new')
   final bool isNew;
+
+  get items async {
+    if (itemss != null) return itemss;
+    itemss = (await locator<ApiService>().getOrder(id))?.itemss;
+    return itemss;
+  }
 
   get serveDateTime {
     if (serveTime == null) return null;

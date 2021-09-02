@@ -127,11 +127,12 @@ class ApiService {
     try {
       String filters =
           "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=1)";
-      filters = Uri(queryParameters: {'filters': filters}).query;
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
     } catch (e) {
+      print(e.toString());
       return List<Order>.empty();
     }
   }
@@ -140,7 +141,7 @@ class ApiService {
     try {
       String filters =
           "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=2,3)";
-      filters = Uri(queryParameters: {'filters': filters}).query;
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
@@ -153,7 +154,7 @@ class ApiService {
     try {
       String filters =
           "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=4)";
-      filters = Uri(queryParameters: {'filters': filters}).query;
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
@@ -166,12 +167,21 @@ class ApiService {
     try {
       String filters =
           "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=5)";
-      filters = Uri(queryParameters: {'filters': filters}).query;
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
     } catch (e) {
       return List<Order>.empty();
+    }
+  }
+
+  Future<Order?> getOrder(int id) async {
+    try {
+      final rawData = await _getAuthRequest('orders/order/$id');
+      return Order.fromRawJson(rawData);
+    } catch (e) {
+      return null;
     }
   }
 

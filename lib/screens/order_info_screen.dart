@@ -700,13 +700,18 @@ class OrderInfo extends StatelessWidget {
   }
 
   Widget _itemsListView() {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: order.items.length,
-        itemBuilder: (BuildContext context, int index) =>
-            Container(child: _itemTile(order.items[index])),
-      ),
-    );
+    return FutureBuilder(
+        future: order.items,
+        builder: (BuildContext context, AsyncSnapshot snapshot) =>
+            snapshot.hasData
+                ? Expanded(
+                    child: ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          Container(child: _itemTile(snapshot.data[index])),
+                    ),
+                  )
+                : CircularProgressIndicator());
   }
 
   Row emailwidget() {

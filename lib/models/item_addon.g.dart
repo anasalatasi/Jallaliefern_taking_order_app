@@ -9,7 +9,7 @@ part of 'item_addon.dart';
 ItemAddon _$ItemAddonFromJson(Map<String, dynamic> json) {
   return ItemAddon(
     addonId: json['addon'] as int,
-    totalPrice: (json['total_price'] as num).toDouble(),
+    totalPrice: double.parse(json['total_price']),
     addonObject: Addon.fromJson(json['addon_object'] as Map<String, dynamic>),
   );
 }

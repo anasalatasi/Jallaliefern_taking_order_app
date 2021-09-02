@@ -130,8 +130,8 @@ class _PrintScreenState extends State<PrintScreen> {
 
     ticket.hr();
 
-    for (int i = 0; i < widget.order.items.length; i++) {
-      var item = widget.order.items[i];
+    for (int i = 0; i < (await widget.order.items).length; i++) {
+      var item = (await widget.order.items)[i];
       ticket.row([
         PosColumn(text: '${item.quantity}x', width: 1, styles: PosStyles()),
         (item.sizeObject == null)
