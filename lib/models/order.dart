@@ -76,7 +76,7 @@ class Order {
   String getType() {
     if (this.type == 1)
       return "Delivery";
-    else if (this.type == 2) return "Pickup";
+    else if (this.type == 2) return "Liefern";
     return "Unknown";
   }
 }

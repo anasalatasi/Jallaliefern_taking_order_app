@@ -244,7 +244,7 @@ class _PrintScreenState extends State<PrintScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Kcolor,
-          title: Text("Print Order #${widget.order.id}"),
+          title: Text("drucken #${widget.order.id}"),
         ),
         body: Center(
           child: FutureBuilder(
@@ -252,7 +252,7 @@ class _PrintScreenState extends State<PrintScreen> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) return CircularProgressIndicator();
                 return ElevatedButton(
-                    onPressed: _print, child: Text("PRINT RECEIPT"));
+                    onPressed: _print, child: Text("drucken"));
               }),
         ),
       ),

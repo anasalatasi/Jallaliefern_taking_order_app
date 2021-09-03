@@ -53,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Kcolor,
-        title: Text("Printer Settings"),
+        title: Text("Druckereinstellungen"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -77,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // SizedBox(width: 5, height: 5),
             Row(children: [
               Text(
-                "Receipt copies:",
+                "Anzahl der Kopien:",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ]),
@@ -87,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Flexible(
                   child: TextField(
                     decoration: InputDecoration(
-                      labelText: "Number of receipts",
+                      labelText: "Anzahl der Kopien",
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
@@ -106,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 16),
             Row(children: [
               Text(
-                "Choose your Printer:",
+                "Drucker auswählen:",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ]),
@@ -135,7 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       Text(_devices[index].name ?? ''),
                                       Text(_devices[index].address),
                                       Text(
-                                        'Click to connect to printer',
+                                        'Drucker anschließen',
                                         style:
                                             TextStyle(color: Colors.grey[700]),
                                       ),

@@ -47,13 +47,19 @@ class ApiFormView extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment : MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _fromTitle(),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: [ _apiUrlField(),SizedBox(height: 16,) ,_saveButton()],
+                  children: [
+                    _apiUrlField(),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    _saveButton()
+                  ],
                 ),
               ],
             ),
@@ -80,9 +86,11 @@ class ApiFormView extends StatelessWidget {
                   ),
                   labelText: 'Website URL :',
                   hintText: 'http://example.com'),
-              validator: (value) => state.validApiUrl ? null : 'url is not valid',
-              onChanged: (value) =>
-                  context.read<ApiFormBloc>().add(ApiUrlChanged(apiUrl: value))),
+              validator: (value) =>
+                  state.validApiUrl ? null : 'url is not valid',
+              onChanged: (value) => context
+                  .read<ApiFormBloc>()
+                  .add(ApiUrlChanged(apiUrl: value))),
         );
       });
   Widget _fromTitle() {
@@ -90,7 +98,7 @@ class ApiFormView extends StatelessWidget {
         alignment: Alignment.center,
         padding: EdgeInsets.all(10),
         child: Text(
-          'Jallaliefern Taking Orders App',
+          'OrderSet Order manager',
           textAlign: TextAlign.center,
           style: TextStyle(
               color: Kcolor, fontWeight: FontWeight.w500, fontSize: 30),

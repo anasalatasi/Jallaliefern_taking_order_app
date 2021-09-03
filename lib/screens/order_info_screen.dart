@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
+import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/screens/print_screen.dart';
 import 'package:jallaliefern_taking_orders_app/models/item.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal.dart';
@@ -22,12 +23,12 @@ class OrderInfo extends StatelessWidget {
       barrierDismissible: false, // user must tap button!
       builder: (context) {
         return AlertDialog(
-          title: Text('The Note of ${order.id} order :'),
+          title: Text('die Notiz von ${order.id} Bestellung :'),
           content: SingleChildScrollView(child: Text('${order.notes}')),
           actions: <Widget>[
             ElevatedButton(
                 style: ElevatedButton.styleFrom(primary: Colors.red),
-                child: Text('CANCEL'),
+                child: Text('Abbrechen'),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
@@ -60,9 +61,9 @@ class OrderInfo extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text("Confirm Order #${order.id} is Ready"),
-                content:
-                    Text("Are you sure you want to mark this order as ready?"),
+                title: Text("bestätigen Bestellung #${order.id} bereit"),
+                content: Text(
+                    "Möchten Sie diese Bestellung wirklich als fertig markieren?"),
                 actions: [
                   Row(
                     children: [
@@ -72,7 +73,7 @@ class OrderInfo extends StatelessWidget {
                           child: ElevatedButton(
                               style:
                                   ElevatedButton.styleFrom(primary: Colors.red),
-                              child: Text('CANCEL'),
+                              child: Text('Abbrechen'),
                               onPressed: () {
                                 Navigator.pop(context);
                               }),
@@ -84,7 +85,7 @@ class OrderInfo extends StatelessWidget {
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.green),
-                              child: Text('CONFIRM'),
+                              child: Text('bestätigen'),
                               onPressed: () async {
                                 try {
                                   await locator<ApiService>()
@@ -106,8 +107,9 @@ class OrderInfo extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text("Delete Order #${order.id}"),
-                content: Text("Are you sure you want to delete this order?"),
+                title: Text("Bestellung löschen #${order.id}"),
+                content: Text(
+                    "bist du sicher, dass du diese Bestellung löschen möchtest?"),
                 actions: [
                   Row(
                     children: [
@@ -117,7 +119,7 @@ class OrderInfo extends StatelessWidget {
                           child: ElevatedButton(
                               style:
                                   ElevatedButton.styleFrom(primary: Colors.red),
-                              child: Text('CANCEL'),
+                              child: Text('Abbrechen'),
                               onPressed: () {
                                 Navigator.pop(context);
                               }),
@@ -129,7 +131,7 @@ class OrderInfo extends StatelessWidget {
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.green),
-                              child: Text('CONFIRM'),
+                              child: Text('bestätigen'),
                               onPressed: () async {
                                 try {
                                   await locator<ApiService>()
@@ -151,9 +153,9 @@ class OrderInfo extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text("Confirm Order #${order.id} is Finished"),
+                title: Text("bestätigen Bestellung #${order.id} fertig"),
                 content: Text(
-                    "Are you sure you want to mark this order as finished?"),
+                    "Möchten Sie diese Bestellung wirklich als abgeschlossen markieren?"),
                 actions: [
                   Row(
                     children: [
@@ -163,7 +165,7 @@ class OrderInfo extends StatelessWidget {
                           child: ElevatedButton(
                               style:
                                   ElevatedButton.styleFrom(primary: Colors.red),
-                              child: Text('CANCEL'),
+                              child: Text('Abbrechen'),
                               onPressed: () {
                                 Navigator.pop(context);
                               }),
@@ -175,7 +177,7 @@ class OrderInfo extends StatelessWidget {
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   primary: Colors.green),
-                              child: Text('CONFIRM'),
+                              child: Text('bestätigen'),
                               onPressed: () async {
                                 try {
                                   await locator<ApiService>()
@@ -196,8 +198,9 @@ class OrderInfo extends StatelessWidget {
   Future<void> _showRejectDialog(BuildContext context) async => showDialog(
       context: context,
       builder: (context) => AlertDialog(
-            title: Text("Reject Order #${order.id}"),
-            content: Text("Are you sure you want to reject this order?"),
+            title: Text("Ablehnen Bestellung #${order.id}"),
+            content: Text(
+                "bist du sicher, dass du diese Bestellung ablehnen möchtest?"),
             actions: [
               Row(
                 children: [
@@ -206,7 +209,7 @@ class OrderInfo extends StatelessWidget {
                       padding: const EdgeInsets.all(5.0),
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Colors.red),
-                          child: Text('CANCEL'),
+                          child: Text('Abbrechen'),
                           onPressed: () {
                             Navigator.pop(context);
                           }),
@@ -218,7 +221,7 @@ class OrderInfo extends StatelessWidget {
                       child: ElevatedButton(
                           style:
                               ElevatedButton.styleFrom(primary: Colors.green),
-                          child: Text('CONFIRM'),
+                          child: Text('bestätigen'),
                           onPressed: () async {
                             try {
                               await locator<ApiService>().rejectOrder(order.id);
@@ -242,7 +245,7 @@ class OrderInfo extends StatelessWidget {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             title: Row(children: [
-              Text('Accept Order #${order.id}'),
+              Text('Bestellung annehmen #${order.id}'),
               IconButton(
                   onPressed: () {
                     Navigator.push(
@@ -266,7 +269,7 @@ class OrderInfo extends StatelessWidget {
                       padding: const EdgeInsets.all(5.0),
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Colors.red),
-                          child: Text('CANCEL'),
+                          child: Text('Abbrechen'),
                           onPressed: () {
                             setState(() {
                               Navigator.pop(context);
@@ -280,7 +283,7 @@ class OrderInfo extends StatelessWidget {
                       child: ElevatedButton(
                           style:
                               ElevatedButton.styleFrom(primary: Colors.green),
-                          child: Text('CONFIRM'),
+                          child: Text('bestätigen'),
                           onPressed: () {
                             setState(() async {
                               try {
@@ -317,7 +320,7 @@ class OrderInfo extends StatelessWidget {
         Duration _duration = Duration();
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            title: Text('Add ETA for Order #${order.id}'),
+            title: Text('hinzufügen ETA zum Bestellung #${order.id}'),
             content: DurationPicker(
                 snapToMins: 5.0,
                 duration: _duration,
@@ -332,7 +335,7 @@ class OrderInfo extends StatelessWidget {
                       padding: const EdgeInsets.all(5.0),
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Colors.red),
-                          child: Text('CANCEL'),
+                          child: Text('Abbrechen'),
                           onPressed: () {
                             setState(() {
                               Navigator.pop(context);
@@ -346,7 +349,7 @@ class OrderInfo extends StatelessWidget {
                       child: ElevatedButton(
                           style:
                               ElevatedButton.styleFrom(primary: Colors.green),
-                          child: Text('CONFIRM'),
+                          child: Text('bestätigen'),
                           onPressed: () {
                             setState(() async {
                               try {
@@ -376,10 +379,10 @@ class OrderInfo extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "#${order.id}",
-              ),
-              Text('${order.totalPrice}'),
+              Text("#${order.id} - ${order.slug}"),
+              SizedBox(width: 5),
+              Text('${order.totalPrice} ${locator<Restaurant>().currency}',
+                  style: TextStyle(fontSize: 15)),
               IconButton(
                   onPressed: () {
                     Navigator.push(
@@ -468,7 +471,7 @@ class OrderInfo extends StatelessWidget {
                     icon: Icon(Icons.edit),
                     onPressed: () async => await _showAddEtaDialog(context),
                     label: Center(
-                      child: Text('Add ETA'),
+                      child: Text('hinzufügen ETA'),
                     ),
                   ),
                 ),
@@ -482,7 +485,7 @@ class OrderInfo extends StatelessWidget {
                     onPressed: () async =>
                         await _showConfirmReadyDialog(context),
                     label: Center(
-                      child: Text('Done'),
+                      child: Text('getan'),
                     ),
                   ),
                 ),
@@ -507,7 +510,7 @@ class OrderInfo extends StatelessWidget {
                     onPressed: () async =>
                         await _showConfirmFinishDialog(context),
                     label: Center(
-                      child: Text('Finish'),
+                      child: Text('beenden'),
                     ),
                   ),
                 ),
@@ -531,7 +534,7 @@ class OrderInfo extends StatelessWidget {
                 icon: Icon(Icons.cancel_outlined),
                 onPressed: () async => await _showRejectDialog(context),
                 label: Center(
-                  child: Text('Reject'),
+                  child: Text('Ablehnen'),
                 ),
               ),
             ),
@@ -544,7 +547,7 @@ class OrderInfo extends StatelessWidget {
                 icon: Icon(Icons.add_task),
                 onPressed: () async => await _showAcceptDialog(context),
                 label: Center(
-                  child: Text('Accept'),
+                  child: Text('annehmen'),
                 ),
               ),
             ),
@@ -588,7 +591,7 @@ class OrderInfo extends StatelessWidget {
                       }),
                   order.delivery!.sectionId == null
                       ? Row(
-                          children: [Text("Section: no section")],
+                          children: [Text("Bereich: no section")],
                         )
                       : FutureBuilder(
                           future: order.delivery!.getSection(),
@@ -596,19 +599,24 @@ class OrderInfo extends StatelessWidget {
                               AsyncSnapshot<Section?> snapshot) {
                             if (!snapshot.hasData)
                               return Row(children: [
-                                Text('Section: Loading'),
+                                Text('Bereich: Loading'),
                               ]);
                             return Row(
                               children: [
-                                Text("Section: ${snapshot.data!.name}")
+                                Text("Bereich: ${snapshot.data!.name}")
                               ],
                             );
                           }),
                   Row(
                     children: [
-                      Text("Address: ${order.delivery!.address}"),
+                      Text("Adresse: ${order.delivery!.address}"),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Text("Building NO: ${order.delivery!.buildingNo}")
+                    ],
+                  )
                 ],
               ),
       ],
@@ -638,7 +646,7 @@ class OrderInfo extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Meal: ", style: labelTextStyle),
+                  Text("Mahlzeit: ", style: labelTextStyle),
                   Expanded(
                     child: Text("${item.mealObject.name}"),
                   ),
@@ -662,7 +670,7 @@ class OrderInfo extends StatelessWidget {
                     ),
               Row(
                 children: [
-                  Text('Quantity: ', style: labelTextStyle),
+                  Text('Anzahl: ', style: labelTextStyle),
                   Text('x${item.quantity}')
                 ],
               ),
@@ -671,7 +679,7 @@ class OrderInfo extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Text('Notes: ', style: labelTextStyle),
+                  Text('Anmerkungen: ', style: labelTextStyle),
                   Expanded(child: Text('${item.notes}'))
                 ],
               ),
@@ -680,7 +688,7 @@ class OrderInfo extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Text('Price:', style: labelTextStyle),
+                  Text('Preis:', style: labelTextStyle),
                   Text('${item.totalPrice}')
                 ],
               ),
@@ -690,7 +698,7 @@ class OrderInfo extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Addons: ', style: labelTextStyle),
+                  Text('Extra: ', style: labelTextStyle),
                   _addons(item)
                 ],
               )

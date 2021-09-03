@@ -35,13 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Colors.black38,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined), label: 'New'),
+              icon: Icon(Icons.request_page_outlined), label: 'Neu'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.watch_later_outlined), label: 'In Progress'),
+              icon: Icon(Icons.watch_later_outlined), label: 'im Gange'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.done_rounded), label: 'Ready'),
+              icon: Icon(Icons.done_rounded), label: 'bereit'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.done_all_rounded), label: 'Finished'),
+              icon: Icon(Icons.done_all_rounded), label: 'fertig'),
         ],
       );
   @override

@@ -153,14 +153,14 @@ class LoginView extends StatelessWidget {
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Kcolor)),
 
-                    labelText: 'Password',
+                    labelText: 'Passwort',
                     labelStyle: TextStyle(
                       color: Kcolor,
                     ),
-                    hintText: 'Enter your Password',
+                    hintText: 'gib dein Passwort ein',
                   ),
                   validator: (value) =>
-                      state.validPassword ? null : 'password is required',
+                      state.validPassword ? null : 'Passwort is required',
                   onChanged: (value) => context
                       .read<LoginBloc>()
                       .add(PasswordChanged(password: value))),
@@ -188,13 +188,13 @@ class LoginView extends StatelessWidget {
                   //enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
                   focusedBorder:
                       OutlineInputBorder(borderSide: BorderSide(color: Kcolor)),
-                  labelText: 'Username',
+                  labelText: 'Nutzername',
                   labelStyle: TextStyle(
                     color: Kcolor,
                   ),
-                  hintText: 'Enter Your username'),
+                  hintText: 'gib deinen Benutzernamen ein'),
               validator: (value) =>
-                  state.validUsername ? null : 'username is required',
+                  state.validUsername ? null : 'Nutzername is required',
               onChanged: (value) => context.read<LoginBloc>().add(
                     UsernameChanged(username: value),
                   ),

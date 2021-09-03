@@ -57,7 +57,7 @@ class OrderTile extends StatelessWidget {
                                   shape: BadgeShape.square,
                                   badgeColor: Colors.green,
                                   borderRadius: BorderRadius.circular(8),
-                                  badgeContent: Text('New Order',
+                                  badgeContent: Text('neue Bestellung',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 11)),
                                 )
@@ -86,7 +86,7 @@ class OrderTile extends StatelessWidget {
                                   order.serveDateTime.millisecondsSinceEpoch,
                               widgetBuilder: (_, time) {
                                 if (time == null) {
-                                  return Text('TIME OUT',
+                                  return Text('AUSZEIT',
                                       style: TextStyle(
                                           color: Colors.red,
                                           fontSize: 20,
@@ -157,32 +157,34 @@ class OrderTile extends StatelessWidget {
                                           PrintScreen(order: order)));
                             },
                             icon: Icon(Icons.print),
-                            label: Text("Print"),
+                            label: Text("drucken"),
                           ),
                         ),
                       ),
                       order.status == 1
-                          ? StateWidget(state: 'Pending', color: Colors.purple)
+                          ? StateWidget(
+                              state: 'Ausstehend', color: Colors.purple)
                           : order.status == 2
                               ? StateWidget(
-                                  state: 'Rejected', color: Colors.red)
+                                  state: 'Abgelehnt', color: Colors.red)
                               : order.status == 3
                                   ? StateWidget(
-                                      state: 'Accepted', color: Colors.green)
+                                      state: 'Akzeptiert', color: Colors.green)
                                   : order.status == 4
                                       ? StateWidget(
-                                          state: 'Pending Delivery',
+                                          state: 'Lieferung ausstehend',
                                           color: Colors.deepPurple)
                                       : order.status == 5
                                           ? StateWidget(
-                                              state: 'Delivering',
+                                              state: 'Liefern',
                                               color: Colors.cyan)
                                           : order.status == 6
                                               ? StateWidget(
-                                                  state: "Delivered",
+                                                  state: "Geliefert",
                                                   color: Colors.blueGrey)
                                               : StateWidget(
-                                                  state: 'Done', color: Kcolor)
+                                                  state: 'Fertig',
+                                                  color: Kcolor)
                     ],
                   ),
                 ],
