@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/services/printer_service.dart';
@@ -76,7 +77,7 @@ class _PrintScreenState extends State<PrintScreen> {
         linesAfter: 1);
     ticket.text(
         myEncoding(
-            '${locator<Restaurant>().street}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
+            '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum} ${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
         styles: PosStyles(align: PosAlign.center));
 
     ticket.text(myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
@@ -85,50 +86,53 @@ class _PrintScreenState extends State<PrintScreen> {
         styles: PosStyles(align: PosAlign.center));
     ticket.text(
         myEncoding(
-            'Web: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
+            'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
         styles: PosStyles(align: PosAlign.center),
         linesAfter: 1);
     ticket.hr(ch: '=');
     ticket.row([
-      PosColumn(text: 'Full Name:', width: 4),
+      PosColumn(text: 'Name: ', width: 4),
       PosColumn(
           text:
               myEncoding("${widget.order.firstName} ${widget.order.lastName}"),
           width: 8)
     ]);
-    ticket.row([
-      PosColumn(text: 'Order ID:', width: 4),
-      PosColumn(text: "#${widget.order.id}", width: 8)
-    ]);
-    ticket.row([
-      PosColumn(text: 'Order Slug:', width: 4),
-      PosColumn(text: "${widget.order.slug}", width: 8)
-    ]);
+
     if (widget.order.delivery != null) {
+      String tmp = "";
       if (await widget.order.delivery!.getSection() != null) {
-        ticket.row([
-          PosColumn(text: 'Full Address:', width: 4, styles: PosStyles()),
-          PosColumn(
-              text: myEncoding(
-                  "${(await widget.order.delivery!.getZone())!.name}, ${(await widget.order.delivery!.getSection())!.name}, ${widget.order.delivery!.address}"),
-              width: 8,
-              styles: PosStyles())
-        ]);
+        tmp = myEncoding(
+            "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}, ${(await widget.order.delivery!.getSection())!.name} ${(await widget.order.delivery!.getSection())!.zipCode}");
       } else {
+        tmp = myEncoding(
+            "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}");
+      }
+      List<String> chunks = [];
+      for (var i = 0; i < tmp.length; i += 32) {
+        chunks.add(tmp.substring(i, min(tmp.length, i + 32)));
+      }
+      ticket.row([
+        PosColumn(text: 'Adresse: ', width: 4, styles: PosStyles()),
+        PosColumn(text: chunks[0], width: 8, styles: PosStyles())
+      ]);
+      for (var i = 1; i < chunks.length; i++) {
         ticket.row([
-          PosColumn(text: 'Full Address:', width: 4, styles: PosStyles()),
-          PosColumn(
-              text: myEncoding(
-                  "${(await widget.order.delivery!.getZone())!.name}, ${widget.order.delivery!.address}"),
-              width: 8,
-              styles: PosStyles())
+          PosColumn(text: ' ', width: 4, styles: PosStyles()),
+          PosColumn(text: chunks[i], width: 8, styles: PosStyles())
         ]);
       }
     }
-    ticket.text('Tel1: ${widget.order.phone}',
-        styles: PosStyles(align: PosAlign.center));
-
-    ticket.hr();
+    ticket.text('Tel: ${widget.order.phone}',
+        styles: PosStyles(align: PosAlign.left));
+    ticket.row([
+      PosColumn(text: 'Bestell.ID: ', width: 4),
+      PosColumn(text: "#${widget.order.id}", width: 8)
+    ]);
+    ticket.row([
+      PosColumn(text: 'Bestell.Slug: ', width: 4),
+      PosColumn(text: "${widget.order.slug}", width: 8)
+    ]);
+    ticket.hr(ch: "=");
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
@@ -163,13 +167,20 @@ class _PrintScreenState extends State<PrintScreen> {
               styles: PosStyles(align: PosAlign.right)),
         ]);
       }
+      if (item.notes != null && item.notes!.length > 0) {
+        ticket.text('Anmerkung:', styles: PosStyles());
+        ticket.text(myEncoding(item.notes!), styles: PosStyles());
+      }
+      if (i < (await widget.order.items).length - 1) {
+        ticket.hr(ch: "-");
+      }
     }
 
-    ticket.hr();
+    ticket.hr(ch: '=');
 
     ticket.row([
       PosColumn(
-          text: 'TOTAL',
+          text: 'Gesamtpreis',
           width: 6,
           styles: PosStyles(
             height: PosTextSize.size2,
@@ -187,8 +198,13 @@ class _PrintScreenState extends State<PrintScreen> {
 
     ticket.hr(ch: '=', linesAfter: 1);
 
+    if (widget.order.notes != null && widget.order.notes!.length > 0) {
+      ticket.text('Anmerkung:', styles: PosStyles());
+      ticket.text(myEncoding(widget.order.notes!), styles: PosStyles());
+    }
+
     ticket.feed(2);
-    ticket.text('Thank you!',
+    ticket.text('Danke!',
         styles: PosStyles(
           align: PosAlign.center,
           bold: true,

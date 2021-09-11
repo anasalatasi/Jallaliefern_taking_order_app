@@ -614,7 +614,7 @@ class OrderInfo extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Text("Building NO: ${order.delivery!.buildingNo}")
+                      Text("Hausnummer: ${order.delivery!.buildingNo}")
                     ],
                   )
                 ],

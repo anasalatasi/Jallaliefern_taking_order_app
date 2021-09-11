@@ -13,18 +13,21 @@ class Restaurant {
   String? phone1;
   String? phone2;
   String? currency;
+  String? buildingNum;
+  String? zipcode;
   Restaurant.empty();
-  Restaurant({
-    required this.id,
-    required this.name,
-    required this.logo,
-    this.city,
-    this.country,
-    this.street,
-    this.phone1,
-    this.phone2,
-    this.currency,
-  });
+  Restaurant(
+      {required this.id,
+      required this.name,
+      required this.logo,
+      this.city,
+      this.country,
+      this.street,
+      this.phone1,
+      this.phone2,
+      this.currency,
+      this.buildingNum,
+      this.zipcode});
 
   Future<void> init() async {
     try {
@@ -39,6 +42,8 @@ class Restaurant {
       phone1 = rest.phone1;
       phone2 = rest.phone2;
       currency = rest.currency;
+      buildingNum = rest.buildingNum;
+      zipcode = rest.zipcode;
     } catch (e) {
       return Future.value(false);
     }
@@ -60,7 +65,9 @@ class Restaurant {
         street: json['street'],
         phone1: json['phone1'],
         phone2: json['phone2'],
-        currency: json['currency']);
+        currency: json['currency'],
+        buildingNum: json['building_num'],
+        zipcode: json['zip_code']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -73,5 +80,7 @@ class Restaurant {
         'phone1': phone1,
         'phone2': phone2,
         'currency': currency,
+        'building_num': buildingNum,
+        'zip_code': zipcode
       };
 }
