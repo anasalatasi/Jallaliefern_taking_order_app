@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/screens/home_screen.dart';
+import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/exceptions.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import '../form_submission_status.dart';
@@ -96,7 +97,15 @@ class LoginView extends StatelessWidget {
         Container(
           alignment: Alignment.center,
           child: locator<Restaurant>().logo != null
-              ? Image.network(locator<Restaurant>().logo!)
+              ? FutureBuilder(
+                  future: locator<SecureStorageService>().apiUrl,
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) return CircularProgressIndicator();
+                    var tmp =
+                        snapshot.data.substring(0, snapshot.data.length - 5) +
+                            locator<Restaurant>().logo!;
+                    return Image.network(tmp);
+                  })
               : CircularProgressIndicator(),
         ),
         Container(

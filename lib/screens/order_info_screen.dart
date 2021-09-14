@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/screens/print_screen.dart';
@@ -420,6 +421,14 @@ class OrderInfo extends StatelessWidget {
                       Divider(
                         height: 16,
                       ),
+                      (order.serveTime == null)
+                          ? Container()
+                          : _preorderwidget(),
+                      (order.serveTime == null)
+                          ? Container()
+                          : Divider(
+                              height: 16,
+                            ),
                       _deliveryWidget(),
                       Divider(
                         height: 16,
@@ -754,6 +763,18 @@ class OrderInfo extends StatelessWidget {
           width: 16,
         ),
         Text("${order.firstName} ${order.lastName}"),
+      ],
+    );
+  }
+
+  Row _preorderwidget() {
+    return Row(
+      children: [
+        Icon(Icons.access_time),
+        SizedBox(
+          width: 16,
+        ),
+        Text("${DateFormat('yyyy-MM-dd – kk:mm').format(order.serveDateTime)}"),
       ],
     );
   }

@@ -61,41 +61,63 @@ class _PrintScreenState extends State<PrintScreen> {
     //final Uint8List bytes = data.buffer.asUint8List();
     //final Image image = decodeImage(bytes);
     // ticket.image(image);
-    print(locator<Restaurant>());
+
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    ticket.text(timestamp, styles: PosStyles(align: PosAlign.center));
+    ticket.text(timestamp,
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2));
 
     ticket.text(locator<Restaurant>().name!,
         styles: PosStyles(
           align: PosAlign.center,
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
+          height: PosTextSize.size3,
+          width: PosTextSize.size3,
         ),
         linesAfter: 1);
     ticket.text(
         myEncoding(
             '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum} ${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
-        styles: PosStyles(align: PosAlign.center));
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2));
 
     ticket.text(myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
-        styles: PosStyles(align: PosAlign.center));
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2));
     ticket.text(myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
-        styles: PosStyles(align: PosAlign.center));
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2));
     ticket.text(
         myEncoding(
             'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
-        styles: PosStyles(align: PosAlign.center),
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2),
         linesAfter: 1);
     ticket.hr(ch: '=');
     ticket.row([
-      PosColumn(text: 'Name: ', width: 4),
+      PosColumn(
+          text: 'Name: ',
+          width: 4,
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
       PosColumn(
           text:
               myEncoding("${widget.order.firstName} ${widget.order.lastName}"),
-          width: 8)
+          width: 8,
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
     ]);
 
     if (widget.order.delivery != null) {
@@ -112,46 +134,90 @@ class _PrintScreenState extends State<PrintScreen> {
         chunks.add(tmp.substring(i, min(tmp.length, i + 32)));
       }
       ticket.row([
-        PosColumn(text: 'Adresse: ', width: 4, styles: PosStyles()),
-        PosColumn(text: chunks[0], width: 8, styles: PosStyles())
+        PosColumn(
+            text: 'Adresse: ',
+            width: 4,
+            styles:
+                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+        PosColumn(
+            text: chunks[0],
+            width: 8,
+            styles:
+                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
       ]);
       for (var i = 1; i < chunks.length; i++) {
         ticket.row([
-          PosColumn(text: ' ', width: 4, styles: PosStyles()),
-          PosColumn(text: chunks[i], width: 8, styles: PosStyles())
+          PosColumn(
+              text: ' ',
+              width: 4,
+              styles: PosStyles(
+                  height: PosTextSize.size2, width: PosTextSize.size2)),
+          PosColumn(
+              text: chunks[i],
+              width: 8,
+              styles: PosStyles(
+                  height: PosTextSize.size2, width: PosTextSize.size2))
         ]);
       }
     }
     ticket.text('Tel: ${widget.order.phone}',
-        styles: PosStyles(align: PosAlign.left));
+        styles: PosStyles(
+            align: PosAlign.left,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2));
     ticket.row([
-      PosColumn(text: 'Bestell.ID: ', width: 4),
-      PosColumn(text: "#${widget.order.id}", width: 8)
+      PosColumn(
+          text: 'Bestell.ID: ',
+          width: 4,
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+      PosColumn(
+          text: "#${widget.order.id}",
+          width: 8,
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
     ]);
     ticket.row([
-      PosColumn(text: 'Bestell.Slug: ', width: 4),
-      PosColumn(text: "${widget.order.slug}", width: 8)
+      PosColumn(
+          text: 'Bestell.Slug: ',
+          width: 4,
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+      PosColumn(
+          text: "${widget.order.slug}",
+          width: 8,
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
     ]);
     ticket.hr(ch: "=");
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
       ticket.row([
-        PosColumn(text: '${item.quantity}x', width: 1, styles: PosStyles()),
+        PosColumn(
+            text: '${item.quantity}x',
+            width: 1,
+            styles:
+                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
         (item.sizeObject == null)
             ? PosColumn(
                 text: myEncoding('${item.mealObject.name}'),
                 width: 9,
-                styles: PosStyles())
+                styles: PosStyles(
+                    height: PosTextSize.size2, width: PosTextSize.size2))
             : PosColumn(
                 text: myEncoding(
                     '${item.mealObject.name} - ${item.sizeObject!.name}'),
                 width: 9,
-                styles: PosStyles()),
+                styles: PosStyles(
+                    height: PosTextSize.size2, width: PosTextSize.size2)),
         PosColumn(
             text: '${item.totalPrice}',
             width: 2,
-            styles: PosStyles(align: PosAlign.right)),
+            styles: PosStyles(
+                align: PosAlign.right,
+                height: PosTextSize.size2,
+                width: PosTextSize.size2)),
       ]);
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];
@@ -160,16 +226,24 @@ class _PrintScreenState extends State<PrintScreen> {
           PosColumn(
               text: myEncoding('>${itemAddon.addonObject.name}'),
               width: 7,
-              styles: PosStyles()),
+              styles: PosStyles(
+                  height: PosTextSize.size2, width: PosTextSize.size2)),
           PosColumn(
               text: '${itemAddon.totalPrice}',
               width: 2,
-              styles: PosStyles(align: PosAlign.right)),
+              styles: PosStyles(
+                  align: PosAlign.right,
+                  height: PosTextSize.size2,
+                  width: PosTextSize.size2)),
         ]);
       }
       if (item.notes != null && item.notes!.length > 0) {
-        ticket.text('Anmerkung:', styles: PosStyles());
-        ticket.text(myEncoding(item.notes!), styles: PosStyles());
+        ticket.text('Anmerkung:',
+            styles:
+                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
+        ticket.text(myEncoding(item.notes!),
+            styles:
+                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
       }
       if (i < (await widget.order.items).length - 1) {
         ticket.hr(ch: "-");
@@ -183,32 +257,37 @@ class _PrintScreenState extends State<PrintScreen> {
           text: 'Gesamtpreis',
           width: 6,
           styles: PosStyles(
-            height: PosTextSize.size2,
-            width: PosTextSize.size2,
+            height: PosTextSize.size3,
+            width: PosTextSize.size3,
           )),
       PosColumn(
           text: '${widget.order.totalPrice}${locator<Restaurant>().currency}',
           width: 6,
           styles: PosStyles(
             align: PosAlign.right,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2,
+            height: PosTextSize.size3,
+            width: PosTextSize.size3,
           )),
     ]);
 
     ticket.hr(ch: '=', linesAfter: 1);
 
     if (widget.order.notes != null && widget.order.notes!.length > 0) {
-      ticket.text('Anmerkung:', styles: PosStyles());
-      ticket.text(myEncoding(widget.order.notes!), styles: PosStyles());
+      ticket.text('Anmerkung:',
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
+      ticket.text(myEncoding(widget.order.notes!),
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
     }
 
     ticket.feed(2);
     ticket.text('Danke!',
         styles: PosStyles(
-          align: PosAlign.center,
-          bold: true,
-        ));
+            align: PosAlign.center,
+            bold: true,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2));
 
     // Print QR Code from image
     // try {

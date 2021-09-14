@@ -52,16 +52,33 @@ class OrderTile extends StatelessWidget {
                               style: orderTileTimeStyle),
                           SizedBox(width: 5),
                           order.isNew
-                              ? Badge(
-                                  toAnimate: false,
-                                  shape: BadgeShape.square,
-                                  badgeColor: Colors.green,
-                                  borderRadius: BorderRadius.circular(8),
-                                  badgeContent: Text('neue Bestellung',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 11)),
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Badge(
+                                    toAnimate: false,
+                                    shape: BadgeShape.square,
+                                    badgeColor: Colors.green,
+                                    borderRadius: BorderRadius.circular(8),
+                                    badgeContent: Text('neue Bestellung',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 11)),
+                                  ),
                                 )
                               : SizedBox(width: 16),
+                          (order.serveTime != null && order.status == 1)
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Badge(
+                                    toAnimate: false,
+                                    shape: BadgeShape.square,
+                                    badgeColor: Colors.orange,
+                                    borderRadius: BorderRadius.circular(8),
+                                    badgeContent: Text('preorder',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 11)),
+                                  ),
+                                )
+                              : SizedBox(),
                         ],
                       ),
                       Row(
@@ -143,6 +160,22 @@ class OrderTile extends StatelessWidget {
                           "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt).toLocal())}"),
                     ],
                   ),
+                  (order.serveTime != null && order.status == 1)
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Preorder time:",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                                "${DateFormat('yyyy-MM-dd – kk:mm').format(order.serveDateTime)}",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold))
+                          ],
+                        )
+                      : Container(),
                   Row(
                     children: [
                       Expanded(
