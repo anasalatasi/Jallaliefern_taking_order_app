@@ -61,7 +61,7 @@ class _PrintScreenState extends State<PrintScreen> {
     //final Uint8List bytes = data.buffer.asUint8List();
     //final Image image = decodeImage(bytes);
     // ticket.image(image);
-    print(locator<Restaurant>());
+
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
@@ -142,12 +142,14 @@ class _PrintScreenState extends State<PrintScreen> {
             ? PosColumn(
                 text: myEncoding('${item.mealObject.name}'),
                 width: 9,
-                styles: PosStyles())
+                styles: PosStyles(
+                    height: PosTextSize.size2, width: PosTextSize.size2))
             : PosColumn(
                 text: myEncoding(
                     '${item.mealObject.name} - ${item.sizeObject!.name}'),
                 width: 9,
-                styles: PosStyles()),
+                styles: PosStyles(
+                    height: PosTextSize.size2, width: PosTextSize.size2)),
         PosColumn(
             text: '${item.totalPrice}',
             width: 2,

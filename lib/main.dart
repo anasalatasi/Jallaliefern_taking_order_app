@@ -6,6 +6,7 @@ import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_repository
 import 'screens/welcome_screen.dart';
 import 'utils/service_locator.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:wakelock/wakelock.dart';
 
 void registerNotification() async {
   await Firebase.initializeApp();
@@ -16,21 +17,31 @@ void registerNotification() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('app_icon');
   final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,);
+    android: initializationSettingsAndroid,
+  );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     if (message.notification != null) {
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails('your channel id', 'your channel name',
-              'your channel description',
-              importance: Importance.max,
-              priority: Priority.high,
-              playSound: true);
+          AndroidNotificationDetails(
+        'your channel id',
+        'your channel name',
+        'your channel description',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound('alert'),
+      );
       const NotificationDetails platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
       await flutterLocalNotificationsPlugin.show(
-          message.notification.hashCode, message.notification!.title, message.notification!.body, platformChannelSpecifics,);
+        message.notification.hashCode,
+        message.notification!.title,
+        message.notification!.body,
+        platformChannelSpecifics,
+        payload: 'Custom_Sound',
+      );
     }
   });
 }
@@ -39,6 +50,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   registerNotification();
   setupLocator();
+  Wakelock.enable();
   runApp(App());
 }
 
