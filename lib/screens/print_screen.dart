@@ -142,14 +142,12 @@ class _PrintScreenState extends State<PrintScreen> {
             ? PosColumn(
                 text: myEncoding('${item.mealObject.name}'),
                 width: 9,
-                styles: PosStyles(
-                    height: PosTextSize.size2, width: PosTextSize.size2))
+                styles: PosStyles())
             : PosColumn(
                 text: myEncoding(
                     '${item.mealObject.name} - ${item.sizeObject!.name}'),
                 width: 9,
-                styles: PosStyles(
-                    height: PosTextSize.size2, width: PosTextSize.size2)),
+                styles: PosStyles()),
         PosColumn(
             text: '${item.totalPrice}',
             width: 2,
@@ -160,7 +158,7 @@ class _PrintScreenState extends State<PrintScreen> {
         ticket.row([
           PosColumn(width: 3, styles: PosStyles()),
           PosColumn(
-              text: myEncoding('>${itemAddon.addonObject.name}'),
+              text: myEncoding('+${itemAddon.addonObject.name}'),
               width: 7,
               styles: PosStyles()),
           PosColumn(
