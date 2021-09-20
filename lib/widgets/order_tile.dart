@@ -65,7 +65,7 @@ class OrderTile extends StatelessWidget {
                                   ),
                                 )
                               : SizedBox(width: 16),
-                          (order.serveTime != null && order.status == 1)
+                          (order.isPreorder)
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Badge(
@@ -160,7 +160,7 @@ class OrderTile extends StatelessWidget {
                           "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt).toLocal())}"),
                     ],
                   ),
-                  (order.serveTime != null && order.status == 1)
+                  (order.isPreorder)
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

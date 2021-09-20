@@ -123,10 +123,28 @@ class ApiService {
   Future<String> getRestaurantInfo() async =>
       await _getRequest('settings/restaurant/1/');
 
+  Future<List<Order>> getPreOrders() async {
+    try {
+      String filters =
+          "(serve_time__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (preorder=1)";
+      filters = Uri(queryParameters: {
+        'filters': filters,
+        'lite': '1',
+        'ordering': "serve_time"
+      }).query;
+      final rawData = await _getAuthRequest('orders/order/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      print(e.toString());
+      return List<Order>.empty();
+    }
+  }
+
   Future<List<Order>> getNewOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=1)";
+          "(status=1) & ((serve_time__lte=${DateTime.now().add(Duration(hours: 1)).toUtc().toIso8601String()}) | (status=1&created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()})";
       filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);

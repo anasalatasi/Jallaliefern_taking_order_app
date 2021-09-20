@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -554,7 +555,27 @@ class OrderInfo extends StatelessWidget {
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(primary: Colors.green),
                 icon: Icon(Icons.add_task),
-                onPressed: () async => await _showAcceptDialog(context),
+                onPressed: () async {
+                  if (order.isPreorder)
+                    await _showAcceptDialog(context);
+                  else {
+                    try {
+                      locator<ApiService>()
+                          .acceptOrder(order.id, Duration(seconds: 0))
+                          .then((_) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PrintScreen(order: order))).then((_) {
+                          Navigator.pop(context);
+                        });
+                      });
+                    } catch (e) {
+                      await _showErrorDialog(context, e.toString());
+                    }
+                  }
+                },
                 label: Center(
                   child: Text('annehmen'),
                 ),

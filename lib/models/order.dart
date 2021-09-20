@@ -27,7 +27,8 @@ class Order {
       required this.recieveEmail,
       required this.totalPrice,
       this.notes,
-      required this.isNew});
+      required this.isNew,
+      required this.isPreorder});
 
   final int id;
   final String slug;
@@ -54,7 +55,8 @@ class Order {
   final String? notes;
   @JsonKey(name: 'is_new')
   final bool isNew;
-
+  @JsonKey(name: 'is_preorder')
+  final bool isPreorder;
   get items async {
     if (itemss != null) return itemss;
     itemss = (await locator<ApiService>().getOrder(id))?.itemss;

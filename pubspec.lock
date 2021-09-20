@@ -246,6 +246,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.8"
+  esc_pos_printer:
+    dependency: "direct main"
+    description:
+      name: esc_pos_printer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.6"
   esc_pos_utils:
     dependency: "direct main"
     description:

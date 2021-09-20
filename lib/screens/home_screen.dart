@@ -1,6 +1,7 @@
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/Preorder_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
 import 'pages/New_page.dart';
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> pages = [
     NewPage(),
+    PreorderPage(),
     InProgPage(),
     ReadyPage(),
     FinishedPage(),
@@ -36,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.request_page_outlined), label: 'Neu'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.request_page_outlined), label: 'Preorder'),
           BottomNavigationBarItem(
               icon: Icon(Icons.watch_later_outlined), label: 'im Gange'),
           BottomNavigationBarItem(

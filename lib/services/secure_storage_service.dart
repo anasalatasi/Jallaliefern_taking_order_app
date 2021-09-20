@@ -33,5 +33,10 @@ class SecureStorageService {
     return 1;
   }
 
+  get printerIp async {
+    String tmp = await read('printer_ip');
+    return tmp;
+  }
+
   get accessToken async => await read('access_token');
 }

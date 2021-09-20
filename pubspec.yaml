@@ -59,7 +59,7 @@ dependencies:
   convert: ^2.1.1
   badges: ^2.0.1
   wakelock: ^0.5.4
-
+  esc_pos_printer: ^3.1.6
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.

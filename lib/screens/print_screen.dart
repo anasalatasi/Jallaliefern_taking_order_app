@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
@@ -19,6 +20,7 @@ import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:charset_converter/charset_converter.dart';
 import 'dart:typed_data';
 import 'package:flutter_charset_detector/flutter_charset_detector.dart';
+import 'package:esc_pos_printer/esc_pos_printer.dart';
 
 class PrintScreen extends StatefulWidget {
   final Order order;
@@ -32,9 +34,11 @@ class PrintScreen extends StatefulWidget {
 class _PrintScreenState extends State<PrintScreen> {
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
+  PrinterNetworkManager printerNetworkManager =
+      locator<PrinterService>().printerNetworkManager;
   Future<Ticket>? _ticket;
 
-  String myEncoding(String str) {
+  Uint8List myEncoding(String str) {
     str = str.replaceAll("Ä", "A");
     str = str.replaceAll("ä", "a");
     str = str.replaceAll("Ö", "O");
@@ -43,7 +47,7 @@ class _PrintScreenState extends State<PrintScreen> {
     str = str.replaceAll("Ü", "U");
     str = str.replaceAll("ẞ", "SS");
     str = str.replaceAll("ß", "ss");
-    return str;
+    return Uint8List.fromList(str.codeUnits);
   }
 
   @override
@@ -69,41 +73,43 @@ class _PrintScreenState extends State<PrintScreen> {
     ticket.text(timestamp,
         styles: PosStyles(
             align: PosAlign.center,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2));
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
 
     ticket.text(locator<Restaurant>().name!,
         styles: PosStyles(
           align: PosAlign.center,
-          height: PosTextSize.size3,
-          width: PosTextSize.size3,
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
         ),
         linesAfter: 1);
-    ticket.text(
+    ticket.textEncoded(
         myEncoding(
             '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum} ${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
         styles: PosStyles(
             align: PosAlign.center,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2));
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
 
-    ticket.text(myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
+    ticket.textEncoded(
+        myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
         styles: PosStyles(
             align: PosAlign.center,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2));
-    ticket.text(myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
+    ticket.textEncoded(
+        myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
         styles: PosStyles(
             align: PosAlign.center,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2));
-    ticket.text(
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
+    ticket.textEncoded(
         myEncoding(
             'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
         styles: PosStyles(
             align: PosAlign.center,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2),
+            height: PosTextSize.size1,
+            width: PosTextSize.size1),
         linesAfter: 1);
     ticket.hr(ch: '=');
     ticket.row([
@@ -111,17 +117,17 @@ class _PrintScreenState extends State<PrintScreen> {
           text: 'Name: ',
           width: 4,
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
       PosColumn(
-          text:
+          textEncoded:
               myEncoding("${widget.order.firstName} ${widget.order.lastName}"),
           width: 8,
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
 
     if (widget.order.delivery != null) {
-      String tmp = "";
+      Uint8List tmp;
       if (await widget.order.delivery!.getSection() != null) {
         tmp = myEncoding(
             "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}, ${(await widget.order.delivery!.getSection())!.name} ${(await widget.order.delivery!.getSection())!.zipCode}");
@@ -129,21 +135,21 @@ class _PrintScreenState extends State<PrintScreen> {
         tmp = myEncoding(
             "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}");
       }
-      List<String> chunks = [];
+      List<Uint8List> chunks = [];
       for (var i = 0; i < tmp.length; i += 32) {
-        chunks.add(tmp.substring(i, min(tmp.length, i + 32)));
+        chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
       ticket.row([
         PosColumn(
             text: 'Adresse: ',
             width: 4,
             styles:
-                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
         PosColumn(
-            text: chunks[0],
+            textEncoded: chunks[0],
             width: 8,
             styles:
-                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
       for (var i = 1; i < chunks.length; i++) {
         ticket.row([
@@ -151,43 +157,43 @@ class _PrintScreenState extends State<PrintScreen> {
               text: ' ',
               width: 4,
               styles: PosStyles(
-                  height: PosTextSize.size2, width: PosTextSize.size2)),
+                  height: PosTextSize.size1, width: PosTextSize.size1)),
           PosColumn(
-              text: chunks[i],
+              textEncoded: chunks[i],
               width: 8,
               styles: PosStyles(
-                  height: PosTextSize.size2, width: PosTextSize.size2))
+                  height: PosTextSize.size1, width: PosTextSize.size1))
         ]);
       }
     }
     ticket.text('Tel: ${widget.order.phone}',
         styles: PosStyles(
             align: PosAlign.left,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2));
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
     ticket.row([
       PosColumn(
           text: 'Bestell.ID: ',
           width: 4,
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
       PosColumn(
           text: "#${widget.order.id}",
           width: 8,
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
     ticket.row([
       PosColumn(
           text: 'Bestell.Slug: ',
           width: 4,
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
       PosColumn(
           text: "${widget.order.slug}",
           width: 8,
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2))
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
     ticket.hr(ch: "=");
 
@@ -198,52 +204,52 @@ class _PrintScreenState extends State<PrintScreen> {
             text: '${item.quantity}x',
             width: 1,
             styles:
-                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2)),
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
         (item.sizeObject == null)
             ? PosColumn(
-                text: myEncoding('${item.mealObject.name}'),
+                textEncoded: myEncoding('${item.mealObject.name}'),
                 width: 9,
                 styles: PosStyles(
-                    height: PosTextSize.size2, width: PosTextSize.size2))
+                    height: PosTextSize.size1, width: PosTextSize.size1))
             : PosColumn(
-                text: myEncoding(
+                textEncoded: myEncoding(
                     '${item.mealObject.name} - ${item.sizeObject!.name}'),
                 width: 9,
                 styles: PosStyles(
-                    height: PosTextSize.size2, width: PosTextSize.size2)),
+                    height: PosTextSize.size1, width: PosTextSize.size1)),
         PosColumn(
             text: '${item.totalPrice}',
             width: 2,
             styles: PosStyles(
                 align: PosAlign.right,
-                height: PosTextSize.size2,
-                width: PosTextSize.size2)),
+                height: PosTextSize.size1,
+                width: PosTextSize.size1)),
       ]);
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];
         ticket.row([
           PosColumn(width: 3, styles: PosStyles()),
           PosColumn(
-              text: myEncoding('>${itemAddon.addonObject.name}'),
+              textEncoded: myEncoding('>${itemAddon.addonObject.name}'),
               width: 7,
               styles: PosStyles(
-                  height: PosTextSize.size2, width: PosTextSize.size2)),
+                  height: PosTextSize.size1, width: PosTextSize.size1)),
           PosColumn(
               text: '${itemAddon.totalPrice}',
               width: 2,
               styles: PosStyles(
                   align: PosAlign.right,
-                  height: PosTextSize.size2,
-                  width: PosTextSize.size2)),
+                  height: PosTextSize.size1,
+                  width: PosTextSize.size1)),
         ]);
       }
       if (item.notes != null && item.notes!.length > 0) {
         ticket.text('Anmerkung:',
             styles:
-                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
-        ticket.text(myEncoding(item.notes!),
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
+        ticket.textEncoded(myEncoding(item.notes!),
             styles:
-                PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
       }
       if (i < (await widget.order.items).length - 1) {
         ticket.hr(ch: "-");
@@ -257,16 +263,16 @@ class _PrintScreenState extends State<PrintScreen> {
           text: 'Gesamtpreis',
           width: 6,
           styles: PosStyles(
-            height: PosTextSize.size3,
-            width: PosTextSize.size3,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2,
           )),
       PosColumn(
           text: '${widget.order.totalPrice}${locator<Restaurant>().currency}',
           width: 6,
           styles: PosStyles(
             align: PosAlign.right,
-            height: PosTextSize.size3,
-            width: PosTextSize.size3,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2,
           )),
     ]);
 
@@ -275,10 +281,10 @@ class _PrintScreenState extends State<PrintScreen> {
     if (widget.order.notes != null && widget.order.notes!.length > 0) {
       ticket.text('Anmerkung:',
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
-      ticket.text(myEncoding(widget.order.notes!),
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
+      ticket.textEncoded(myEncoding(widget.order.notes!),
           styles:
-              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
     }
 
     ticket.feed(2);
@@ -286,8 +292,8 @@ class _PrintScreenState extends State<PrintScreen> {
         styles: PosStyles(
             align: PosAlign.center,
             bold: true,
-            height: PosTextSize.size2,
-            width: PosTextSize.size2));
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
 
     // Print QR Code from image
     // try {
@@ -321,12 +327,23 @@ class _PrintScreenState extends State<PrintScreen> {
     try {
       Ticket? tmp = await _ticket;
       int n = await locator<SecureStorageService>().receiptCopies;
-      var res = await printerManager.printTicket(tmp);
-      showToast(res.msg);
-      for (int i = 1; i < n; i++) {
-        await Future.delayed(Duration(seconds: 5));
-        await printerManager.printTicket(tmp);
-        showToast("$i");
+
+      try {
+        var res = await printerNetworkManager.printTicket(tmp);
+        showToast(res.msg);
+        for (int i = 1; i < n; i++) {
+          await Future.delayed(Duration(seconds: 5));
+          await printerNetworkManager.printTicket(tmp);
+          showToast("$i");
+        }
+      } catch (c) {
+        var res = await printerManager.printTicket(tmp);
+        showToast(res.msg);
+        for (int i = 1; i < n; i++) {
+          await Future.delayed(Duration(seconds: 5));
+          await printerManager.printTicket(tmp);
+          showToast("$i");
+        }
       }
     } catch (c) {
       showToast("Printer not connected");

@@ -16,7 +16,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
-  TextEditingController? _controller;
+  TextEditingController? _controller, _controllerip;
   List<PrinterBluetooth> _devices = [];
   @override
   void initState() {
@@ -26,6 +26,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _controller = TextEditingController(
           text:
               (await locator<SecureStorageService>().receiptCopies).toString());
+      _controllerip = TextEditingController(
+          text: (await locator<SecureStorageService>().printerIp).toString());
       setState(() {
         _devices = devices;
       });
@@ -75,6 +77,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
             //       items: locator<PrinterService>().codetablelist),
             // ]),
             // SizedBox(width: 5, height: 5),
+            Row(children: [
+              Text(
+                "Printer IP:",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ]),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Flexible(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: "Printer IP",
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (String str) async {
+                      if (str == "") return;
+                      await locator<SecureStorageService>()
+                          .write("printer_ip", str);
+                    },
+                    controller: _controllerip,
+                  ),
+                ),
+                Flexible(
+                  child: ElevatedButton(
+                    child: Text("connect"),
+                    onPressed: () async {
+                      locator<PrinterService>()
+                          .printerNetworkManager
+                          .selectPrinter(
+                              await locator<SecureStorageService>().printerIp,
+                              port: 9100);
+                    },
+                  ),
+                )
+              ],
+            ),
             Row(children: [
               Text(
                 "Anzahl der Kopien:",
