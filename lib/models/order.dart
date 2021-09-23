@@ -65,7 +65,7 @@ class Order {
 
   get serveDateTime {
     if (serveTime == null) return null;
-    return DateTime.parse(serveTime!);
+    return DateTime.parse(serveTime!).toLocal();
   }
 
   factory Order.fromRawJson(String str) => Order.fromJson(json.decode(str));
