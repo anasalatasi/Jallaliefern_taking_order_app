@@ -556,7 +556,7 @@ class OrderInfo extends StatelessWidget {
                 style: ElevatedButton.styleFrom(primary: Colors.green),
                 icon: Icon(Icons.add_task),
                 onPressed: () async {
-                  if (order.isPreorder)
+                  if (!order.isPreorder)
                     await _showAcceptDialog(context);
                   else {
                     try {
