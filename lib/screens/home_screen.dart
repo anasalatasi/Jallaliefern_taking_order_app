@@ -39,13 +39,13 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.request_page_outlined), label: 'Neu'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined), label: 'Preorder'),
-          BottomNavigationBarItem(
               icon: Icon(Icons.watch_later_outlined), label: 'im Gange'),
           BottomNavigationBarItem(
               icon: Icon(Icons.done_rounded), label: 'bereit'),
           BottomNavigationBarItem(
               icon: Icon(Icons.done_all_rounded), label: 'fertig'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.request_page_outlined), label: 'Preorder'),
         ],
       );
   @override

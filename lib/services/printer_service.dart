@@ -7,7 +7,7 @@ class PrinterService {
   PrinterNetworkManager printerNetworkManager = PrinterNetworkManager();
   PrinterBluetoothManager printerManager = PrinterBluetoothManager();
   PosCodeTable? codetable;
-
+  bool connected = false;
   List<DropdownMenuItem<PosCodeTable>> codetablelist = [
     DropdownMenuItem<PosCodeTable>(
         child: Text("pc437_1"), value: PosCodeTable(0)),

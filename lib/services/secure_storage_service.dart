@@ -34,8 +34,12 @@ class SecureStorageService {
   }
 
   get printerIp async {
-    String tmp = await read('printer_ip');
-    return tmp;
+    if (await haskey('printer_ip')) {
+      String tmp = await read('printer_ip');
+      if (tmp == "") return null;
+      return tmp;
+    }
+    return null;
   }
 
   get accessToken async => await read('access_token');

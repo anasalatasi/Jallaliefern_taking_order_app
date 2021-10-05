@@ -47,6 +47,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _connectPrinter(PrinterBluetooth printer) async {
     printerManager.selectPrinter(printer);
+    // locator<SecureStorageService>().write('printer_ip', printer.address);
+    locator<PrinterService>().connected = true;
     showToast("Printer Selected");
   }
 

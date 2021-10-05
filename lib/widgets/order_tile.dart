@@ -209,7 +209,7 @@ class OrderTile extends StatelessWidget {
                                           color: Colors.deepPurple)
                                       : order.status == 5
                                           ? StateWidget(
-                                              state: 'Liefern',
+                                              state: 'Abholen',
                                               color: Colors.cyan)
                                           : order.status == 6
                                               ? StateWidget(

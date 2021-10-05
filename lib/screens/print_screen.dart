@@ -53,6 +53,12 @@ class _PrintScreenState extends State<PrintScreen> {
   @override
   void initState() {
     super.initState();
+    if (!locator<PrinterService>().connected &&
+        locator<SecureStorageService>().printerIp != null) {
+      printerNetworkManager
+          .selectPrinter(locator<SecureStorageService>().printerIp);
+      locator<PrinterService>().connected = true;
+    }
     _ticket = orderReceipt(PaperSize.mm80);
   }
 
@@ -191,6 +197,18 @@ class _PrintScreenState extends State<PrintScreen> {
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
       PosColumn(
           text: "${widget.order.slug}",
+          width: 8,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    ]);
+    ticket.row([
+      PosColumn(
+          text: 'Bestellung: ',
+          width: 4,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          text: "${widget.order.getType()}",
           width: 8,
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
