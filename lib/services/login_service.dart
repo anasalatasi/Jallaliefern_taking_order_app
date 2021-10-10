@@ -9,6 +9,7 @@ import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:http/http.dart' as http;
 import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 
 class LoginService {
   JwtToken? _token;
@@ -29,6 +30,11 @@ class LoginService {
     if (response.statusCode == 401) {
       throw UnauthorizedException();
     } else if (response.statusCode == 200) {
+      var tmp = JwtToken.fromRawJson(response.body).access;
+      Map<String, dynamic> payload = Jwt.parseJwt(tmp);
+      if (payload['role'] != 3 || payload['role'] != 4) {
+        throw UnauthorizedException();
+      }
       _token = JwtToken.fromRawJson(response.body);
       await locator<SecureStorageService>()
           .write("access_token", _token!.access);

@@ -60,6 +60,7 @@ dependencies:
   badges: ^2.0.1
   wakelock: ^0.5.4
   esc_pos_printer: ^3.1.6
+  jwt_decode: ^0.3.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.
