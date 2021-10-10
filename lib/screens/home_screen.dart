@@ -22,10 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> pages = [
     NewPage(),
-    PreorderPage(),
     InProgPage(),
     ReadyPage(),
     FinishedPage(),
+    PreorderPage(),
   ];
   int _selectedIndex = 0;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(

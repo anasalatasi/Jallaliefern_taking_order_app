@@ -29,6 +29,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
       createdAt: json['created_at'] as String,
       recieveEmail: json['recieve_email'] as bool,
       totalPrice: double.parse(json['total_price']),
+      deliveryPrice: double.parse(json['delivery_price']),
       notes: json['notes'] as String?,
       isNew: json['is_new'] as bool,
       isPreorder: json['is_preorder'] as bool);
@@ -50,6 +51,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'created_at': instance.createdAt,
       'recieve_email': instance.recieveEmail,
       'total_price': instance.totalPrice,
+      'delivery_price': instance.deliveryPrice,
       'notes': instance.notes,
       'is_new': instance.isNew,
       'is_preorder': instance.isPreorder

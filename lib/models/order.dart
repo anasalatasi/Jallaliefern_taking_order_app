@@ -28,7 +28,8 @@ class Order {
       required this.totalPrice,
       this.notes,
       required this.isNew,
-      required this.isPreorder});
+      required this.isPreorder,
+      this.deliveryPrice});
 
   final int id;
   final String slug;
@@ -57,6 +58,8 @@ class Order {
   final bool isNew;
   @JsonKey(name: 'is_preorder')
   final bool isPreorder;
+  @JsonKey(name: 'delivery_price')
+  final double? deliveryPrice;
   get items async {
     if (itemss != null) return itemss;
     itemss = (await locator<ApiService>().getOrder(id))?.itemss;

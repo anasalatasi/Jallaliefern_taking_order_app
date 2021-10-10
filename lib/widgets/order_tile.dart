@@ -122,40 +122,12 @@ class OrderTile extends StatelessWidget {
                       : SizedBox(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("#${order.id}"),
-                      Text(
-                          "${order.totalPrice} ${locator<Restaurant>().currency ?? ""}")
-                    ],
+                    children: [Text("#${order.id}")],
                   ),
-                  Row(
-                    children: [
-                      Text("${order.firstName} ${order.lastName}"),
-                    ],
-                  ),
-                  order.delivery == null
-                      ? SizedBox()
-                      : Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text("${order.delivery!.address}"),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text("${order.delivery!.section ?? ""}"),
-                                order.delivery!.zone == null
-                                    ? SizedBox()
-                                    : Text(" - ${order.delivery!.zone!.name}"),
-                              ],
-                            ),
-                          ],
-                        ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("${order.phone}"),
+                      Text("${order.firstName} ${order.lastName}"),
                       Text(
                           "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt).toLocal())}"),
                     ],

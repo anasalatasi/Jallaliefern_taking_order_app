@@ -53,13 +53,9 @@ class _PrintScreenState extends State<PrintScreen> {
   @override
   void initState() {
     super.initState();
-    if (!locator<PrinterService>().connected &&
-        locator<SecureStorageService>().printerIp != null) {
-      printerNetworkManager
-          .selectPrinter(locator<SecureStorageService>().printerIp);
-      locator<PrinterService>().connected = true;
-    }
+
     _ticket = orderReceipt(PaperSize.mm80);
+    _print();
   }
 
   Future<Ticket> orderReceipt(PaperSize paper) async {
@@ -171,6 +167,18 @@ class _PrintScreenState extends State<PrintScreen> {
                   height: PosTextSize.size1, width: PosTextSize.size1))
         ]);
       }
+      ticket.row([
+        PosColumn(
+            text: 'Lieferpreis: ',
+            width: 4,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            text: "${widget.order.deliveryPrice}",
+            width: 8,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
     }
     ticket.text('Tel: ${widget.order.phone}',
         styles: PosStyles(
@@ -248,7 +256,7 @@ class _PrintScreenState extends State<PrintScreen> {
         ticket.row([
           PosColumn(width: 3, styles: PosStyles()),
           PosColumn(
-              textEncoded: myEncoding('>${itemAddon.addonObject.name}'),
+              textEncoded: myEncoding('+${itemAddon.addonObject.name}'),
               width: 7,
               styles: PosStyles(
                   height: PosTextSize.size1, width: PosTextSize.size1)),
@@ -342,7 +350,14 @@ class _PrintScreenState extends State<PrintScreen> {
   }
 
   void _print() async {
+    await _ticket;
     try {
+      if (!locator<PrinterService>().connected &&
+          await locator<SecureStorageService>().printerIp != null) {
+        printerNetworkManager
+            .selectPrinter(await locator<SecureStorageService>().printerIp);
+        locator<PrinterService>().connected = true;
+      }
       Ticket? tmp = await _ticket;
       int n = await locator<SecureStorageService>().receiptCopies;
 
@@ -358,7 +373,7 @@ class _PrintScreenState extends State<PrintScreen> {
         var res = await printerManager.printTicket(tmp);
         showToast(res.msg);
         for (int i = 1; i < n; i++) {
-          await Future.delayed(Duration(seconds: 5));
+          await Future.delayed(Duration(seconds: 3));
           await printerManager.printTicket(tmp);
           showToast("$i");
         }
@@ -366,6 +381,7 @@ class _PrintScreenState extends State<PrintScreen> {
     } catch (c) {
       showToast("Printer not connected");
     }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -376,15 +392,7 @@ class _PrintScreenState extends State<PrintScreen> {
           backgroundColor: Kcolor,
           title: Text("drucken #${widget.order.id}"),
         ),
-        body: Center(
-          child: FutureBuilder(
-              future: _ticket,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (!snapshot.hasData) return CircularProgressIndicator();
-                return ElevatedButton(
-                    onPressed: _print, child: Text("drucken"));
-              }),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       ),
     );
   }
