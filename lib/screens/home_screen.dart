@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Preorder_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/search_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
+import 'package:jallaliefern_taking_orders_app/utils/custom_search_delegate.dart';
 import 'pages/New_page.dart';
 import 'pages/Inprog_page.dart';
 import '../../Constants.dart';
@@ -53,6 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
           actions: [
+            IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  showSearch(
+                      context: context, delegate: CustomSearchDelegate());
+                }),
             IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {

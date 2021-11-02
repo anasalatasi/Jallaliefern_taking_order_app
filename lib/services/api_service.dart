@@ -194,6 +194,19 @@ class ApiService {
     }
   }
 
+  Future<List<Order>> getSearchOrders(String query) async {
+    try {
+      String filters =
+          "(first_name=$query) | (last_name=$query) | (slug=$query) | (phone=$query)";
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
+      final rawData = await _getAuthRequest('orders/order/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
+
   Future<Order?> getOrder(int id) async {
     try {
       final rawData = await _getAuthRequest('orders/order/$id');

@@ -32,7 +32,7 @@ class LoginService {
     } else if (response.statusCode == 200) {
       var tmp = JwtToken.fromRawJson(response.body).access;
       Map<String, dynamic> payload = Jwt.parseJwt(tmp);
-      if (payload['role'] != 3 || payload['role'] != 4) {
+      if (payload['role'] != 3 && payload['role'] != 4) {
         throw UnauthorizedException();
       }
       _token = JwtToken.fromRawJson(response.body);
