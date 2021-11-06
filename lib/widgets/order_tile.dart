@@ -88,7 +88,9 @@ class OrderTile extends StatelessWidget {
                                   Icons.hail,
                                   size: 30,
                                 )
-                              : Icon(Icons.delivery_dining, size: 30),
+                              : order.type == 3
+                                  ? Icon(Icons.restaurant, size: 30)
+                                  : Icon(Icons.delivery_dining, size: 30),
                           Text("${order.getType()}", style: orderTileIconStyle),
                         ],
                       )

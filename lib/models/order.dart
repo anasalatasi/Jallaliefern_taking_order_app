@@ -4,6 +4,7 @@ import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../utils/service_locator.dart';
 import 'delivery.dart';
+import 'ordergift.dart';
 import 'payment.dart';
 import 'item.dart';
 part 'order.g.dart';
@@ -20,9 +21,11 @@ class Order {
       required this.type,
       required this.status,
       this.delivery,
+      this.dineTable,
       required this.payment,
       this.serveTime,
       this.itemss,
+      this.giftChoices,
       required this.createdAt,
       required this.recieveEmail,
       required this.totalPrice,
@@ -41,10 +44,14 @@ class Order {
   final String phone;
   final int type;
   final int status;
+  @JsonKey(name: 'dine_table')
+  final int? dineTable;
   final Delivery? delivery;
   final Payment payment;
   @JsonKey(name: 'items')
   List<Item>? itemss;
+  @JsonKey(name: 'gift_choices')
+  List<OrderGift>? giftChoices;
   @JsonKey(name: 'serve_time')
   final String? serveTime;
   @JsonKey(name: 'created_at')
@@ -66,6 +73,17 @@ class Order {
     return itemss;
   }
 
+  get giftChoicess async {
+    if (giftChoices != null) return giftChoices;
+    giftChoices = (await locator<ApiService>().getOrder(id))?.giftChoices;
+    return giftChoices;
+  }
+
+  get dineTableName async {
+    if (dineTable == null) return null;
+    return (await locator<ApiService>().getTableName(dineTable!));
+  }
+
   get serveDateTime {
     if (serveTime == null) return null;
     return DateTime.parse(serveTime!).toLocal();
@@ -81,7 +99,9 @@ class Order {
   String getType() {
     if (this.type == 1)
       return "Liefern";
-    else if (this.type == 2) return "Abholen";
+    else if (this.type == 2)
+      return "Abholen";
+    else if (this.type == 3) return "DineIn";
     return "Unknown";
   }
 }

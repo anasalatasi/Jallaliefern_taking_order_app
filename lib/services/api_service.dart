@@ -318,4 +318,14 @@ class ApiService {
     }
     return true;
   }
+
+  Future<String?> getTableName(int id) async {
+    try {
+      dynamic tmp = await _getAuthRequest("settings/dine_table/$id/");
+      tmp = json.decode(tmp);
+      return tmp["name"];
+    } catch (c) {
+      return null;
+    }
+  }
 }

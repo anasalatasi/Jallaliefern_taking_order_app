@@ -16,6 +16,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
       phone: json['phone'] as String,
       type: json['type'] as int,
       status: json['status'] as int,
+      dineTable: json['dine_table'] as int?,
       delivery: json['delivery'] == null
           ? null
           : Delivery.fromJson(json['delivery'] as Map<String, dynamic>),
@@ -24,6 +25,11 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
           ? null
           : (json['items'] as List<dynamic>)
               .map((e) => Item.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      giftChoices: json['gift_choices'] == null
+          ? null
+          : (json['gift_choices'] as List<dynamic>)
+              .map((e) => OrderGift.fromJson(e as Map<String, dynamic>))
               .toList(),
       serveTime: json['serve_time'] as String?,
       createdAt: json['created_at'] as String,
@@ -44,9 +50,11 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'phone': instance.phone,
       'type': instance.type,
       'status': instance.status,
+      'dine_table': instance.dineTable,
       'delivery': instance.delivery?.toJson(),
       'payment': instance.payment.toJson(),
       'items': instance.itemss?.map((e) => e.toJson()).toList(),
+      'gift_choices': instance.giftChoices?.map((e) => e.toJson()).toList(),
       'serve_time': instance.serveTime,
       'created_at': instance.createdAt,
       'recieve_email': instance.recieveEmail,

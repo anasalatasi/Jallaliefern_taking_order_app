@@ -445,6 +445,14 @@ class OrderInfo extends StatelessWidget {
                         height: 16,
                       ),
                       SizedBox(height: 8),
+                      Row(children: [
+                        Text(
+                          "Gifts: ",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        _giftsView()
+                      ]),
+                      SizedBox(height: 8),
                       _itemsListView(),
                     ],
                   ),
@@ -592,7 +600,11 @@ class OrderInfo extends StatelessWidget {
       children: [
         Row(
           children: [
-            order.type == 1 ? Icon(Icons.delivery_dining) : Icon(Icons.hail),
+            order.type == 1
+                ? Icon(Icons.delivery_dining)
+                : order.type == 2
+                    ? Icon(Icons.hail)
+                    : Icon(Icons.restaurant),
             SizedBox(
               width: 16,
             ),
@@ -600,9 +612,23 @@ class OrderInfo extends StatelessWidget {
           ],
         ),
         order.delivery == null
-            ? SizedBox(
-                width: 0,
-              )
+            ? order.dineTable == null
+                ? SizedBox(
+                    width: 0,
+                  )
+                : Column(
+                    children: [
+                      FutureBuilder(
+                          future: order.dineTableName,
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (!snapshot.hasData)
+                              return CircularProgressIndicator();
+                            return Row(
+                                children: [Text("Table : ${snapshot.data}")]);
+                          })
+                    ],
+                  )
             : Column(
                 children: [
                   FutureBuilder(
@@ -735,6 +761,20 @@ class OrderInfo extends StatelessWidget {
             ],
           ),
         ));
+  }
+
+  Widget _giftsView() {
+    return FutureBuilder(
+        future: order.giftChoicess,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasData) return CircularProgressIndicator();
+          String tmp = "";
+          for (int i = 0; i < snapshot.data.length; i++) {
+            tmp += snapshot.data[i].description;
+            if (i != snapshot.data.length - 1) tmp += ", ";
+          }
+          return Text(tmp);
+        });
   }
 
   Widget _itemsListView() {
