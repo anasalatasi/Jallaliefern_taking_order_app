@@ -9,6 +9,7 @@ part of 'order.dart';
 Order _$OrderFromJson(Map<String, dynamic> json) {
   return Order(
       id: json['id'] as int,
+      count: json['count'] as int?,
       slug: json['slug'] as String,
       firstName: json['first_name'] as String,
       lastName: json['last_name'] as String,
@@ -35,6 +36,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
       createdAt: json['created_at'] as String,
       recieveEmail: json['recieve_email'] as bool,
       totalPrice: double.parse(json['total_price']),
+      beforePrice: double.parse(json['total_price']),
       deliveryPrice: double.parse(json['delivery_price']),
       notes: json['notes'] as String?,
       isNew: json['is_new'] as bool,
@@ -43,6 +45,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'id': instance.id,
+      'count': instance.count,
       'slug': instance.slug,
       'first_name': instance.firstName,
       'last_name': instance.lastName,
@@ -59,6 +62,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
       'created_at': instance.createdAt,
       'recieve_email': instance.recieveEmail,
       'total_price': instance.totalPrice,
+      'before_price': instance.beforePrice,
       'delivery_price': instance.deliveryPrice,
       'notes': instance.notes,
       'is_new': instance.isNew,

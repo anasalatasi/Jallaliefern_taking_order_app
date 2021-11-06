@@ -5,14 +5,15 @@ part 'meal_size.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class MealSize {
-  MealSize({required this.name});
+  MealSize({required this.name, this.price});
   final String name;
-
+  final String? price;
   factory MealSize.fromRawJson(String str) =>
       MealSize.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory MealSize.fromJson(Map<String,dynamic> json) => _$MealSizeFromJson(json);
+  factory MealSize.fromJson(Map<String, dynamic> json) =>
+      _$MealSizeFromJson(json);
   Map<String, dynamic> toJson() => _$MealSizeToJson(this);
 }

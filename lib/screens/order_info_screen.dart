@@ -408,53 +408,72 @@ class OrderInfo extends StatelessWidget {
                 margin: EdgeInsets.all(10),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      infowidget(),
-                      Divider(
-                        height: 16,
-                      ),
-                      phonewidget(),
-                      Divider(
-                        height: 16,
-                      ),
-                      emailwidget(),
-                      Divider(
-                        height: 16,
-                      ),
-                      (order.serveTime == null)
-                          ? Container()
-                          : _preorderwidget(),
-                      (order.serveTime == null)
-                          ? Container()
-                          : Divider(
-                              height: 16,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Count: ",
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                      _deliveryWidget(),
-                      Divider(
-                        height: 16,
-                      ),
-                      ElevatedButton(
-                          onPressed: () async => await showMyNote(context),
-                          child: noteswidget(),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.resolveWith<Color>(
-                                      (Set<MaterialState> states) => Kcolor))),
-                      Divider(
-                        height: 16,
-                      ),
-                      SizedBox(height: 8),
-                      Row(children: [
-                        Text(
-                          "Gifts: ",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                            Text("${order.count}")
+                          ],
                         ),
-                        _giftsView()
-                      ]),
-                      SizedBox(height: 8),
-                      _itemsListView(),
-                    ],
+                        Divider(
+                          height: 16,
+                        ),
+                        infowidget(),
+                        Divider(
+                          height: 16,
+                        ),
+                        phonewidget(),
+                        Divider(
+                          height: 16,
+                        ),
+                        emailwidget(),
+                        Divider(
+                          height: 16,
+                        ),
+                        (order.serveTime == null)
+                            ? Container()
+                            : _preorderwidget(),
+                        (order.serveTime == null)
+                            ? Container()
+                            : Divider(
+                                height: 16,
+                              ),
+                        _deliveryWidget(),
+                        Divider(
+                          height: 16,
+                        ),
+                        _priceWidget(),
+                        Divider(
+                          height: 16,
+                        ),
+                        ElevatedButton(
+                            onPressed: () async => await showMyNote(context),
+                            child: noteswidget(),
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                        (Set<MaterialState> states) =>
+                                            Kcolor))),
+                        Divider(
+                          height: 16,
+                        ),
+                        SizedBox(height: 8),
+                        Row(children: [
+                          Text(
+                            "Gifts: ",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          _giftsView()
+                        ]),
+                        SizedBox(height: 8),
+                        _itemsListView(),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -595,6 +614,47 @@ class OrderInfo extends StatelessWidget {
     );
   }
 
+  Widget _priceWidget() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Price Before Discounts: ",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("${order.beforePrice}")
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Discount: ", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+                "${order.beforePrice! - order.totalPrice + order.deliveryPrice!}")
+          ],
+        ),
+        (order.type == 1)
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Liefern Preis: ",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("${order.deliveryPrice!}")
+                ],
+              )
+            : Container(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Total Price: ",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("${order.totalPrice}")
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _deliveryWidget() {
     return Column(
       children: [
@@ -683,7 +743,8 @@ class OrderInfo extends StatelessWidget {
     if (item.addons == null) return SizedBox();
     var list = [];
     for (var i = 0; i < item.addons!.length; i++) {
-      list.add(Text(item.addons![i].addonObject.name));
+      list.add(Text(
+          "${item.addons![i].addonObject.name} (${item.addons![i].totalPrice})"));
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -704,7 +765,8 @@ class OrderInfo extends StatelessWidget {
                 children: [
                   Text("Mahlzeit: ", style: labelTextStyle),
                   Expanded(
-                    child: Text("${item.mealObject.name}"),
+                    child: Text(
+                        "${item.mealObject.name} (${item.mealObject.price})"),
                   ),
                 ],
               ),
@@ -716,7 +778,8 @@ class OrderInfo extends StatelessWidget {
                   : Row(
                       children: [
                         Text('Size: ', style: labelTextStyle),
-                        Text('${item.sizeObject!.name}')
+                        Text(
+                            '${item.sizeObject!.name} (${item.sizeObject!.price})')
                       ],
                     ),
               item.size == null
@@ -782,12 +845,12 @@ class OrderInfo extends StatelessWidget {
         future: order.items,
         builder: (BuildContext context, AsyncSnapshot snapshot) =>
             snapshot.hasData
-                ? Expanded(
-                    child: ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          Container(child: _itemTile(snapshot.data[index])),
-                    ),
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, int index) =>
+                        Container(child: _itemTile(snapshot.data[index])),
                   )
                 : CircularProgressIndicator());
   }

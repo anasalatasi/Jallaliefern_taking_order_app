@@ -9,9 +9,11 @@ part of 'meal_size.dart';
 MealSize _$MealSizeFromJson(Map<String, dynamic> json) {
   return MealSize(
     name: json['name'] as String,
+    price: json['price'] as String?,
   );
 }
 
 Map<String, dynamic> _$MealSizeToJson(MealSize instance) => <String, dynamic>{
       'name': instance.name,
+      'price': instance.price,
     };

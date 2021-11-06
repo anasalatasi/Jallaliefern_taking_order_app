@@ -124,7 +124,7 @@ class OrderTile extends StatelessWidget {
                       : SizedBox(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text("#${order.id}")],
+                    children: [Text("count: ${order.count} #${order.id}")],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

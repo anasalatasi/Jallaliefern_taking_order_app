@@ -13,6 +13,7 @@ part 'order.g.dart';
 class Order {
   Order(
       {required this.id,
+      this.count,
       required this.slug,
       required this.firstName,
       required this.lastName,
@@ -29,12 +30,14 @@ class Order {
       required this.createdAt,
       required this.recieveEmail,
       required this.totalPrice,
+      this.beforePrice,
       this.notes,
       required this.isNew,
       required this.isPreorder,
       this.deliveryPrice});
 
   final int id;
+  final int? count;
   final String slug;
   @JsonKey(name: 'first_name')
   final String firstName;
@@ -60,6 +63,8 @@ class Order {
   final bool recieveEmail;
   @JsonKey(name: 'total_price')
   final double totalPrice;
+  @JsonKey(name: 'before_price')
+  final double? beforePrice;
   final String? notes;
   @JsonKey(name: 'is_new')
   final bool isNew;

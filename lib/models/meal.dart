@@ -9,7 +9,14 @@ part 'meal.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Meal {
-  Meal({this.image,required this.name,this.description,required this.priority,required this.hidden,required this.categoryId});
+  Meal(
+      {this.image,
+      this.price,
+      required this.name,
+      this.description,
+      required this.priority,
+      required this.hidden,
+      required this.categoryId});
   final String? image;
   final String name;
   final String? description;
@@ -19,7 +26,7 @@ class Meal {
   final int categoryId;
   @JsonKey(ignore: true)
   MealCategory? category;
-
+  final String? price;
   Future<String> getCategoryName() async {
     if (category == null) {
       category = await locator<ApiService>().getCategory(categoryId);
@@ -28,11 +35,10 @@ class Meal {
     return category!.name;
   }
 
-  factory Meal.fromRawJson(String str) =>
-      Meal.fromJson(json.decode(str));
+  factory Meal.fromRawJson(String str) => Meal.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Meal.fromJson(Map<String,dynamic> json) => _$MealFromJson(json);
+  factory Meal.fromJson(Map<String, dynamic> json) => _$MealFromJson(json);
   Map<String, dynamic> toJson() => _$MealToJson(this);
 }

@@ -14,6 +14,7 @@ Meal _$MealFromJson(Map<String, dynamic> json) {
     priority: json['priority'] as int,
     hidden: json['hidden'] as bool,
     categoryId: json['category'] as int,
+    price: json['price'] as String?,
   );
 }
 
@@ -24,4 +25,5 @@ Map<String, dynamic> _$MealToJson(Meal instance) => <String, dynamic>{
       'priority': instance.priority,
       'hidden': instance.hidden,
       'category': instance.categoryId,
+      'price': instance.price,
     };
