@@ -1,5 +1,6 @@
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:flutter/material.dart';
+import 'package:jallaliefern_taking_orders_app/screens/close_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Preorder_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
@@ -60,6 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   showSearch(
                       context: context, delegate: CustomSearchDelegate());
+                }),
+            IconButton(
+                icon: Icon(Icons.warning),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CloseScreen()));
                 }),
             IconButton(
               icon: Icon(Icons.settings),

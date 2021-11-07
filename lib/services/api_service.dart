@@ -84,6 +84,25 @@ class ApiService {
       throw Exception('Unknown Error');
   }
 
+  Future<String> _patchAuthRequest(String endpoint, String rawData) async {
+    String apiUrl = await locator<SecureStorageService>().apiUrl;
+    String jwtToken = await locator<SecureStorageService>().accessToken;
+    String fullUrl = "$apiUrl$endpoint";
+    final client = RetryClient(http.Client());
+    final response = await client.patch(Uri.parse(fullUrl),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $jwtToken',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: rawData);
+    if (response.statusCode == 401)
+      throw UnauthorizedException();
+    else if (response.statusCode == 201 || response.statusCode == 200) {
+      return Future.value(Utf8Decoder().convert(response.body.codeUnits));
+    } else
+      throw Exception('Unknown Error');
+  }
+
   Future<String> _postRequest(String endpoint, String rawData) async {
     String apiUrl = await locator<SecureStorageService>().apiUrl;
     String fullUrl = "$apiUrl$endpoint";
@@ -126,7 +145,7 @@ class ApiService {
   Future<List<Order>> getPreOrders() async {
     try {
       String filters =
-          "(serve_time__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (preorder=1)";
+          "(is_preorder=true) & (serve_time__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()})";
       filters = Uri(queryParameters: {
         'filters': filters,
         'lite': '1',
@@ -327,5 +346,15 @@ class ApiService {
     } catch (c) {
       return null;
     }
+  }
+
+  Future<bool> patchSuperClosed(bool da) async {
+    try {
+      await _patchAuthRequest(
+          "settings/restaurant/1/super_close/", "{\"is_super_closed\":$da}");
+    } catch (c) {
+      return false;
+    }
+    return true;
   }
 }

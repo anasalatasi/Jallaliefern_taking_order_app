@@ -15,6 +15,7 @@ class Restaurant {
   String? currency;
   String? buildingNum;
   String? zipcode;
+  bool? isSuperClosed;
   Restaurant.empty();
   Restaurant(
       {required this.id,
@@ -27,7 +28,8 @@ class Restaurant {
       this.phone2,
       this.currency,
       this.buildingNum,
-      this.zipcode});
+      this.zipcode,
+      this.isSuperClosed});
 
   Future<void> init() async {
     try {
@@ -44,6 +46,7 @@ class Restaurant {
       currency = rest.currency;
       buildingNum = rest.buildingNum;
       zipcode = rest.zipcode;
+      isSuperClosed = rest.isSuperClosed;
     } catch (e) {
       return Future.value(false);
     }
@@ -67,7 +70,8 @@ class Restaurant {
         phone2: json['phone2'],
         currency: json['currency'],
         buildingNum: json['building_num'],
-        zipcode: json['zip_code']);
+        zipcode: json['zip_code'],
+        isSuperClosed: json['is_super_closed']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -81,6 +85,7 @@ class Restaurant {
         'phone2': phone2,
         'currency': currency,
         'building_num': buildingNum,
-        'zip_code': zipcode
+        'zip_code': zipcode,
+        'is_super_closed': isSuperClosed,
       };
 }
