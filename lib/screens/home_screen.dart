@@ -4,6 +4,7 @@ import 'package:jallaliefern_taking_orders_app/screens/close_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Preorder_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/table_reservation_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/search_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
 import 'package:jallaliefern_taking_orders_app/utils/custom_search_delegate.dart';
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ReadyPage(),
     FinishedPage(),
     PreorderPage(),
+    TableReservationPage()
   ];
   int _selectedIndex = 0;
   Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(
@@ -49,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.done_all_rounded), label: 'fertig'),
           BottomNavigationBarItem(
               icon: Icon(Icons.request_page_outlined), label: 'Preorder'),
+          BottomNavigationBarItem(icon: Icon(Icons.restaurant), label: 'Table'),
         ],
       );
   @override

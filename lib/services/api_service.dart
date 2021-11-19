@@ -10,6 +10,7 @@ import 'package:jallaliefern_taking_orders_app/models/meal_category.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/models/section.dart';
+import 'package:jallaliefern_taking_orders_app/models/table_reservation.dart';
 import 'package:jallaliefern_taking_orders_app/models/zone.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
@@ -356,5 +357,20 @@ class ApiService {
       return false;
     }
     return true;
+  }
+
+  Future<List<TableReservation>> getTableReservations() async {
+    try {
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=1,2)";
+      filters = Uri(queryParameters: {'filters': filters}).query;
+      final rawData =
+          await _getAuthRequest('orders/table_reservation/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<TableReservation>.from(
+          jsonList.map((model) => TableReservation.fromMap(model)));
+    } catch (c) {
+      return List<TableReservation>.empty();
+    }
   }
 }
