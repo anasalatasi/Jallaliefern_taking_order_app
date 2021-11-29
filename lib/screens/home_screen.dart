@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       context: context, delegate: CustomSearchDelegate());
                 }),
             IconButton(
-                icon: Icon(Icons.warning),
+                icon: Icon(Icons.lock),
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => CloseScreen()));

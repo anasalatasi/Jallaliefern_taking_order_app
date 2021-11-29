@@ -373,4 +373,39 @@ class ApiService {
       return List<TableReservation>.empty();
     }
   }
+
+  Future<void> deleteTable(int id) async {
+    try {
+      await _deleteAuthRequest('orders/table_reservation/$id/');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> acceptTable(int id) async {
+    try {
+      await _postAuthRequest(
+          'orders/table_reservation/$id/change_status/', "{\"status\": 2}");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> finishTable(int id) async {
+    try {
+      await _postAuthRequest(
+          'orders/table_reservation/$id/change_status/', "{\"status\": 4}");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> rejectTable(int id) async {
+    try {
+      await _postAuthRequest(
+          'orders/table_reservation/$id/change_status/', "{\"status\": 3}");
+    } catch (e) {
+      return null;
+    }
+  }
 }

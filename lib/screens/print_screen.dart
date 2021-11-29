@@ -113,7 +113,19 @@ class _PrintScreenState extends State<PrintScreen> {
             height: PosTextSize.size1,
             width: PosTextSize.size1),
         linesAfter: 1);
+    ticket.text("${widget.order.count}",
+        styles: PosStyles(
+            width: PosTextSize.size1,
+            height: PosTextSize.size1,
+            align: PosAlign.center));
     ticket.hr(ch: '=');
+    if (widget.order.dineTable != null) {
+      ticket.text("Table: ${widget.order.dineTable}",
+          styles: PosStyles(
+              width: PosTextSize.size1,
+              height: PosTextSize.size1,
+              align: PosAlign.left));
+    }
     ticket.row([
       PosColumn(
           text: 'Name: ',
@@ -181,6 +193,14 @@ class _PrintScreenState extends State<PrintScreen> {
       ]);
     }
     ticket.text('Tel: ${widget.order.phone}',
+        styles: PosStyles(
+            align: PosAlign.left,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
+    final String timestamp2 = formatter.format(
+        widget.order.serveDateTime ?? DateTime.parse(widget.order.createdAt));
+
+    ticket.text("Datum: $timestamp2",
         styles: PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size1,
@@ -282,6 +302,67 @@ class _PrintScreenState extends State<PrintScreen> {
       }
     }
 
+    if ((await widget.order.giftChoicess).length > 0) {
+      ticket.hr(ch: '=');
+      ticket.text('Gifts:',
+          styles:
+              PosStyles(height: PosTextSize.size2, width: PosTextSize.size2));
+      for (int i = 0; i < (await widget.order.giftChoicess).length; i++) {
+        ticket.text((await widget.order.giftChoicess)[i].description!,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
+      }
+    }
+
+    ticket.hr(ch: '=');
+
+    ticket.row([
+      PosColumn(
+          width: 10,
+          text: "Price Before Discounts: ",
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          width: 2,
+          text: "${(widget.order.beforePrice)!.toStringAsFixed(2)}",
+          styles: PosStyles(
+              align: PosAlign.right,
+              height: PosTextSize.size1,
+              width: PosTextSize.size1))
+    ]);
+
+    ticket.row([
+      PosColumn(
+          width: 10,
+          text: "Discount: ",
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          width: 2,
+          text:
+              "${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}",
+          styles: PosStyles(
+              align: PosAlign.right,
+              height: PosTextSize.size1,
+              width: PosTextSize.size1))
+    ]);
+
+    if (widget.order.type == 1) {
+      ticket.row([
+        PosColumn(
+            width: 10,
+            text: "Liefern Preis: ",
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            width: 2,
+            text: "${(widget.order.deliveryPrice!).toStringAsFixed(2)}",
+            styles: PosStyles(
+                align: PosAlign.right,
+                height: PosTextSize.size1,
+                width: PosTextSize.size1))
+      ]);
+    }
     ticket.hr(ch: '=');
 
     ticket.row([

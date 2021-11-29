@@ -5,14 +5,16 @@ part 'payment.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Payment {
-  Payment({required this.type});
+  Payment({required this.type, this.payed, this.amountPayed});
   final int type;
-
-  factory Payment.fromRawJson(String str) =>
-      Payment.fromJson(json.decode(str));
+  final bool? payed;
+  @JsonKey(name: 'amount_payed')
+  final double? amountPayed;
+  factory Payment.fromRawJson(String str) => Payment.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory Payment.fromJson(Map<String,dynamic> json) => _$PaymentFromJson(json);
+  factory Payment.fromJson(Map<String, dynamic> json) =>
+      _$PaymentFromJson(json);
   Map<String, dynamic> toJson() => _$PaymentToJson(this);
 }

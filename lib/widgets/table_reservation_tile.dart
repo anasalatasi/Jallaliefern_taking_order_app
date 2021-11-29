@@ -5,6 +5,7 @@ import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:jallaliefern_taking_orders_app/models/table_reservation.dart';
 import 'package:jallaliefern_taking_orders_app/screens/print_screen.dart';
+import 'package:jallaliefern_taking_orders_app/screens/table_info_screen.dart';
 import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:badges/badges.dart';
@@ -27,13 +28,13 @@ class TableReservationTile extends StatelessWidget {
         elevation: 3,
         child: InkWell(
             onTap: () async {
-              // await Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => OrderInfo(
-              //         order: order,
-              //       ),
-              //     ));
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TableInfoScreen(
+                      table: tableReservation,
+                    ),
+                  ));
               parentRefresh();
             },
             child: Padding(
@@ -78,10 +79,10 @@ class TableReservationTile extends StatelessWidget {
                               state: 'Ausstehend', color: Colors.purple)
                           : tableReservation.status == 2
                               ? StateWidget(
-                                  state: 'Abgelehnt', color: Colors.red)
+                                  state: 'Akzeptiert', color: Colors.green)
                               : tableReservation.status == 3
                                   ? StateWidget(
-                                      state: 'Akzeptiert', color: Colors.green)
+                                      state: 'Abgelehnt', color: Colors.red)
                                   : StateWidget(
                                       state: 'Lieferung ausstehend',
                                       color: Colors.deepPurple)

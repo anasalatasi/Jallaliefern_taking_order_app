@@ -451,6 +451,10 @@ class OrderInfo extends StatelessWidget {
                         Divider(
                           height: 16,
                         ),
+                        _paymentWidget(),
+                        Divider(
+                          height: 16,
+                        ),
                         ElevatedButton(
                             onPressed: () async => await showMyNote(context),
                             child: noteswidget(),
@@ -622,7 +626,7 @@ class OrderInfo extends StatelessWidget {
           children: [
             Text("Price Before Discounts: ",
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("${order.beforePrice}")
+            Text("${(order.beforePrice)!.toStringAsFixed(2)}")
           ],
         ),
         Row(
@@ -630,7 +634,7 @@ class OrderInfo extends StatelessWidget {
           children: [
             Text("Discount: ", style: TextStyle(fontWeight: FontWeight.bold)),
             Text(
-                "${order.beforePrice! - order.totalPrice + order.deliveryPrice!}")
+                "${((order.beforePrice! - order.totalPrice + order.deliveryPrice! == 0 ? 0 : -1) * (order.beforePrice! - order.totalPrice + order.deliveryPrice!)).toStringAsFixed(2)}")
           ],
         ),
         (order.type == 1)
@@ -639,7 +643,7 @@ class OrderInfo extends StatelessWidget {
                 children: [
                   Text("Liefern Preis: ",
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text("${order.deliveryPrice!}")
+                  Text("${(order.deliveryPrice!).toStringAsFixed(2)}")
                 ],
               )
             : Container(),
@@ -648,9 +652,40 @@ class OrderInfo extends StatelessWidget {
           children: [
             Text("Total Price: ",
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("${order.totalPrice}")
+            Text("${(order.totalPrice).toStringAsFixed(2)}")
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _paymentWidget() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text("Payment: ", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(order.payment.type == 1 ? "Cash" : "Paypal")
+          ],
+        ),
+        order.payment.type == 1
+            ? Container()
+            : Row(
+                children: [
+                  Text("payed: ",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(order.payment.payed! ? "YES" : "NO")
+                ],
+              ),
+        (order.payment.type == 2 && order.payment.payed!)
+            ? Row(
+                children: [
+                  Text("Amount Payed: ",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("${order.payment.amountPayed!}")
+                ],
+              )
+            : Container(),
       ],
     );
   }

@@ -36,7 +36,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
       createdAt: json['created_at'] as String,
       recieveEmail: json['recieve_email'] as bool,
       totalPrice: double.parse(json['total_price']),
-      beforePrice: double.parse(json['total_price']),
+      beforePrice: double.parse(json['before_price']),
       deliveryPrice: double.parse(json['delivery_price']),
       notes: json['notes'] as String?,
       isNew: json['is_new'] as bool,
