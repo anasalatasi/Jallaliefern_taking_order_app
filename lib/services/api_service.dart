@@ -204,7 +204,7 @@ class ApiService {
   Future<List<Order>> getFinishedOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=5)";
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=5,7,6)";
       filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -217,7 +217,7 @@ class ApiService {
   Future<List<Order>> getSearchOrders(String query) async {
     try {
       String filters =
-          "(first_name=$query) | (last_name=$query) | (slug=$query) | (phone=$query)";
+          "(first_name__icontains=$query) | (last_name__icontains=$query) | (slug=$query) | (phone=$query)";
       filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);

@@ -7,7 +7,9 @@ import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/table_reservation_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/search_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
+import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/custom_search_delegate.dart';
+import 'login_screen.dart';
 import 'pages/New_page.dart';
 import 'pages/Inprog_page.dart';
 import '../../Constants.dart';
@@ -77,7 +79,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => SettingsScreen()));
               },
-            )
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                locator<SecureStorageService>().write("access_token", "");
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+            ),
           ],
           elevation: 15.0,
           backgroundColor: Color(0xFF9a0404),

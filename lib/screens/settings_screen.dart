@@ -102,9 +102,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     controller: _controllerip,
                   ),
                 ),
+                SizedBox(
+                  width: 20,
+                ),
                 Flexible(
                   child: ElevatedButton(
-                    child: Text("connect"),
+                    child: Text("save"),
                     onPressed: () async {
                       locator<PrinterService>()
                           .printerNetworkManager
@@ -115,6 +118,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 )
               ],
+            ),
+            SizedBox(
+              height: 20,
             ),
             Row(children: [
               Text(
