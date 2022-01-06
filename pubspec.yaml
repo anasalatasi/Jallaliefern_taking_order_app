@@ -61,6 +61,7 @@ dependencies:
   wakelock: ^0.5.4
   esc_pos_printer: ^3.1.6
   jwt_decode: ^0.3.1
+  syncfusion_flutter_datepicker: ^19.4.41
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.

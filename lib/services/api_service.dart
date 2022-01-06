@@ -11,6 +11,7 @@ import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/models/section.dart';
 import 'package:jallaliefern_taking_orders_app/models/table_reservation.dart';
+import 'package:jallaliefern_taking_orders_app/models/driver.dart';
 import 'package:jallaliefern_taking_orders_app/models/zone.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
@@ -404,6 +405,41 @@ class ApiService {
     try {
       await _postAuthRequest(
           'orders/table_reservation/$id/change_status/', "{\"status\": 3}");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<List<Driver>> getDrivers() async {
+    try {
+      final rawData = await _getAuthRequest("users/driver_user/");
+      final Iterable jsonList = json.decode(rawData);
+      return List<Driver>.from(jsonList.map((model) => Driver.fromMap(model)));
+    } catch (e) {
+      return List<Driver>.empty();
+    }
+  }
+
+  Future<List<Driver>> getDriverReceiptAll(
+      DateTime startDate, DateTime endDate) async {
+    try {
+      dynamic format = DateFormat('yyyy-MM-dd');
+      final rawData = await _getAuthRequest(
+          "orders/driver_receipt/all/?from_date=${format.format(startDate)}&to_date=${format.format(endDate)}");
+      final Iterable jsonList = json.decode(rawData);
+      return List<Driver>.from(jsonList.map((model) => Driver.fromMap(model)));
+    } catch (e) {
+      return List<Driver>.empty();
+    }
+  }
+
+  Future<Driver?> getDriverReceipt(
+      int id, DateTime startDate, DateTime endDate) async {
+    try {
+      dynamic format = DateFormat('yyyy-MM-dd');
+      final rawData = await _getAuthRequest(
+          "orders/driver_receipt/$id/one/?from_date=${format.format(startDate)}&to_date=${format.format(endDate)}");
+      return Driver.fromJson(rawData);
     } catch (e) {
       return null;
     }
