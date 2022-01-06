@@ -1,6 +1,7 @@
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:jallaliefern_taking_orders_app/screens/close_screen.dart';
+import 'package:jallaliefern_taking_orders_app/screens/drivers_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Preorder_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
@@ -59,6 +60,90 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Container(
+              height: 100.0,
+              child: DrawerHeader(
+                  child: Center(
+                    child: Text(
+                      'Taking Orders App',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  decoration: BoxDecoration(color: Color(0xFF9a0404)),
+                  margin: EdgeInsets.all(0.0),
+                  padding: EdgeInsets.all(0.0)),
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.lock),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text("Super close", style: TextStyle(fontSize: 20)),
+                  )
+                ],
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CloseScreen()));
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.print),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child:
+                        Text("Print Drivers", style: TextStyle(fontSize: 20)),
+                  )
+                ],
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => DriversScreen()));
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.settings),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text("Printer settings",
+                        style: TextStyle(fontSize: 20)),
+                  )
+                ],
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()));
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.logout),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text("Logout", style: TextStyle(fontSize: 20)),
+                  )
+                ],
+              ),
+              onTap: () {
+                locator<SecureStorageService>().write("access_token", "");
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
           actions: [
             IconButton(
@@ -67,27 +152,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   showSearch(
                       context: context, delegate: CustomSearchDelegate());
                 }),
-            IconButton(
-                icon: Icon(Icons.lock),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => CloseScreen()));
-                }),
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()));
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                locator<SecureStorageService>().write("access_token", "");
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-            ),
           ],
           elevation: 15.0,
           backgroundColor: Color(0xFF9a0404),
