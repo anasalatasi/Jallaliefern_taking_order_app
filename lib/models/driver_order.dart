@@ -7,6 +7,7 @@ class DriverOrder {
   String? slug;
   String? firstName;
   String? lastName;
+  String? endedAt;
   Delivery? delivery;
   double? totalPrice;
   double? deliveryPrice;
@@ -20,6 +21,7 @@ class DriverOrder {
     this.totalPrice,
     this.deliveryPrice,
     this.paymentType,
+    this.endedAt,
   });
 
   DriverOrder copyWith({
@@ -31,17 +33,18 @@ class DriverOrder {
     double? totalPrice,
     double? deliveryPrice,
     int? paymentType,
+    String? endedAt,
   }) {
     return DriverOrder(
-      id: id ?? this.id,
-      slug: slug ?? this.slug,
-      firstName: firstName ?? this.firstName,
-      lastName: lastName ?? this.lastName,
-      delivery: delivery ?? this.delivery,
-      totalPrice: totalPrice ?? this.totalPrice,
-      deliveryPrice: deliveryPrice ?? this.deliveryPrice,
-      paymentType: paymentType ?? this.paymentType,
-    );
+        id: id ?? this.id,
+        slug: slug ?? this.slug,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        delivery: delivery ?? this.delivery,
+        totalPrice: totalPrice ?? this.totalPrice,
+        deliveryPrice: deliveryPrice ?? this.deliveryPrice,
+        paymentType: paymentType ?? this.paymentType,
+        endedAt: endedAt ?? this.endedAt);
   }
 
   factory DriverOrder.fromMap(Map<String, dynamic> map) {
@@ -58,6 +61,7 @@ class DriverOrder {
           ? double.parse(map['delivery_price'])
           : null,
       paymentType: map['payment_type']?.toInt(),
+      endedAt: map['ended_at'],
     );
   }
 
@@ -81,7 +85,8 @@ class DriverOrder {
         other.delivery == delivery &&
         other.totalPrice == totalPrice &&
         other.deliveryPrice == deliveryPrice &&
-        other.paymentType == paymentType;
+        other.paymentType == paymentType &&
+        other.endedAt == endedAt;
   }
 
   @override
@@ -93,6 +98,7 @@ class DriverOrder {
         delivery.hashCode ^
         totalPrice.hashCode ^
         deliveryPrice.hashCode ^
-        paymentType.hashCode;
+        paymentType.hashCode ^
+        endedAt.hashCode;
   }
 }
