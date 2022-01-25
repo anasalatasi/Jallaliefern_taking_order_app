@@ -39,7 +39,7 @@ class OrderTile extends StatelessWidget {
               parentRefresh();
             },
             child: Padding(
-              padding: const EdgeInsets.all(3.0),
+              padding: const EdgeInsets.all(1.0),
               child: Column(
                 children: [
                   Row(
@@ -47,12 +47,13 @@ class OrderTile extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text("#${order.id}",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                              "${DateFormat('kk:mm').format(DateTime.parse(order.createdAt).toLocal())}",
+                              style: orderTileTimeStyle),
                           SizedBox(width: 5),
                           order.isNew
                               ? Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(4.0),
                                   child: Badge(
                                     toAnimate: false,
                                     shape: BadgeShape.square,
@@ -66,7 +67,7 @@ class OrderTile extends StatelessWidget {
                               : SizedBox(width: 16),
                           (order.isPreorder)
                               ? Padding(
-                                  padding: const EdgeInsets.all(2.0),
+                                  padding: const EdgeInsets.all(4.0),
                                   child: Badge(
                                     toAnimate: false,
                                     shape: BadgeShape.square,
@@ -74,7 +75,7 @@ class OrderTile extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8),
                                     badgeContent: Text('preorder',
                                         style: TextStyle(
-                                            color: Colors.white, fontSize: 8)),
+                                            color: Colors.white, fontSize: 5)),
                                   ),
                                 )
                               : SizedBox(),
@@ -90,22 +91,9 @@ class OrderTile extends StatelessWidget {
                               : order.type == 3
                                   ? Icon(Icons.restaurant, size: 20)
                                   : Icon(Icons.delivery_dining, size: 20),
-                          Text("${order.getType()}  ",
-                              style: orderTileIconStyle),
-                          IconButton(
-                            iconSize: 20,
-                            icon: Icon(Icons.print),
-                            color: Colors.blue,
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PrintScreen(order: order)));
-                            },
-                          ),
+                          Text("${order.getType()}", style: orderTileIconStyle),
                         ],
-                      ),
+                      )
                     ],
                   ),
                   (order.status == 3)
@@ -136,27 +124,22 @@ class OrderTile extends StatelessWidget {
                       : SizedBox(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("count: ${order.count} #${order.id}")],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('count: ${order.count}',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Column(
-                        children: [
-                          Text("${order.firstName} ${order.lastName}"),
-                          (order.type == 1)
-                              ? Text(
-                                  "${order.delivery!.address} ${order.delivery!.buildingNo}")
-                              : Container()
-                        ],
-                      ),
+                      Text("${order.firstName} ${order.lastName}"),
                       Text(
-                          "${DateFormat('yyyy-MM-dd - kk:mm').format(DateTime.parse(order.createdAt).toLocal())}"),
+                          "${DateFormat('yyyy-MM-dd').format(DateTime.parse(order.createdAt).toLocal())}"),
                     ],
                   ),
                   (order.isPreorder)
                       ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Preorder time: ",
+                              "Preorder time:",
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.bold),
                             ),
@@ -167,6 +150,53 @@ class OrderTile extends StatelessWidget {
                           ],
                         )
                       : Container(),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PrintScreen(order: order)));
+                            },
+                            icon: Icon(Icons.print),
+                            label: Text(
+                              "drucken",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      order.status == 1
+                          ? StateWidget(
+                              state: 'Ausstehend', color: Colors.purple)
+                          : order.status == 2
+                              ? StateWidget(
+                                  state: 'Abgelehnt', color: Colors.red)
+                              : order.status == 3
+                                  ? StateWidget(
+                                      state: 'Akzeptiert', color: Colors.green)
+                                  : order.status == 4
+                                      ? StateWidget(
+                                          state: 'Lieferung ausstehend',
+                                          color: Colors.deepPurple)
+                                      : order.status == 5
+                                          ? StateWidget(
+                                              state: 'Liefern',
+                                              color: Colors.cyan)
+                                          : order.status == 6
+                                              ? StateWidget(
+                                                  state: "Geliefert",
+                                                  color: Colors.blueGrey)
+                                              : StateWidget(
+                                                  state: 'Fertig',
+                                                  color: Kcolor)
+                    ],
+                  ),
                 ],
               ),
             )),

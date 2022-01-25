@@ -35,30 +35,25 @@ class _HomeScreenState extends State<HomeScreen> {
     PreorderPage(),
     TableReservationPage()
   ];
-  int _selectedIndex = 0;
-  Widget _bottomNavigationBar(int selectedIndex) => BottomNavigationBar(
-        onTap: (int index) => setState(() => _selectedIndex = index),
-        currentIndex: selectedIndex,
-        selectedItemColor: Kcolor,
-        unselectedLabelStyle: TextStyle(color: Colors.black38),
-        showUnselectedLabels: true,
-        unselectedItemColor: Colors.black38,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined), label: 'Neu'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.watch_later_outlined), label: 'im Gange'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.done_rounded), label: 'bereit'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.done_all_rounded), label: 'fertig'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.request_page_outlined), label: 'Preorder'),
-          BottomNavigationBarItem(icon: Icon(Icons.restaurant), label: 'Table'),
-        ],
-      );
+
   @override
   Widget build(BuildContext context) {
+    const tabBar1 = const TabBar(tabs: [
+      Tab(
+        text: 'Neu',
+      ),
+      Tab(
+        text: 'im Gange',
+      ),
+      Tab(
+        text: 'bereit',
+      ),
+    ]);
+    const tabBar2 = const TabBar(tabs: [
+      Tab(text: 'fertig'),
+      Tab(text: 'Preorder'),
+      Tab(text: 'Table'),
+    ]);
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -158,11 +153,50 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Row(children: [
             Text(locator<Restaurant>().name!),
           ])),
-      body: PageStorage(
-        bucket: bucket,
-        child: pages[_selectedIndex],
+      body: Column(
+        children: [
+          Expanded(
+            child: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: PreferredSize(
+                    preferredSize: const Size.fromHeight(60.0),
+                    child: Container(
+                      color: Color(0xFF9a0404),
+                      child: tabBar1,
+                      margin: EdgeInsets.zero,
+                    )),
+                body: TabBarView(children: [
+                  NewPage(),
+                  InProgPage(),
+                  ReadyPage(),
+                ]),
+              ),
+            ),
+          ),
+          Expanded(
+            child: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: PreferredSize(
+                    preferredSize: const Size.fromHeight(60.0),
+                    child: Container(
+                      color: Color(0xFF9a0404),
+                      child: tabBar2,
+                      margin: EdgeInsets.zero,
+                    )),
+                body: TabBarView(children: [
+                  FinishedPage(),
+                  PreorderPage(),
+                  TableReservationPage()
+                ]),
+              ),
+            ),
+          ),
+        ],
       ),
-      bottomNavigationBar: _bottomNavigationBar(_selectedIndex),
+      // bottomNavigationBar: _bottomNavigationBar(_selectedIndex),
+
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {},
       //   child: Icon(Icons.auto_fix_high_outlined),

@@ -10,10 +10,10 @@ const labelTextStyle = TextStyle(
 );
 
 const orderTileTimeStyle = TextStyle(
-  fontSize: 30,
+  fontSize: 15,
   fontWeight: FontWeight.bold,
 );
 const orderTileIconStyle = TextStyle(
-  fontSize: 25,
+  fontSize: 15,
   fontWeight: FontWeight.bold,
 );
