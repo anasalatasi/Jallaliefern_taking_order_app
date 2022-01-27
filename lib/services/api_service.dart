@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/retry.dart';
@@ -176,10 +177,38 @@ class ApiService {
     }
   }
 
+  Future<List<Order>> getDineinOrders() async {
+    try {
+      String filters =
+          "(type=3&created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()})";
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
+      log('orders/order/?$filters');
+      final rawData = await _getAuthRequest('orders/order/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      print(e.toString());
+      return List<Order>.empty();
+    }
+  }
+
   Future<List<Order>> getInProgOrders() async {
     try {
       String filters =
           "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=2,3)";
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
+      final rawData = await _getAuthRequest('orders/order/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
+
+  Future<List<Order>> getAcceptedOrders() async {
+    try {
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=3)";
       filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
@@ -205,8 +234,38 @@ class ApiService {
   Future<List<Order>> getFinishedOrders() async {
     try {
       String filters =
-          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=5,7,6)";
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=7,6)";
       filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
+      final rawData = await _getAuthRequest('orders/order/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
+
+  Future<List<Order>> getDeliveringOrders() async {
+    try {
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status__in=4,5)";
+      filters = Uri(queryParameters: {'filters': filters, 'lite': '1'}).query;
+      final rawData = await _getAuthRequest('orders/order/?$filters');
+      final Iterable jsonList = json.decode(rawData);
+      return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));
+    } catch (e) {
+      return List<Order>.empty();
+    }
+  }
+
+  Future<List<Order>> getCanceledOrders() async {
+    try {
+      String filters =
+          "(created_at__gte=${(DateTime(DateTime.now().subtract(Duration(days: 1)).year, DateTime.now().subtract(Duration(days: 1)).month, DateTime.now().subtract(Duration(days: 1)).day)).toUtc().toIso8601String()}) & (status=8)";
+      filters = Uri(queryParameters: {
+        'filters': filters,
+        'lite': '1',
+        'canceled': '1'
+      }).query;
       final rawData = await _getAuthRequest('orders/order/?$filters');
       final Iterable jsonList = json.decode(rawData);
       return List<Order>.from(jsonList.map((model) => Order.fromJson(model)));

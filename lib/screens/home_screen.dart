@@ -5,6 +5,10 @@ import 'package:jallaliefern_taking_orders_app/screens/drivers_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Finished_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Preorder_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/Ready_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/accepted_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/canceled_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/delivering_page.dart';
+import 'package:jallaliefern_taking_orders_app/screens/pages/dinein_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/table_reservation_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/search_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
@@ -42,17 +46,17 @@ class _HomeScreenState extends State<HomeScreen> {
       Tab(
         text: 'Neu',
       ),
+      Tab(text: 'Vor.Best'),
       Tab(
-        text: 'im Gange',
-      ),
-      Tab(
-        text: 'bereit',
+        text: 'Im Rest',
       ),
     ]);
     const tabBar2 = const TabBar(tabs: [
-      Tab(text: 'fertig'),
-      Tab(text: 'Preorder'),
-      Tab(text: 'Table'),
+      Tab(text: 'Akzbtiert'),
+      Tab(text: 'Unterwegs'),
+      Tab(text: 'Fertig'),
+      Tab(text: 'Tisch.Re'),
+      Tab(text: 'Abgelehnt'),
     ]);
     return Scaffold(
       drawer: Drawer(
@@ -166,17 +170,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: tabBar1,
                       margin: EdgeInsets.zero,
                     )),
-                body: TabBarView(children: [
-                  NewPage(),
-                  InProgPage(),
-                  ReadyPage(),
-                ]),
+                body: TabBarView(
+                    children: [NewPage(), PreorderPage(), DineinPage()]),
               ),
             ),
           ),
           Expanded(
             child: DefaultTabController(
-              length: 3,
+              length: 5,
               child: Scaffold(
                 appBar: PreferredSize(
                     preferredSize: const Size.fromHeight(60.0),
@@ -186,9 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       margin: EdgeInsets.zero,
                     )),
                 body: TabBarView(children: [
+                  AcceptedPage(),
+                  DeliveringPage(),
                   FinishedPage(),
-                  PreorderPage(),
-                  TableReservationPage()
+                  TableReservationPage(),
+                  CanceledPage(),
                 ]),
               ),
             ),
