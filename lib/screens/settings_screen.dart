@@ -16,7 +16,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
-  TextEditingController? _controller, _controllerip;
+  TextEditingController? _controller, _controllerip, _controllerpaper;
   List<PrinterBluetooth> _devices = [];
   @override
   void initState() {
@@ -28,6 +28,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               (await locator<SecureStorageService>().receiptCopies).toString());
       _controllerip = TextEditingController(
           text: (await locator<SecureStorageService>().printerIp).toString());
+      _controllerpaper = TextEditingController(
+          text: (await locator<SecureStorageService>().paper).toString());
       setState(() {
         _devices = devices;
       });
@@ -146,6 +148,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     controller: _controller,
                     maxLength: 1,
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Flexible(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: "paper size",
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (String str) async {
+                      if (str == "") return;
+                      await locator<SecureStorageService>().write("paper", str);
+                    },
+                    controller: _controllerpaper,
+                    maxLength: 2,
                   ),
                 )
               ],

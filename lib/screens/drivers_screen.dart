@@ -44,7 +44,7 @@ class _DriversScreenState extends State<DriversScreen> {
     return Uint8List.fromList(str.codeUnits);
   }
 
-  Future<Ticket> driverReceipt(Driver receipt) async {
+  Future<Ticket> ticketmm80(Driver receipt) async {
     final Ticket ticket = Ticket(PaperSize.mm80);
     if (locator<PrinterService>().codetable != null)
       ticket.setGlobalCodeTable(locator<PrinterService>().codetable);
@@ -63,8 +63,9 @@ class _DriversScreenState extends State<DriversScreen> {
       locator<Restaurant>().name!,
       styles: PosStyles(
         align: PosAlign.center,
-        height: PosTextSize.size2,
-        width: PosTextSize.size2,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
+        bold: true,
       ),
     );
     final formatter2 = DateFormat('MM/dd/yyyy');
@@ -107,8 +108,9 @@ class _DriversScreenState extends State<DriversScreen> {
       "Orders:",
       styles: PosStyles(
         align: PosAlign.left,
-        height: PosTextSize.size2,
-        width: PosTextSize.size2,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
+        bold: true,
       ),
     );
 
@@ -254,7 +256,7 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
       PosColumn(
-          textEncoded: myEncoding("${receipt.sumPaypal}"),
+          textEncoded: myEncoding("${receipt.sumPaypal ?? 0}"),
           width: 8,
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
@@ -274,6 +276,245 @@ class _DriversScreenState extends State<DriversScreen> {
     return ticket;
   }
 
+  Future<Ticket> ticketmm58(Driver receipt) async {
+    final Ticket ticket = Ticket(PaperSize.mm58);
+    if (locator<PrinterService>().codetable != null)
+      ticket.setGlobalCodeTable(locator<PrinterService>().codetable);
+
+    final now = DateTime.now();
+    final formatter = DateFormat('MM/dd/yyyy H:m');
+    final String timestamp = formatter.format(now);
+
+    ticket.text(timestamp,
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
+
+    ticket.text(
+      locator<Restaurant>().name!,
+      styles: PosStyles(
+        align: PosAlign.center,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
+        bold: true,
+      ),
+    );
+    final formatter2 = DateFormat('MM/dd/yyyy');
+    String fromtimestamp = formatter2.format(startDate!);
+    String totimestamp = formatter2.format(endDate!);
+    ticket.text("$fromtimestamp -> $totimestamp",
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1),
+        linesAfter: 1);
+
+    ticket.row([
+      PosColumn(
+          text: 'Driver name: ',
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          textEncoded: myEncoding("${receipt.firstName} ${receipt.lastName}"),
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    ]);
+
+    ticket.row([
+      PosColumn(
+          text: 'Phone Number: ',
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          textEncoded: myEncoding("${receipt.phoneNumber ?? ''}"),
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    ]);
+
+    ticket.text(
+      "Orders:",
+      styles: PosStyles(
+        align: PosAlign.left,
+        height: PosTextSize.size1,
+        width: PosTextSize.size1,
+        bold: true,
+      ),
+    );
+
+    for (int i = 0; i < receipt.orders!.length; i++) {
+      ticket.row([
+        PosColumn(
+            text: 'id: ',
+            width: 4,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: myEncoding("#${receipt.orders![i].id}"),
+            width: 8,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+      ticket.row([
+        PosColumn(
+            text: 'slug: ',
+            width: 4,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: myEncoding("${receipt.orders![i].slug}"),
+            width: 8,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+
+      Uint8List tmp;
+      if (await receipt.orders![i].delivery!.getSection() != null) {
+        tmp = myEncoding(
+            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}, ${(await receipt.orders![i].delivery!.getSection())!.name} ${(await receipt.orders![i].delivery!.getSection())!.zipCode}");
+      } else {
+        tmp = myEncoding(
+            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}");
+      }
+      List<Uint8List> chunks = [];
+      for (var i = 0; i < tmp.length; i += 32) {
+        chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
+      }
+      ticket.row([
+        PosColumn(
+            text: 'Adresse: ',
+            width: 4,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: chunks[0],
+            width: 8,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+      for (var i = 1; i < chunks.length; i++) {
+        ticket.row([
+          PosColumn(
+              text: ' ',
+              width: 4,
+              styles: PosStyles(
+                  height: PosTextSize.size1, width: PosTextSize.size1)),
+          PosColumn(
+              textEncoded: chunks[i],
+              width: 8,
+              styles: PosStyles(
+                  height: PosTextSize.size1, width: PosTextSize.size1))
+        ]);
+      }
+
+      ticket.row([
+        PosColumn(
+            text: 'Total price: ',
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: myEncoding("${receipt.orders![i].totalPrice}"),
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+
+      ticket.row([
+        PosColumn(
+            text: 'Delivery price: ',
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: myEncoding("${receipt.orders![i].deliveryPrice}"),
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+
+      ticket.row([
+        PosColumn(
+            text: 'Order Ended at: ',
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: myEncoding(
+                formatter.format(DateTime.parse(receipt.orders![i].endedAt!))),
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+
+      ticket.row([
+        PosColumn(
+            text: 'Payment type: ',
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+        PosColumn(
+            textEncoded: myEncoding(
+                receipt.orders![i].paymentType == 1 ? "Cash" : "Paypal"),
+            width: 6,
+            styles:
+                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      ]);
+
+      if (i != receipt.orders!.length - 1) ticket.hr(ch: "-");
+    }
+
+    ticket.hr(ch: "=");
+    ticket.row([
+      PosColumn(
+          text: 'Total Cash: ',
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          textEncoded: myEncoding("${receipt.sumCash}"),
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    ]);
+    ticket.row([
+      PosColumn(
+          text: 'Total Paypal: ',
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          textEncoded: myEncoding("${receipt.sumPaypal ?? 0.0}"),
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    ]);
+    ticket.row([
+      PosColumn(
+          text: 'Total sum: ',
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
+      PosColumn(
+          textEncoded: myEncoding("${receipt.sumTotal}"),
+          width: 6,
+          styles:
+              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    ]);
+    return ticket;
+  }
+
+  Future<Ticket> driverReceipt(Driver receipt) async {
+    if (await locator<SecureStorageService>().paper == "58") {
+      return await ticketmm58(receipt);
+    }
+    return await ticketmm80(receipt);
+  }
+
   void _onPrintAll() async {
     if (startDate == null || endDate == null) {
       showToast("please select a valid range");
@@ -289,7 +530,8 @@ class _DriversScreenState extends State<DriversScreen> {
     Ticket _ticket = await driverReceipt(receipt);
     try {
       if (!locator<PrinterService>().connected &&
-          await locator<SecureStorageService>().printerIp != null) {
+          await locator<SecureStorageService>().printerIp != null &&
+          await locator<SecureStorageService>().printerIp != "") {
         printerNetworkManager
             .selectPrinter(await locator<SecureStorageService>().printerIp);
         locator<PrinterService>().connected = true;
@@ -297,7 +539,7 @@ class _DriversScreenState extends State<DriversScreen> {
       Ticket? tmp = _ticket;
       int n = 1;
 
-      try {
+      if (locator<PrinterService>().connected) {
         var res = await printerNetworkManager.printTicket(tmp);
         showToast(res.msg);
         for (int i = 1; i < n; i++) {
@@ -305,7 +547,7 @@ class _DriversScreenState extends State<DriversScreen> {
           await printerNetworkManager.printTicket(tmp);
           showToast("$i");
         }
-      } catch (c) {
+      } else {
         var res = await printerManager.printTicket(tmp);
         showToast(res.msg);
         for (int i = 1; i < n; i++) {

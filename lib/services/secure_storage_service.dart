@@ -42,5 +42,14 @@ class SecureStorageService {
     return null;
   }
 
+  get paper async {
+    if (await haskey('paper')) {
+      String tmp = await read('paper');
+      if (tmp == "") return null;
+      return tmp;
+    }
+    return null;
+  }
+
   get accessToken async => await read('access_token');
 }
