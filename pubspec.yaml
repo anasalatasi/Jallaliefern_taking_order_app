@@ -18,12 +18,12 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.2.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dev_dependencies:
   build_runner: ^1.11.5
   change_app_package_name: ^1.0.0
-  flutter_launcher_icons: "^0.8.1"
+  flutter_launcher_icons: ^0.9.2
 
 flutter_icons:
   android: true
@@ -46,20 +46,20 @@ dependencies:
   flutter_secure_storage: ^4.2.0
   get_it: ^7.2.0
   http: ^0.13.3
-  json_serializable: ^3.5.1
+  json_serializable: ^6.1.4
   pull_to_refresh: ^2.0.0
   validators: ^3.0.0
   path_provider: ^2.0.2
   intl: ^0.17.0
-  esc_pos_bluetooth: ^0.2.8
-  esc_pos_utils: ^0.3.6
+  esc_pos_bluetooth: ^0.4.1
+  esc_pos_utils: ^1.1.0
   oktoast: ^3.1.1
   charset_converter: ^2.0.0
   flutter_charset_detector: ^1.0.1
-  convert: ^2.1.1
+  convert: ^3.0.1
   badges: ^2.0.1
   wakelock: ^0.5.4
-  esc_pos_printer: ^3.1.6
+  esc_pos_printer: ^4.1.0
   jwt_decode: ^0.3.1
   syncfusion_flutter_datepicker: ^19.4.41
 # For information on the generic Dart part of this file, see the
@@ -73,6 +73,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/sound/
+    - assets/img/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
@@ -96,3 +97,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+dependency_overrides:
+  platform: ^3.1.0
+  flutter_bluetooth_basic: ^0.1.7

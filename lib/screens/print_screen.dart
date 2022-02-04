@@ -21,6 +21,7 @@ import 'package:charset_converter/charset_converter.dart';
 import 'dart:typed_data';
 import 'package:flutter_charset_detector/flutter_charset_detector.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart';
+import 'package:image/image.dart';
 
 class PrintScreen extends StatefulWidget {
   final Order order;
@@ -34,9 +35,8 @@ class PrintScreen extends StatefulWidget {
 class _PrintScreenState extends State<PrintScreen> {
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
-  PrinterNetworkManager printerNetworkManager =
-      locator<PrinterService>().printerNetworkManager;
-  Future<Ticket>? _ticket;
+  NetworkPrinter? printerNetworkManager;
+  Future<List<int>>? _ticket;
 
   Uint8List myEncoding(String str) {
     str = str.replaceAll("Ä", "A");
@@ -55,34 +55,38 @@ class _PrintScreenState extends State<PrintScreen> {
     super.initState();
 
     () async {
-      _ticket = await locator<SecureStorageService>().paper == "58"
-          ? orderReceipt58()
-          : orderReceipt80();
+      final profile = await CapabilityProfile.load();
+      final paper = (await locator<SecureStorageService>().paper == "58")
+          ? PaperSize.mm58
+          : PaperSize.mm80;
+      printerNetworkManager = NetworkPrinter(paper, profile);
+      _ticket = (await locator<SecureStorageService>().paper == "58")
+          ? orderReceipt58(profile)
+          : orderReceipt80(profile);
       _print();
     }();
   }
 
-  Future<Ticket> orderReceipt58() async {
-    final Ticket ticket = Ticket(PaperSize.mm58);
-    if (locator<PrinterService>().codetable != null)
-      ticket.setGlobalCodeTable(locator<PrinterService>().codetable);
-    // Print image
-    // final ByteData data = await rootBundle.load('assets/rabbit_black.jpg');
-    //final Uint8List bytes = data.buffer.asUint8List();
-    //final Image image = decodeImage(bytes);
-    // ticket.image(image);
+  Future<List<int>> orderReceipt58(CapabilityProfile profile) async {
+    final Generator ticket = Generator(PaperSize.mm58, profile);
+    List<int> bytes = [];
+
+    // final ByteData data = await rootBundle.load('assets/img/rabbit_black.jpg');
+    // final Uint8List bytesimg = data.buffer.asUint8List();
+    // final Image? image = decodeImage(bytesimg);
+    // bytes += ticket.image(image!, align: PosAlign.center);
 
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    ticket.text(timestamp,
+    bytes += ticket.text(timestamp,
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
 
-    ticket.text(locator<Restaurant>().name!,
+    bytes += ticket.text(locator<Restaurant>().name!,
         styles: PosStyles(
           align: PosAlign.center,
           height: PosTextSize.size1,
@@ -90,27 +94,35 @@ class _PrintScreenState extends State<PrintScreen> {
           bold: true,
         ),
         linesAfter: 1);
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding(
-            '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum} ${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
+            '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum}'),
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
 
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
+        myEncoding(
+            '${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size1,
+            width: PosTextSize.size1));
+
+    bytes += ticket.textEncoded(
         myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding(
             'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
         styles: PosStyles(
@@ -118,20 +130,20 @@ class _PrintScreenState extends State<PrintScreen> {
             height: PosTextSize.size1,
             width: PosTextSize.size1),
         linesAfter: 1);
-    ticket.text("${widget.order.count}",
+    bytes += ticket.text("${widget.order.count}",
         styles: PosStyles(
             width: PosTextSize.size1,
             height: PosTextSize.size1,
             align: PosAlign.center));
-    ticket.hr(ch: '=');
+    bytes += ticket.hr(ch: '=');
     if (widget.order.dineTable != null) {
-      ticket.text("Table: ${widget.order.dineTable}",
+      bytes += ticket.text("Table: ${widget.order.dineTable}",
           styles: PosStyles(
               width: PosTextSize.size1,
               height: PosTextSize.size1,
               align: PosAlign.left));
     }
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Name: ',
           width: 4,
@@ -158,7 +170,7 @@ class _PrintScreenState extends State<PrintScreen> {
       for (var i = 0; i < tmp.length; i += 32) {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Adresse: ',
             width: 4,
@@ -171,7 +183,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
       for (var i = 1; i < chunks.length; i++) {
-        ticket.row([
+        bytes += ticket.row([
           PosColumn(
               text: ' ',
               width: 4,
@@ -184,7 +196,7 @@ class _PrintScreenState extends State<PrintScreen> {
                   height: PosTextSize.size1, width: PosTextSize.size1))
         ]);
       }
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Lieferpreis: ',
             width: 6,
@@ -197,7 +209,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
     }
-    ticket.text('Tel: ${widget.order.phone}',
+    bytes += ticket.text('Tel: ${widget.order.phone}',
         styles: PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size1,
@@ -205,12 +217,12 @@ class _PrintScreenState extends State<PrintScreen> {
     final String timestamp2 = formatter.format(
         widget.order.serveDateTime ?? DateTime.parse(widget.order.createdAt));
 
-    ticket.text("Datum: $timestamp2",
+    bytes += ticket.text("Datum: $timestamp2",
         styles: PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Bestell.ID: ',
           width: 6,
@@ -222,7 +234,7 @@ class _PrintScreenState extends State<PrintScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Bestell.Slug: ',
           width: 6,
@@ -234,7 +246,7 @@ class _PrintScreenState extends State<PrintScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Bestellung: ',
           width: 6,
@@ -246,7 +258,7 @@ class _PrintScreenState extends State<PrintScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.hr(ch: "=");
+    bytes += ticket.hr(ch: "=");
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
@@ -257,7 +269,7 @@ class _PrintScreenState extends State<PrintScreen> {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
       for (var i = 0; i < chunks.length; i++) {
-        ticket.row([
+        bytes += ticket.row([
           PosColumn(
               textEncoded: chunks[i],
               width: 12,
@@ -267,8 +279,8 @@ class _PrintScreenState extends State<PrintScreen> {
       }
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];
-        ticket.row([
-          PosColumn(width: 3, styles: PosStyles()),
+        bytes += ticket.row([
+          PosColumn(width: 1, styles: PosStyles()),
           PosColumn(
               textEncoded: myEncoding('+${itemAddon.addonObject.name}'),
               width: 7,
@@ -276,7 +288,7 @@ class _PrintScreenState extends State<PrintScreen> {
                   height: PosTextSize.size1, width: PosTextSize.size1)),
           PosColumn(
               text: '${itemAddon.totalPrice}',
-              width: 2,
+              width: 4,
               styles: PosStyles(
                   align: PosAlign.right,
                   height: PosTextSize.size1,
@@ -284,84 +296,65 @@ class _PrintScreenState extends State<PrintScreen> {
         ]);
       }
       if (item.notes != null && item.notes!.length > 0) {
-        ticket.text('Anmerkung:',
+        bytes += ticket.text('Anmerkung:',
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
-        ticket.textEncoded(myEncoding(item.notes!),
+        bytes += ticket.textEncoded(myEncoding(item.notes!),
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
       }
       if (i < (await widget.order.items).length - 1) {
-        ticket.hr(ch: "-");
+        bytes += ticket.hr(ch: "-");
       }
     }
 
     if ((await widget.order.giftChoicess).length > 0) {
-      ticket.hr(ch: '=');
-      ticket.text('Gifts:',
+      bytes += ticket.hr(ch: '=');
+      bytes += ticket.text('Gifts:',
           styles: PosStyles(
             height: PosTextSize.size1,
             width: PosTextSize.size1,
             bold: true,
           ));
       for (int i = 0; i < (await widget.order.giftChoicess).length; i++) {
-        ticket.text((await widget.order.giftChoicess)[i].description!,
+        bytes += ticket.text((await widget.order.giftChoicess)[i].description!,
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
       }
     }
 
-    ticket.hr(ch: '=');
+    bytes += ticket.hr(ch: '=');
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
-          width: 10,
-          text: "Price Before Discounts: ",
+          width: 12,
+          text:
+              "Price Before Discounts: ${(widget.order.beforePrice)!.toStringAsFixed(2)}",
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          width: 2,
-          text: "${(widget.order.beforePrice)!.toStringAsFixed(2)}",
-          styles: PosStyles(
-              align: PosAlign.right,
-              height: PosTextSize.size1,
-              width: PosTextSize.size1))
     ]);
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
-          width: 10,
-          text: "Discount: ",
+          width: 12,
+          text:
+              "Discount: ${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}",
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          width: 2,
-          text:
-              "${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}",
-          styles: PosStyles(
-              align: PosAlign.right,
-              height: PosTextSize.size1,
-              width: PosTextSize.size1))
     ]);
 
     if (widget.order.type == 1) {
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
-            width: 10,
-            text: "Liefern Preis: ",
+            width: 12,
+            text:
+                "Liefern Preis: ${(widget.order.deliveryPrice!).toStringAsFixed(2)}",
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            width: 2,
-            text: "${(widget.order.deliveryPrice!).toStringAsFixed(2)}",
-            styles: PosStyles(
-                align: PosAlign.right,
-                height: PosTextSize.size1,
-                width: PosTextSize.size1))
       ]);
     }
-    ticket.hr(ch: '=');
-    ticket.row([
+    bytes += ticket.hr(ch: '=');
+    bytes += ticket.row([
       PosColumn(
           text: 'Gesamtpreis',
           width: 6,
@@ -381,19 +374,19 @@ class _PrintScreenState extends State<PrintScreen> {
           )),
     ]);
 
-    ticket.hr(ch: '=', linesAfter: 1);
+    bytes += ticket.hr(ch: '=', linesAfter: 1);
 
     if (widget.order.notes != null && widget.order.notes!.length > 0) {
-      ticket.text('Anmerkung:',
+      bytes += ticket.text('Anmerkung:',
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
-      ticket.textEncoded(myEncoding(widget.order.notes!),
+      bytes += ticket.textEncoded(myEncoding(widget.order.notes!),
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
     }
 
-    ticket.feed(2);
-    ticket.text('Danke!',
+    bytes += ticket.feed(2);
+    bytes += ticket.text('Danke!',
         styles: PosStyles(
             align: PosAlign.center,
             bold: true,
@@ -423,32 +416,31 @@ class _PrintScreenState extends State<PrintScreen> {
     // Print QR Code using native function
     // ticket.qrcode('example.com');
 
-    ticket.feed(2);
-    ticket.cut();
-    return ticket;
+    bytes += ticket.feed(2);
+    bytes += ticket.cut();
+    return bytes;
   }
 
-  Future<Ticket> orderReceipt80() async {
-    final Ticket ticket = Ticket(PaperSize.mm80);
-    if (locator<PrinterService>().codetable != null)
-      ticket.setGlobalCodeTable(locator<PrinterService>().codetable);
-    // Print image
-    // final ByteData data = await rootBundle.load('assets/rabbit_black.jpg');
-    //final Uint8List bytes = data.buffer.asUint8List();
-    //final Image image = decodeImage(bytes);
-    // ticket.image(image);
+  Future<List<int>> orderReceipt80(CapabilityProfile profile) async {
+    final Generator ticket = Generator(PaperSize.mm80, profile);
+    List<int> bytes = [];
+
+    // final ByteData data = await rootBundle.load('assets/img/rabbit_black.jpg');
+    // final Uint8List bytesimg = data.buffer.asUint8List();
+    // final Image? image = decodeImage(bytesimg);
+    // bytes += ticket.image(image!, align: PosAlign.center);
 
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    ticket.text(timestamp,
+    bytes += ticket.text(timestamp,
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
 
-    ticket.text(locator<Restaurant>().name!,
+    bytes += ticket.text(locator<Restaurant>().name!,
         styles: PosStyles(
           align: PosAlign.center,
           height: PosTextSize.size1,
@@ -456,7 +448,7 @@ class _PrintScreenState extends State<PrintScreen> {
           bold: true,
         ),
         linesAfter: 1);
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding(
             '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum} ${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
         styles: PosStyles(
@@ -464,19 +456,19 @@ class _PrintScreenState extends State<PrintScreen> {
             height: PosTextSize.size1,
             width: PosTextSize.size1));
 
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
-    ticket.textEncoded(
+    bytes += ticket.textEncoded(
         myEncoding(
             'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
         styles: PosStyles(
@@ -484,20 +476,20 @@ class _PrintScreenState extends State<PrintScreen> {
             height: PosTextSize.size1,
             width: PosTextSize.size1),
         linesAfter: 1);
-    ticket.text("${widget.order.count}",
+    bytes += ticket.text("${widget.order.count}",
         styles: PosStyles(
             width: PosTextSize.size1,
             height: PosTextSize.size1,
             align: PosAlign.center));
-    ticket.hr(ch: '=');
+    bytes += ticket.hr(ch: '=');
     if (widget.order.dineTable != null) {
-      ticket.text("Table: ${widget.order.dineTable}",
+      bytes += ticket.text("Table: ${widget.order.dineTable}",
           styles: PosStyles(
               width: PosTextSize.size1,
               height: PosTextSize.size1,
               align: PosAlign.left));
     }
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Name: ',
           width: 4,
@@ -524,7 +516,7 @@ class _PrintScreenState extends State<PrintScreen> {
       for (var i = 0; i < tmp.length; i += 32) {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Adresse: ',
             width: 4,
@@ -537,7 +529,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
       for (var i = 1; i < chunks.length; i++) {
-        ticket.row([
+        bytes += ticket.row([
           PosColumn(
               text: ' ',
               width: 4,
@@ -550,7 +542,7 @@ class _PrintScreenState extends State<PrintScreen> {
                   height: PosTextSize.size1, width: PosTextSize.size1))
         ]);
       }
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Lieferpreis: ',
             width: 4,
@@ -563,7 +555,7 @@ class _PrintScreenState extends State<PrintScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
     }
-    ticket.text('Tel: ${widget.order.phone}',
+    bytes += ticket.text('Tel: ${widget.order.phone}',
         styles: PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size1,
@@ -571,12 +563,12 @@ class _PrintScreenState extends State<PrintScreen> {
     final String timestamp2 = formatter.format(
         widget.order.serveDateTime ?? DateTime.parse(widget.order.createdAt));
 
-    ticket.text("Datum: $timestamp2",
+    bytes += ticket.text("Datum: $timestamp2",
         styles: PosStyles(
             align: PosAlign.left,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Bestell.ID: ',
           width: 4,
@@ -588,7 +580,7 @@ class _PrintScreenState extends State<PrintScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Bestell.Slug: ',
           width: 4,
@@ -600,7 +592,7 @@ class _PrintScreenState extends State<PrintScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Bestellung: ',
           width: 4,
@@ -612,11 +604,11 @@ class _PrintScreenState extends State<PrintScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.hr(ch: "=");
+    bytes += ticket.hr(ch: "=");
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: '${item.quantity}x',
             width: 1,
@@ -644,7 +636,7 @@ class _PrintScreenState extends State<PrintScreen> {
       ]);
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];
-        ticket.row([
+        bytes += ticket.row([
           PosColumn(width: 3, styles: PosStyles()),
           PosColumn(
               textEncoded: myEncoding('+${itemAddon.addonObject.name}'),
@@ -661,36 +653,36 @@ class _PrintScreenState extends State<PrintScreen> {
         ]);
       }
       if (item.notes != null && item.notes!.length > 0) {
-        ticket.text('Anmerkung:',
+        bytes += ticket.text('Anmerkung:',
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
-        ticket.textEncoded(myEncoding(item.notes!),
+        bytes += ticket.textEncoded(myEncoding(item.notes!),
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
       }
       if (i < (await widget.order.items).length - 1) {
-        ticket.hr(ch: "-");
+        bytes += ticket.hr(ch: "-");
       }
     }
 
     if ((await widget.order.giftChoicess).length > 0) {
-      ticket.hr(ch: '=');
-      ticket.text('Gifts:',
+      bytes += ticket.hr(ch: '=');
+      bytes += ticket.text('Gifts:',
           styles: PosStyles(
             height: PosTextSize.size1,
             width: PosTextSize.size1,
             bold: true,
           ));
       for (int i = 0; i < (await widget.order.giftChoicess).length; i++) {
-        ticket.text((await widget.order.giftChoicess)[i].description!,
+        bytes += ticket.text((await widget.order.giftChoicess)[i].description!,
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
       }
     }
 
-    ticket.hr(ch: '=');
+    bytes += ticket.hr(ch: '=');
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           width: 10,
           text: "Price Before Discounts: ",
@@ -705,7 +697,7 @@ class _PrintScreenState extends State<PrintScreen> {
               width: PosTextSize.size1))
     ]);
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           width: 10,
           text: "Discount: ",
@@ -722,7 +714,7 @@ class _PrintScreenState extends State<PrintScreen> {
     ]);
 
     if (widget.order.type == 1) {
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             width: 10,
             text: "Liefern Preis: ",
@@ -737,8 +729,8 @@ class _PrintScreenState extends State<PrintScreen> {
                 width: PosTextSize.size1))
       ]);
     }
-    ticket.hr(ch: '=');
-    ticket.row([
+    bytes += ticket.hr(ch: '=');
+    bytes += ticket.row([
       PosColumn(
           text: 'Gesamtpreis',
           width: 6,
@@ -758,19 +750,19 @@ class _PrintScreenState extends State<PrintScreen> {
           )),
     ]);
 
-    ticket.hr(ch: '=', linesAfter: 1);
+    bytes += ticket.hr(ch: '=', linesAfter: 1);
 
     if (widget.order.notes != null && widget.order.notes!.length > 0) {
-      ticket.text('Anmerkung:',
+      bytes += ticket.text('Anmerkung:',
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
-      ticket.textEncoded(myEncoding(widget.order.notes!),
+      bytes += ticket.textEncoded(myEncoding(widget.order.notes!),
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1));
     }
 
-    ticket.feed(2);
-    ticket.text('Danke!',
+    bytes += ticket.feed(2);
+    bytes += ticket.text('Danke!',
         styles: PosStyles(
             align: PosAlign.center,
             bold: true,
@@ -800,33 +792,32 @@ class _PrintScreenState extends State<PrintScreen> {
     // Print QR Code using native function
     // ticket.qrcode('example.com');
 
-    ticket.feed(2);
-    ticket.cut();
-    return ticket;
+    bytes += ticket.feed(2);
+    bytes += ticket.cut();
+    return bytes;
   }
 
   void _print() async {
     await _ticket;
     try {
-      if (!locator<PrinterService>().connected &&
-          await locator<SecureStorageService>().printerIp != null &&
-          await locator<SecureStorageService>().printerIp != "") {
-        printerNetworkManager
-            .selectPrinter(await locator<SecureStorageService>().printerIp);
-        locator<PrinterService>().connected = true;
+      if (await locator<SecureStorageService>().printerIp != null &&
+          (await locator<SecureStorageService>().printerIp).length > 1) {
+        await printerNetworkManager!.connect(
+            await locator<SecureStorageService>().printerIp,
+            port: 9100);
       }
-      Ticket? tmp = await _ticket;
+      List<int>? tmp = await _ticket;
       int n = await locator<SecureStorageService>().receiptCopies;
-      if (locator<PrinterService>().connected) {
-        var res = await printerNetworkManager.printTicket(tmp);
-        showToast(res.msg);
+      if (await locator<SecureStorageService>().printerIp != null &&
+          (await locator<SecureStorageService>().printerIp).length > 1) {
+        printerNetworkManager!.rawBytes(tmp!);
         for (int i = 1; i < n; i++) {
           await Future.delayed(Duration(seconds: 5));
-          await printerNetworkManager.printTicket(tmp);
+          printerNetworkManager!.rawBytes(tmp);
           showToast("$i");
         }
       } else {
-        var res = await printerManager.printTicket(tmp);
+        var res = await printerManager.printTicket(tmp!);
         showToast(res.msg);
         for (int i = 1; i < n; i++) {
           await Future.delayed(Duration(seconds: 3));

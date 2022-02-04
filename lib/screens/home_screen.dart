@@ -51,13 +51,18 @@ class _HomeScreenState extends State<HomeScreen> {
         text: 'Im Rest',
       ),
     ]);
-    const tabBar2 = const TabBar(tabs: [
-      Tab(text: 'Akzbtiert'),
-      Tab(text: 'Unterwegs'),
-      Tab(text: 'Fertig'),
-      Tab(text: 'Tisch.Re'),
-      Tab(text: 'Abgelehnt'),
-    ]);
+    const tabBar2 = const TabBar(
+      tabs: [
+        Tab(text: 'Akzbtiert'),
+        Tab(text: 'Unterwegs'),
+        Tab(text: 'Fertig'),
+        Tab(text: 'Tisch.Re'),
+        Tab(text: 'Abgelehnt'),
+      ],
+      labelStyle: TextStyle(
+        fontSize: 10,
+      ),
+    );
     return Scaffold(
       drawer: Drawer(
         child: ListView(

@@ -50,7 +50,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _connectPrinter(PrinterBluetooth printer) async {
     printerManager.selectPrinter(printer);
     // locator<SecureStorageService>().write('printer_ip', printer.address);
-    locator<PrinterService>().connected = true;
     showToast("Printer Selected");
   }
 
@@ -107,18 +106,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(
                   width: 20,
                 ),
-                Flexible(
-                  child: ElevatedButton(
-                    child: Text("save"),
-                    onPressed: () async {
-                      locator<PrinterService>()
-                          .printerNetworkManager
-                          .selectPrinter(
-                              await locator<SecureStorageService>().printerIp,
-                              port: 9100);
-                    },
-                  ),
-                )
               ],
             ),
             SizedBox(
@@ -202,7 +189,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
                                       Text(_devices[index].name ?? ''),
-                                      Text(_devices[index].address),
+                                      Text(_devices[index].address ?? ""),
                                       Text(
                                         'Drucker anschließen',
                                         style:

@@ -30,8 +30,7 @@ class _DriversScreenState extends State<DriversScreen> {
 
   PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
-  PrinterNetworkManager printerNetworkManager =
-      locator<PrinterService>().printerNetworkManager;
+  NetworkPrinter? printerNetworkManager;
   Uint8List myEncoding(String str) {
     str = str.replaceAll("Ä", "A");
     str = str.replaceAll("ä", "a");
@@ -44,22 +43,21 @@ class _DriversScreenState extends State<DriversScreen> {
     return Uint8List.fromList(str.codeUnits);
   }
 
-  Future<Ticket> ticketmm80(Driver receipt) async {
-    final Ticket ticket = Ticket(PaperSize.mm80);
-    if (locator<PrinterService>().codetable != null)
-      ticket.setGlobalCodeTable(locator<PrinterService>().codetable);
-
+  Future<List<int>> ticketmm80(
+      Driver receipt, CapabilityProfile profile) async {
+    final Generator ticket = Generator(PaperSize.mm80, profile);
+    List<int> bytes = [];
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    ticket.text(timestamp,
+    bytes += ticket.text(timestamp,
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
 
-    ticket.text(
+    bytes += ticket.text(
       locator<Restaurant>().name!,
       styles: PosStyles(
         align: PosAlign.center,
@@ -71,14 +69,14 @@ class _DriversScreenState extends State<DriversScreen> {
     final formatter2 = DateFormat('MM/dd/yyyy');
     String fromtimestamp = formatter2.format(startDate!);
     String totimestamp = formatter2.format(endDate!);
-    ticket.text("$fromtimestamp -> $totimestamp",
+    bytes += ticket.text("$fromtimestamp -> $totimestamp",
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1),
         linesAfter: 1);
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Driver name: ',
           width: 4,
@@ -91,7 +89,7 @@ class _DriversScreenState extends State<DriversScreen> {
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Phone Number: ',
           width: 4,
@@ -104,7 +102,7 @@ class _DriversScreenState extends State<DriversScreen> {
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
 
-    ticket.text(
+    bytes += ticket.text(
       "Orders:",
       styles: PosStyles(
         align: PosAlign.left,
@@ -115,7 +113,7 @@ class _DriversScreenState extends State<DriversScreen> {
     );
 
     for (int i = 0; i < receipt.orders!.length; i++) {
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'id: ',
             width: 4,
@@ -127,7 +125,7 @@ class _DriversScreenState extends State<DriversScreen> {
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'slug: ',
             width: 4,
@@ -152,7 +150,7 @@ class _DriversScreenState extends State<DriversScreen> {
       for (var i = 0; i < tmp.length; i += 32) {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Adresse: ',
             width: 4,
@@ -165,7 +163,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
       for (var i = 1; i < chunks.length; i++) {
-        ticket.row([
+        bytes += ticket.row([
           PosColumn(
               text: ' ',
               width: 4,
@@ -179,7 +177,7 @@ class _DriversScreenState extends State<DriversScreen> {
         ]);
       }
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Total price: ',
             width: 4,
@@ -192,7 +190,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Delivery price: ',
             width: 4,
@@ -205,7 +203,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Order Ended at: ',
             width: 4,
@@ -219,7 +217,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Payment type: ',
             width: 4,
@@ -233,11 +231,11 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      if (i != receipt.orders!.length - 1) ticket.hr(ch: "-");
+      if (i != receipt.orders!.length - 1) bytes += ticket.hr(ch: "-");
     }
 
-    ticket.hr(ch: "=");
-    ticket.row([
+    bytes += ticket.hr(ch: "=");
+    bytes += ticket.row([
       PosColumn(
           text: 'Total Cash: ',
           width: 4,
@@ -249,7 +247,7 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Total Paypal: ',
           width: 4,
@@ -261,7 +259,7 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Total sum: ',
           width: 4,
@@ -273,25 +271,25 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    return ticket;
+    return bytes;
   }
 
-  Future<Ticket> ticketmm58(Driver receipt) async {
-    final Ticket ticket = Ticket(PaperSize.mm58);
-    if (locator<PrinterService>().codetable != null)
-      ticket.setGlobalCodeTable(locator<PrinterService>().codetable);
+  Future<List<int>> ticketmm58(
+      Driver receipt, CapabilityProfile profile) async {
+    final Generator ticket = Generator(PaperSize.mm58, profile);
+    List<int> bytes = [];
 
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    ticket.text(timestamp,
+    bytes += ticket.text(timestamp,
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1));
 
-    ticket.text(
+    bytes += ticket.text(
       locator<Restaurant>().name!,
       styles: PosStyles(
         align: PosAlign.center,
@@ -303,14 +301,14 @@ class _DriversScreenState extends State<DriversScreen> {
     final formatter2 = DateFormat('MM/dd/yyyy');
     String fromtimestamp = formatter2.format(startDate!);
     String totimestamp = formatter2.format(endDate!);
-    ticket.text("$fromtimestamp -> $totimestamp",
+    bytes += ticket.text("$fromtimestamp -> $totimestamp",
         styles: PosStyles(
             align: PosAlign.center,
             height: PosTextSize.size1,
             width: PosTextSize.size1),
         linesAfter: 1);
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Driver name: ',
           width: 6,
@@ -323,7 +321,7 @@ class _DriversScreenState extends State<DriversScreen> {
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
 
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Phone Number: ',
           width: 6,
@@ -336,7 +334,7 @@ class _DriversScreenState extends State<DriversScreen> {
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
 
-    ticket.text(
+    bytes += ticket.text(
       "Orders:",
       styles: PosStyles(
         align: PosAlign.left,
@@ -347,7 +345,7 @@ class _DriversScreenState extends State<DriversScreen> {
     );
 
     for (int i = 0; i < receipt.orders!.length; i++) {
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'id: ',
             width: 4,
@@ -359,7 +357,7 @@ class _DriversScreenState extends State<DriversScreen> {
             styles:
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'slug: ',
             width: 4,
@@ -384,7 +382,7 @@ class _DriversScreenState extends State<DriversScreen> {
       for (var i = 0; i < tmp.length; i += 32) {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Adresse: ',
             width: 4,
@@ -397,7 +395,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
       for (var i = 1; i < chunks.length; i++) {
-        ticket.row([
+        bytes += ticket.row([
           PosColumn(
               text: ' ',
               width: 4,
@@ -411,7 +409,7 @@ class _DriversScreenState extends State<DriversScreen> {
         ]);
       }
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Total price: ',
             width: 6,
@@ -424,7 +422,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Delivery price: ',
             width: 6,
@@ -437,7 +435,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Order Ended at: ',
             width: 6,
@@ -451,7 +449,7 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      ticket.row([
+      bytes += ticket.row([
         PosColumn(
             text: 'Payment type: ',
             width: 6,
@@ -465,11 +463,11 @@ class _DriversScreenState extends State<DriversScreen> {
                 PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
       ]);
 
-      if (i != receipt.orders!.length - 1) ticket.hr(ch: "-");
+      if (i != receipt.orders!.length - 1) bytes += ticket.hr(ch: "-");
     }
 
-    ticket.hr(ch: "=");
-    ticket.row([
+    bytes += ticket.hr(ch: "=");
+    bytes += ticket.row([
       PosColumn(
           text: 'Total Cash: ',
           width: 6,
@@ -481,7 +479,7 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Total Paypal: ',
           width: 6,
@@ -493,7 +491,7 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    ticket.row([
+    bytes += ticket.row([
       PosColumn(
           text: 'Total sum: ',
           width: 6,
@@ -505,14 +503,15 @@ class _DriversScreenState extends State<DriversScreen> {
           styles:
               PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
     ]);
-    return ticket;
+    return bytes;
   }
 
-  Future<Ticket> driverReceipt(Driver receipt) async {
+  Future<List<int>> driverReceipt(Driver receipt) async {
+    CapabilityProfile profile = await CapabilityProfile.load();
     if (await locator<SecureStorageService>().paper == "58") {
-      return await ticketmm58(receipt);
+      return await ticketmm58(receipt, profile);
     }
-    return await ticketmm80(receipt);
+    return await ticketmm80(receipt, profile);
   }
 
   void _onPrintAll() async {
@@ -527,24 +526,23 @@ class _DriversScreenState extends State<DriversScreen> {
 
   void _printReceipt(Driver receipt) async {
     await Future.delayed(Duration(seconds: 3));
-    Ticket _ticket = await driverReceipt(receipt);
+    List<int> _ticket = await driverReceipt(receipt);
     try {
-      if (!locator<PrinterService>().connected &&
-          await locator<SecureStorageService>().printerIp != null &&
-          await locator<SecureStorageService>().printerIp != "") {
-        printerNetworkManager
-            .selectPrinter(await locator<SecureStorageService>().printerIp);
-        locator<PrinterService>().connected = true;
+      if (await locator<SecureStorageService>().printerIp != null &&
+          (await locator<SecureStorageService>().printerIp).length > 1) {
+        await printerNetworkManager!.connect(
+            await locator<SecureStorageService>().printerIp,
+            port: 9100);
       }
-      Ticket? tmp = _ticket;
+      List<int> tmp = _ticket;
       int n = 1;
 
-      if (locator<PrinterService>().connected) {
-        var res = await printerNetworkManager.printTicket(tmp);
-        showToast(res.msg);
+      if (await locator<SecureStorageService>().printerIp != null &&
+          (await locator<SecureStorageService>().printerIp).length > 1) {
+        printerNetworkManager!.rawBytes(tmp);
         for (int i = 1; i < n; i++) {
           await Future.delayed(Duration(seconds: 5));
-          await printerNetworkManager.printTicket(tmp);
+          printerNetworkManager!.rawBytes(tmp);
           showToast("$i");
         }
       } else {
@@ -566,6 +564,11 @@ class _DriversScreenState extends State<DriversScreen> {
       showToast("please select a valid range");
       return;
     }
+    final profile = await CapabilityProfile.load();
+    final paper = (await locator<SecureStorageService>().paper == "58")
+        ? PaperSize.mm58
+        : PaperSize.mm80;
+    printerNetworkManager = NetworkPrinter(paper, profile);
     dynamic receipt =
         await locator<ApiService>().getDriverReceipt(id, startDate!, endDate!);
     _printReceipt(receipt);
