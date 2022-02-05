@@ -405,6 +405,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.0"
+  flutter_sunmi_printer:
+    dependency: "direct main"
+    description:
+      name: flutter_sunmi_printer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
