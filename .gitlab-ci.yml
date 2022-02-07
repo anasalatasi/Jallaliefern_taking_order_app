@@ -13,4 +13,4 @@ flutter-build:
     - flutter build apk --release --no-sound-null-safety
   artifacts:
     paths:
-      - "**/**/**/**/**/**/*.apk"
+      - "**/**/**/**/**/**/app-release.apk"

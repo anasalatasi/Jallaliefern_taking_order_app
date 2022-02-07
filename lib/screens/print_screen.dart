@@ -88,6 +88,9 @@ class _PrintScreenState extends State<PrintScreen> {
     SunmiPrinter.text('${widget.order.count}',
         styles: SunmiStyles(align: SunmiAlign.center));
 
+    SunmiPrinter.text("${widget.order.slug}",
+        styles: SunmiStyles(align: SunmiAlign.center, bold: true));
+
     SunmiPrinter.hr(ch: '=');
 
     if (widget.order.dineTable != null) {
@@ -135,8 +138,6 @@ class _PrintScreenState extends State<PrintScreen> {
     //   SunmiCol(text: "#${widget.order.id}", width: 6)
     // ]);
 
-    SunmiPrinter.text("${widget.order.slug}");
-
     // SunmiPrinter.row(cols: [
     //   SunmiCol(
     //     text: 'Bestell.Slug: ',
@@ -152,10 +153,10 @@ class _PrintScreenState extends State<PrintScreen> {
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
-      SunmiPrinter.text("${item.mealObject.getCategoryName()}",
+      SunmiPrinter.text("${await item.mealObject.getCategoryName()}",
           styles: SunmiStyles(bold: true));
       var tmp =
-          "${item.quantity}x ${item.mealObject.name}${(item.sizeObject == null) ? "" : (" (" + item.sizeObject!.name + ")")} ${item.totalPrice}"
+          "${item.quantity}x ${item.mealObject.name}${(item.sizeId == null) ? "" : (" (" + item.sizeObject!.name + ")")} ${item.totalPrice}"
               .codeUnits;
       List<List<int>> chunks = [];
       for (var i = 0; i < tmp.length; i += 32) {
@@ -208,10 +209,10 @@ class _PrintScreenState extends State<PrintScreen> {
 
     if (widget.order.payment.type == 1) {
       SunmiPrinter.text("Bestellung wird Bar bezahlt",
-          styles: SunmiStyles(size: SunmiSize.lg, bold: true));
+          styles: SunmiStyles(align: SunmiAlign.center, bold: true));
     } else if (widget.order.payment.type == 2) {
       SunmiPrinter.text("Bestellung wurde online bezahlt",
-          styles: SunmiStyles(size: SunmiSize.lg, bold: true));
+          styles: SunmiStyles(align: SunmiAlign.center, bold: true));
     }
 
     if (widget.order.notes != null && widget.order.notes!.length > 0) {
