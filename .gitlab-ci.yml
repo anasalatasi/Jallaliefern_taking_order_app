@@ -10,7 +10,7 @@ flutter-build:
     - flutter clean
   script:
     - flutter doctor --android-licenses
-    - flutter build apk --release
+    - flutter build apk --release --no-sound-null-safety
   artifacts:
     paths:
       - "**/**/**/**/**/**/*.apk"

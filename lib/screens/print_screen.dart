@@ -94,98 +94,68 @@ class _PrintScreenState extends State<PrintScreen> {
       SunmiPrinter.text("Table: ${widget.order.dineTable}");
     }
 
-    SunmiPrinter.row(cols: [
-      SunmiCol(text: "Name: ", width: 4),
-      SunmiCol(
-          text: "${widget.order.firstName} ${widget.order.lastName}", width: 8)
-    ]);
+    SunmiPrinter.text('${widget.order.firstName} ${widget.order.lastName}',
+        styles: SunmiStyles(
+          bold: true,
+        ));
+
+    // SunmiPrinter.row(cols: [
+    //   SunmiCol(text: "Name: ", width: 4),
+    //   SunmiCol(
+    //       text: "${widget.order.firstName} ${widget.order.lastName}", width: 8)
+    // ]);
 
     if (widget.order.delivery != null) {
-      List<int> tmp;
+      SunmiPrinter.text(
+          "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}");
       if (await widget.order.delivery!.getSection() != null) {
-        tmp =
-            "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}, ${(await widget.order.delivery!.getSection())!.name} ${(await widget.order.delivery!.getSection())!.zipCode}"
-                .codeUnits;
-      } else {
-        tmp =
-            "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}"
-                .codeUnits;
-      }
-      List<List<int>> chunks = [];
-      for (var i = 0; i < tmp.length; i += 32) {
-        chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
-      }
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Adresse: ',
-          width: 4,
-        ),
-        SunmiCol(
-          text: String.fromCharCodes(chunks[0]),
-          width: 8,
-        )
-      ]);
-      for (var i = 1; i < chunks.length; i++) {
-        SunmiPrinter.row(cols: [
-          SunmiCol(
-            text: ' ',
-            width: 4,
-          ),
-          SunmiCol(
-            text: String.fromCharCodes(chunks[i]),
-            width: 8,
-          )
-        ]);
+        SunmiPrinter.text(
+            "${(await widget.order.delivery!.getSection())!.name} ${(await widget.order.delivery!.getSection())!.zipCode}");
       }
 
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Lieferpreis: ',
-          width: 6,
-        ),
-        SunmiCol(
-          text: "${widget.order.deliveryPrice}",
-          width: 6,
-        )
-      ]);
+      // SunmiPrinter.row(cols: [
+      //   SunmiCol(
+      //     text: 'Lieferpreis: ',
+      //     width: 6,
+      //   ),
+      //   SunmiCol(
+      //     text: "${widget.order.deliveryPrice}",
+      //     width: 6,
+      //   )
+      // ]);
     }
 
-    SunmiPrinter.text('Tel: ${widget.order.phone}');
-    final String timestamp2 = formatter.format(
-        widget.order.serveDateTime ?? DateTime.parse(widget.order.createdAt));
+    SunmiPrinter.text('${widget.order.phone}');
+    // final String timestamp2 = formatter.format(
+    //     widget.order.serveDateTime ?? DateTime.parse(widget.order.createdAt));
 
-    SunmiPrinter.text("Datum: $timestamp2");
-    SunmiPrinter.row(cols: [
-      SunmiCol(text: 'Bestell.ID: ', width: 6),
-      SunmiCol(text: "#${widget.order.id}", width: 6)
-    ]);
+    // SunmiPrinter.text("Datum: $timestamp2");
+    // SunmiPrinter.row(cols: [
+    //   SunmiCol(text: 'Bestell.ID: ', width: 6),
+    //   SunmiCol(text: "#${widget.order.id}", width: 6)
+    // ]);
 
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Bestell.Slug: ',
-        width: 6,
-      ),
-      SunmiCol(
-        text: "${widget.order.slug}",
-        width: 6,
-      )
-    ]);
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Bestellung: ',
-        width: 6,
-      ),
-      SunmiCol(
-        text: "${widget.order.getType()}",
-        width: 6,
-      )
-    ]);
+    SunmiPrinter.text("${widget.order.slug}");
+
+    // SunmiPrinter.row(cols: [
+    //   SunmiCol(
+    //     text: 'Bestell.Slug: ',
+    //     width: 6,
+    //   ),
+    //   SunmiCol(
+    //     text: "${widget.order.slug}",
+    //     width: 6,
+    //   )
+    // ]);
+    if (widget.order.type == 2) SunmiPrinter.text("${widget.order.getType()}");
     SunmiPrinter.hr(ch: "=");
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
+      SunmiPrinter.text("${item.mealObject.getCategoryName()}",
+          styles: SunmiStyles(bold: true));
       var tmp =
-          "${item.quantity}x ${item.mealObject.name}${(item.sizeObject == null) ? "" : (" - " + item.sizeObject!.name)} ${item.totalPrice}"
+          "${item.quantity}x ${item.mealObject.name}${(item.sizeObject == null) ? "" : (" (" + item.sizeObject!.name + ")")} ${item.totalPrice}"
               .codeUnits;
       List<List<int>> chunks = [];
       for (var i = 0; i < tmp.length; i += 32) {
@@ -236,11 +206,23 @@ class _PrintScreenState extends State<PrintScreen> {
 
     SunmiPrinter.hr(ch: '=');
 
+    if (widget.order.payment.type == 1) {
+      SunmiPrinter.text("Bestellung wird Bar bezahlt",
+          styles: SunmiStyles(size: SunmiSize.lg, bold: true));
+    } else if (widget.order.payment.type == 2) {
+      SunmiPrinter.text("Bestellung wurde online bezahlt",
+          styles: SunmiStyles(size: SunmiSize.lg, bold: true));
+    }
+
+    if (widget.order.notes != null && widget.order.notes!.length > 0) {
+      SunmiPrinter.text('Anmerkung:');
+      SunmiPrinter.text(widget.order.notes!);
+    }
+
     SunmiPrinter.row(cols: [
       SunmiCol(
         width: 12,
-        text:
-            "Price Before Discounts: ${(widget.order.beforePrice)!.toStringAsFixed(2)}",
+        text: "Gesamtpreis: ${(widget.order.beforePrice)!.toStringAsFixed(2)}",
       ),
     ]);
 
@@ -248,7 +230,7 @@ class _PrintScreenState extends State<PrintScreen> {
       SunmiCol(
         width: 12,
         text:
-            "Discount: ${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}",
+            "Rabatt: -${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}",
       ),
     ]);
 
@@ -257,14 +239,14 @@ class _PrintScreenState extends State<PrintScreen> {
         SunmiCol(
           width: 12,
           text:
-              "Liefern Preis: ${(widget.order.deliveryPrice!).toStringAsFixed(2)}",
+              "Lieferkosten: ${(widget.order.deliveryPrice!).toStringAsFixed(2)}",
         ),
       ]);
     }
     SunmiPrinter.hr(ch: "=");
     SunmiPrinter.row(bold: true, cols: [
       SunmiCol(
-        text: 'Gesamtpreis',
+        text: 'Total',
         width: 6,
       ),
       SunmiCol(
@@ -276,13 +258,8 @@ class _PrintScreenState extends State<PrintScreen> {
 
     SunmiPrinter.hr(ch: '=', linesAfter: 1);
 
-    if (widget.order.notes != null && widget.order.notes!.length > 0) {
-      SunmiPrinter.text('Anmerkung:');
-      SunmiPrinter.text(widget.order.notes!);
-    }
-
     SunmiPrinter.emptyLines(2);
-    SunmiPrinter.text('Danke!',
+    SunmiPrinter.text('Dies ist keine Rechnung!',
         styles: SunmiStyles(align: SunmiAlign.center, bold: true));
     SunmiPrinter.emptyLines(2);
   }
