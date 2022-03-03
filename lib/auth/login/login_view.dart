@@ -14,7 +14,7 @@ import '../../Constants.dart';
 
 class LoginView extends StatelessWidget {
   final ButtonStyle mystyle =
-      ElevatedButton.styleFrom(primary: Color(0xFF9a0404));
+      ElevatedButton.styleFrom(primary: Color(0xfff86011));
   final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class LoginView extends StatelessWidget {
                 context,
                 formStatus.exception is MyException
                     ? formStatus.exception.toString()
-                    : "Unknown Error Occured");
+                    : formStatus.exception.toString());
             context.read<LoginBloc>().add(LoginInit());
           } else if (formStatus is SubmissionSuccess) {
             Navigator.pushReplacement(
