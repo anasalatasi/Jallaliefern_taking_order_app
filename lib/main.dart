@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jallaliefern_taking_orders_app/auth/api_form/api_form_repository.dart';
+import 'package:jallaliefern_taking_orders_app/services/sound_service.dart';
 import 'screens/welcome_screen.dart';
 import 'utils/service_locator.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -23,33 +24,15 @@ void registerNotification() async {
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     if (message.notification != null) {
-      const AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-        'your channel id',
-        'your channel name',
-        'your channel description',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('alert'),
-      );
-      const NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: androidPlatformChannelSpecifics);
-      await flutterLocalNotificationsPlugin.show(
-        message.notification.hashCode,
-        message.notification!.title,
-        message.notification!.body,
-        platformChannelSpecifics,
-        payload: 'Custom_Sound',
-      );
+      locator<SoundService>().playAlert();
     }
   });
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  registerNotification();
   setupLocator();
+  registerNotification();
   Wakelock.enable();
   runApp(App());
 }

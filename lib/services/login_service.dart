@@ -41,6 +41,6 @@ class LoginService {
       // print(await locator<SecureStorageService>().accessToken);
       await locator<ApiService>().registerDevice();
     } else
-      throw Exception('Unknown Error');
+      throw Exception(response.body);
   }
 }

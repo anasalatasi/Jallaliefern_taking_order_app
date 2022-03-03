@@ -163,12 +163,9 @@ class _PrintScreenState extends State<PrintScreen> {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
       for (var i = 0; i < chunks.length; i++) {
-        SunmiPrinter.row(cols: [
-          SunmiCol(
-            text: String.fromCharCodes(chunks[i]),
-            width: 12,
-          )
-        ]);
+        SunmiPrinter.row(
+            cols: [SunmiCol(text: String.fromCharCodes(chunks[i]), width: 12)],
+            bold: true);
       }
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];

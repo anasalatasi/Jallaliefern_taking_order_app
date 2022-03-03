@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter_sunmi_printer/flutter_sunmi_printer.dart';
 import 'package:intl/intl.dart';
 import 'package:jallaliefern_taking_orders_app/models/driver.dart';
 import 'package:jallaliefern_taking_orders_app/models/restaurant.dart';
@@ -43,475 +44,203 @@ class _DriversScreenState extends State<DriversScreen> {
     return Uint8List.fromList(str.codeUnits);
   }
 
-  Future<List<int>> ticketmm80(
-      Driver receipt, CapabilityProfile profile) async {
-    final Generator ticket = Generator(PaperSize.mm80, profile);
-    List<int> bytes = [];
+  Future<void> ticketmm58(Driver receipt) async {
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    bytes += ticket.text(timestamp,
-        styles: PosStyles(
-            align: PosAlign.center,
-            height: PosTextSize.size1,
-            width: PosTextSize.size1));
+    SunmiPrinter.text(timestamp,
+        styles: SunmiStyles(
+          align: SunmiAlign.center,
+        ));
 
-    bytes += ticket.text(
+    SunmiPrinter.text(
       locator<Restaurant>().name!,
-      styles: PosStyles(
-        align: PosAlign.center,
-        height: PosTextSize.size1,
-        width: PosTextSize.size1,
+      styles: SunmiStyles(
+        align: SunmiAlign.center,
         bold: true,
       ),
     );
     final formatter2 = DateFormat('MM/dd/yyyy');
     String fromtimestamp = formatter2.format(startDate!);
     String totimestamp = formatter2.format(endDate!);
-    bytes += ticket.text("$fromtimestamp -> $totimestamp",
-        styles: PosStyles(
-            align: PosAlign.center,
-            height: PosTextSize.size1,
-            width: PosTextSize.size1),
+    SunmiPrinter.text("$fromtimestamp -> $totimestamp",
+        styles: SunmiStyles(
+          align: SunmiAlign.center,
+        ),
         linesAfter: 1);
 
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Driver name: ',
-          width: 4,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.firstName} ${receipt.lastName}"),
-          width: 8,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    SunmiPrinter.row(cols: [
+      SunmiCol(
+        text: 'Driver name: ',
+        width: 6,
+      ),
+      SunmiCol(
+        text: "${receipt.firstName} ${receipt.lastName}",
+        width: 6,
+      )
     ]);
 
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Phone Number: ',
-          width: 4,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.phoneNumber ?? ''}"),
-          width: 8,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    SunmiPrinter.row(cols: [
+      SunmiCol(
+        text: 'Phone Number: ',
+        width: 6,
+      ),
+      SunmiCol(
+        text: "${receipt.phoneNumber ?? ''}",
+        width: 6,
+      )
     ]);
 
-    bytes += ticket.text(
+    SunmiPrinter.text(
       "Orders:",
-      styles: PosStyles(
-        align: PosAlign.left,
-        height: PosTextSize.size1,
-        width: PosTextSize.size1,
+      styles: SunmiStyles(
         bold: true,
       ),
     );
 
     for (int i = 0; i < receipt.orders!.length; i++) {
-      bytes += ticket.row([
-        PosColumn(
-            text: 'id: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("#${receipt.orders![i].id}"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'id: ',
+          width: 4,
+        ),
+        SunmiCol(
+          text: "#${receipt.orders![i].id}",
+          width: 8,
+        )
       ]);
-      bytes += ticket.row([
-        PosColumn(
-            text: 'slug: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("${receipt.orders![i].slug}"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'slug: ',
+          width: 4,
+        ),
+        SunmiCol(
+          text: "${receipt.orders![i].slug}",
+          width: 8,
+        )
       ]);
 
-      Uint8List tmp;
+      List<int> tmp;
       if (await receipt.orders![i].delivery!.getSection() != null) {
-        tmp = myEncoding(
-            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}, ${(await receipt.orders![i].delivery!.getSection())!.name} ${(await receipt.orders![i].delivery!.getSection())!.zipCode}");
+        tmp =
+            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}, ${(await receipt.orders![i].delivery!.getSection())!.name} ${(await receipt.orders![i].delivery!.getSection())!.zipCode}"
+                .codeUnits;
       } else {
-        tmp = myEncoding(
-            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}");
+        tmp =
+            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}"
+                .codeUnits;
       }
-      List<Uint8List> chunks = [];
+      List<List<int>> chunks = [];
       for (var i = 0; i < tmp.length; i += 32) {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Adresse: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: chunks[0],
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'Adresse: ',
+          width: 4,
+        ),
+        SunmiCol(
+          text: String.fromCharCodes(chunks[0]),
+          width: 8,
+        )
       ]);
       for (var i = 1; i < chunks.length; i++) {
-        bytes += ticket.row([
-          PosColumn(
-              text: ' ',
-              width: 4,
-              styles: PosStyles(
-                  height: PosTextSize.size1, width: PosTextSize.size1)),
-          PosColumn(
-              textEncoded: chunks[i],
-              width: 8,
-              styles: PosStyles(
-                  height: PosTextSize.size1, width: PosTextSize.size1))
+        SunmiPrinter.row(cols: [
+          SunmiCol(
+            text: ' ',
+            width: 4,
+          ),
+          SunmiCol(
+            text: String.fromCharCodes(chunks[i]),
+            width: 8,
+          )
         ]);
       }
 
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Total price: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("${receipt.orders![i].totalPrice}"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'Total price: ',
+          width: 6,
+        ),
+        SunmiCol(
+          text: "${receipt.orders![i].totalPrice}",
+          width: 6,
+        )
       ]);
 
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Delivery price: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("${receipt.orders![i].deliveryPrice}"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'Delivery price: ',
+          width: 6,
+        ),
+        SunmiCol(
+          text: "${receipt.orders![i].deliveryPrice}",
+          width: 6,
+        )
       ]);
 
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Order Ended at: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding(
-                formatter.format(DateTime.parse(receipt.orders![i].endedAt!))),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'Order Ended at: ',
+          width: 6,
+        ),
+        SunmiCol(
+          text: formatter.format(DateTime.parse(receipt.orders![i].endedAt!)),
+          width: 6,
+        )
       ]);
 
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Payment type: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding(
-                receipt.orders![i].paymentType == 1 ? "Cash" : "Paypal"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+      SunmiPrinter.row(cols: [
+        SunmiCol(
+          text: 'Payment type: ',
+          width: 6,
+        ),
+        SunmiCol(
+          text: receipt.orders![i].paymentType == 1 ? "Cash" : "Paypal",
+          width: 6,
+        )
       ]);
 
-      if (i != receipt.orders!.length - 1) bytes += ticket.hr(ch: "-");
+      if (i != receipt.orders!.length - 1) SunmiPrinter.hr(ch: "-");
     }
 
-    bytes += ticket.hr(ch: "=");
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Total Cash: ',
-          width: 4,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.sumCash}"),
-          width: 8,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    SunmiPrinter.hr(ch: "=");
+    SunmiPrinter.row(cols: [
+      SunmiCol(
+        text: 'Total Cash: ',
+        width: 6,
+      ),
+      SunmiCol(
+        text: "${receipt.sumCash}",
+        width: 6,
+      )
     ]);
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Total Paypal: ',
-          width: 4,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.sumPaypal ?? 0}"),
-          width: 8,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    SunmiPrinter.row(cols: [
+      SunmiCol(
+        text: 'Total Paypal: ',
+        width: 6,
+      ),
+      SunmiCol(
+        text: "${receipt.sumPaypal ?? 0.0}",
+        width: 6,
+      )
     ]);
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Total sum: ',
-          width: 4,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.sumTotal}"),
-          width: 8,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
+    SunmiPrinter.row(cols: [
+      SunmiCol(
+        text: 'Total sum: ',
+        width: 6,
+      ),
+      SunmiCol(
+        text: "${receipt.sumTotal}",
+        width: 6,
+      )
     ]);
-    return bytes;
+    SunmiPrinter.emptyLines(2);
   }
 
-  Future<List<int>> ticketmm58(
-      Driver receipt, CapabilityProfile profile) async {
-    final Generator ticket = Generator(PaperSize.mm58, profile);
-    List<int> bytes = [];
-
-    final now = DateTime.now();
-    final formatter = DateFormat('MM/dd/yyyy H:m');
-    final String timestamp = formatter.format(now);
-
-    bytes += ticket.text(timestamp,
-        styles: PosStyles(
-            align: PosAlign.center,
-            height: PosTextSize.size1,
-            width: PosTextSize.size1));
-
-    bytes += ticket.text(
-      locator<Restaurant>().name!,
-      styles: PosStyles(
-        align: PosAlign.center,
-        height: PosTextSize.size1,
-        width: PosTextSize.size1,
-        bold: true,
-      ),
-    );
-    final formatter2 = DateFormat('MM/dd/yyyy');
-    String fromtimestamp = formatter2.format(startDate!);
-    String totimestamp = formatter2.format(endDate!);
-    bytes += ticket.text("$fromtimestamp -> $totimestamp",
-        styles: PosStyles(
-            align: PosAlign.center,
-            height: PosTextSize.size1,
-            width: PosTextSize.size1),
-        linesAfter: 1);
-
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Driver name: ',
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.firstName} ${receipt.lastName}"),
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-    ]);
-
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Phone Number: ',
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.phoneNumber ?? ''}"),
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-    ]);
-
-    bytes += ticket.text(
-      "Orders:",
-      styles: PosStyles(
-        align: PosAlign.left,
-        height: PosTextSize.size1,
-        width: PosTextSize.size1,
-        bold: true,
-      ),
-    );
-
-    for (int i = 0; i < receipt.orders!.length; i++) {
-      bytes += ticket.row([
-        PosColumn(
-            text: 'id: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("#${receipt.orders![i].id}"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-      bytes += ticket.row([
-        PosColumn(
-            text: 'slug: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("${receipt.orders![i].slug}"),
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-
-      Uint8List tmp;
-      if (await receipt.orders![i].delivery!.getSection() != null) {
-        tmp = myEncoding(
-            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}, ${(await receipt.orders![i].delivery!.getSection())!.name} ${(await receipt.orders![i].delivery!.getSection())!.zipCode}");
-      } else {
-        tmp = myEncoding(
-            "${receipt.orders![i].delivery!.address} ${receipt.orders![i].delivery!.buildingNo}");
-      }
-      List<Uint8List> chunks = [];
-      for (var i = 0; i < tmp.length; i += 32) {
-        chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
-      }
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Adresse: ',
-            width: 4,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: chunks[0],
-            width: 8,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-      for (var i = 1; i < chunks.length; i++) {
-        bytes += ticket.row([
-          PosColumn(
-              text: ' ',
-              width: 4,
-              styles: PosStyles(
-                  height: PosTextSize.size1, width: PosTextSize.size1)),
-          PosColumn(
-              textEncoded: chunks[i],
-              width: 8,
-              styles: PosStyles(
-                  height: PosTextSize.size1, width: PosTextSize.size1))
-        ]);
-      }
-
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Total price: ',
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("${receipt.orders![i].totalPrice}"),
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Delivery price: ',
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding("${receipt.orders![i].deliveryPrice}"),
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Order Ended at: ',
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding(
-                formatter.format(DateTime.parse(receipt.orders![i].endedAt!))),
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-
-      bytes += ticket.row([
-        PosColumn(
-            text: 'Payment type: ',
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-        PosColumn(
-            textEncoded: myEncoding(
-                receipt.orders![i].paymentType == 1 ? "Cash" : "Paypal"),
-            width: 6,
-            styles:
-                PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-      ]);
-
-      if (i != receipt.orders!.length - 1) bytes += ticket.hr(ch: "-");
-    }
-
-    bytes += ticket.hr(ch: "=");
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Total Cash: ',
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.sumCash}"),
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-    ]);
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Total Paypal: ',
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.sumPaypal ?? 0.0}"),
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-    ]);
-    bytes += ticket.row([
-      PosColumn(
-          text: 'Total sum: ',
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1)),
-      PosColumn(
-          textEncoded: myEncoding("${receipt.sumTotal}"),
-          width: 6,
-          styles:
-              PosStyles(height: PosTextSize.size1, width: PosTextSize.size1))
-    ]);
-    return bytes;
-  }
-
-  Future<List<int>> driverReceipt(Driver receipt) async {
-    CapabilityProfile profile = await CapabilityProfile.load();
-    if (await locator<SecureStorageService>().paper == "58") {
-      return await ticketmm58(receipt, profile);
-    }
-    return await ticketmm80(receipt, profile);
+  Future<void> driverReceipt(Driver receipt) async {
+    await ticketmm58(receipt);
   }
 
   void _onPrintAll() async {
@@ -525,38 +254,7 @@ class _DriversScreenState extends State<DriversScreen> {
   }
 
   void _printReceipt(Driver receipt) async {
-    await Future.delayed(Duration(seconds: 3));
-    List<int> _ticket = await driverReceipt(receipt);
-    try {
-      if (await locator<SecureStorageService>().printerIp != null &&
-          (await locator<SecureStorageService>().printerIp).length > 1) {
-        await printerNetworkManager!.connect(
-            await locator<SecureStorageService>().printerIp,
-            port: 9100);
-      }
-      List<int> tmp = _ticket;
-      int n = 1;
-
-      if (await locator<SecureStorageService>().printerIp != null &&
-          (await locator<SecureStorageService>().printerIp).length > 1) {
-        printerNetworkManager!.rawBytes(tmp);
-        for (int i = 1; i < n; i++) {
-          await Future.delayed(Duration(seconds: 5));
-          printerNetworkManager!.rawBytes(tmp);
-          showToast("$i");
-        }
-      } else {
-        var res = await printerManager.printTicket(tmp);
-        showToast(res.msg);
-        for (int i = 1; i < n; i++) {
-          await Future.delayed(Duration(seconds: 3));
-          await printerManager.printTicket(tmp);
-          showToast("$i");
-        }
-      }
-    } catch (c) {
-      showToast("Printer not connected");
-    }
+    await driverReceipt(receipt);
   }
 
   void _onSelectDriver(int id) async {

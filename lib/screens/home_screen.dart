@@ -12,6 +12,7 @@ import 'package:jallaliefern_taking_orders_app/screens/pages/dinein_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/pages/table_reservation_page.dart';
 import 'package:jallaliefern_taking_orders_app/screens/search_screen.dart';
 import 'package:jallaliefern_taking_orders_app/screens/settings_screen.dart';
+import 'package:jallaliefern_taking_orders_app/screens/summary_screen.dart';
 import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/custom_search_delegate.dart';
 import 'login_screen.dart';
@@ -73,12 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: DrawerHeader(
                   child: Center(
                     child: Text(
-                      'Taking Orders App',
+                      'Order manager App',
                       style: TextStyle(color: Colors.white, fontSize: 20),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  decoration: BoxDecoration(color: Color(0xFF9a0404)),
+                  decoration: BoxDecoration(color: Color(0xfff86011)),
                   margin: EdgeInsets.all(0.0),
                   padding: EdgeInsets.all(0.0)),
             ),
@@ -88,7 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.lock),
                   Padding(
                     padding: EdgeInsets.only(left: 20.0),
-                    child: Text("Super close", style: TextStyle(fontSize: 20)),
+                    child: Text("Notfall Abschaltung",
+                        style: TextStyle(fontSize: 20)),
                   )
                 ],
               ),
@@ -103,8 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.print),
                   Padding(
                     padding: EdgeInsets.only(left: 20.0),
-                    child:
-                        Text("Print Drivers", style: TextStyle(fontSize: 20)),
+                    child: Text("Fahrer Abrechnung ",
+                        style: TextStyle(fontSize: 20)),
                   )
                 ],
               ),
@@ -116,10 +118,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               title: Row(
                 children: <Widget>[
+                  Icon(Icons.print),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20.0),
+                    child: Text("Bestellungsübersicht",
+                        style: TextStyle(fontSize: 20)),
+                  )
+                ],
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SummaryScreen()));
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
                   Icon(Icons.settings),
                   Padding(
                     padding: EdgeInsets.only(left: 20.0),
-                    child: Text("Printer settings",
+                    child: Text("Druckeinstellungen",
                         style: TextStyle(fontSize: 20)),
                   )
                 ],
@@ -135,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(Icons.logout),
                   Padding(
                     padding: EdgeInsets.only(left: 20.0),
-                    child: Text("Logout", style: TextStyle(fontSize: 20)),
+                    child: Text("Abmelden", style: TextStyle(fontSize: 20)),
                   )
                 ],
               ),
@@ -158,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }),
           ],
           elevation: 15.0,
-          backgroundColor: Color(0xFF9a0404),
+          backgroundColor: Color(0xfff86011),
           title: Row(children: [
             Text(locator<Restaurant>().name!),
           ])),
@@ -171,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 appBar: PreferredSize(
                     preferredSize: const Size.fromHeight(60.0),
                     child: Container(
-                      color: Color(0xFF9a0404),
+                      color: Color(0xfff86011),
                       child: tabBar1,
                       margin: EdgeInsets.zero,
                     )),
@@ -187,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 appBar: PreferredSize(
                     preferredSize: const Size.fromHeight(60.0),
                     child: Container(
-                      color: Color(0xFF9a0404),
+                      color: Color(0xfff86011),
                       child: tabBar2,
                       margin: EdgeInsets.zero,
                     )),

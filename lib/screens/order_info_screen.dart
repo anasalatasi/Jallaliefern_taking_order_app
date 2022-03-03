@@ -12,6 +12,7 @@ import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
 import 'package:jallaliefern_taking_orders_app/models/section.dart';
 import 'package:jallaliefern_taking_orders_app/models/zone.dart';
 import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
+import 'package:jallaliefern_taking_orders_app/services/sound_service.dart';
 import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:duration_picker/duration_picker.dart';
 import '../models/order.dart';
@@ -375,6 +376,7 @@ class OrderInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    locator<SoundService>().stopAlert();
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Kcolor,

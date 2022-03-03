@@ -4,6 +4,7 @@ import 'package:jallaliefern_taking_orders_app/services/api_service.dart';
 import 'package:jallaliefern_taking_orders_app/services/login_service.dart';
 import 'package:jallaliefern_taking_orders_app/services/printer_service.dart';
 import 'package:jallaliefern_taking_orders_app/services/secure_storage_service.dart';
+import 'package:jallaliefern_taking_orders_app/services/sound_service.dart';
 
 GetIt locator = GetIt.I;
 
@@ -13,4 +14,5 @@ void setupLocator() {
   locator.registerSingleton(ApiService());
   locator.registerSingleton(Restaurant.empty());
   locator.registerSingleton(PrinterService());
+  locator.registerSingleton(SoundService());
 }

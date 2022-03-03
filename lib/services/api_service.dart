@@ -11,6 +11,7 @@ import 'package:jallaliefern_taking_orders_app/models/meal_category.dart';
 import 'package:jallaliefern_taking_orders_app/models/meal_size.dart';
 import 'package:jallaliefern_taking_orders_app/models/order.dart';
 import 'package:jallaliefern_taking_orders_app/models/section.dart';
+import 'package:jallaliefern_taking_orders_app/models/summary.dart';
 import 'package:jallaliefern_taking_orders_app/models/table_reservation.dart';
 import 'package:jallaliefern_taking_orders_app/models/driver.dart';
 import 'package:jallaliefern_taking_orders_app/models/zone.dart';
@@ -489,6 +490,18 @@ class ApiService {
       return List<Driver>.from(jsonList.map((model) => Driver.fromMap(model)));
     } catch (e) {
       return List<Driver>.empty();
+    }
+  }
+
+  Future<Summary?> getSummaryReceipt(
+      DateTime startDate, DateTime endDate) async {
+    try {
+      dynamic format = DateFormat('yyyy-MM-dd');
+      final rawData = await _getAuthRequest(
+          "orders/summary_receipt/get_summary/?from_date=${format.format(startDate)}&to_date=${format.format(endDate)}");
+      return Summary.fromJson(rawData);
+    } catch (e) {
+      return null;
     }
   }
 
