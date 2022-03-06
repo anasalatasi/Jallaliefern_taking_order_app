@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
-import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
+import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart' as PosBluetooth;
 import 'package:flutter/material.dart' hide Image;
 import 'dart:convert' show Utf8Encoder, utf8;
 import 'package:oktoast/oktoast.dart';
@@ -34,12 +34,11 @@ class PrintScreen extends StatefulWidget {
 }
 
 class _PrintScreenState extends State<PrintScreen> {
-  PrinterBluetoothManager printerManager =
+  PosBluetooth.PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
   NetworkPrinter? printerNetworkManager;
-  Future<List<int>>? _ticket;
 
-  Uint8List myEncoding(String str) {
+  String myEncoding(String str) {
     str = str.replaceAll("Ä", "A");
     str = str.replaceAll("ä", "a");
     str = str.replaceAll("Ö", "O");
@@ -48,113 +47,121 @@ class _PrintScreenState extends State<PrintScreen> {
     str = str.replaceAll("Ü", "U");
     str = str.replaceAll("ẞ", "SS");
     str = str.replaceAll("ß", "ss");
-    return Uint8List.fromList(str.codeUnits);
+    return String.fromCharCodes(Uint8List.fromList(str.codeUnits));
   }
 
   @override
   void initState() {
     super.initState();
-
     _print();
   }
 
-  Future<void> orderReceipt() async {
+  Future<void> orderReceipt(NetworkPrinter printer) async {
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
-    SunmiPrinter.text(timestamp, styles: SunmiStyles(align: SunmiAlign.center));
-    SunmiPrinter.text(locator<Restaurant>().name!,
-        styles: SunmiStyles(
-            align: SunmiAlign.center, size: SunmiSize.lg, bold: true));
-    SunmiPrinter.text(
-        '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum}',
-        styles: SunmiStyles(align: SunmiAlign.center));
-    SunmiPrinter.text(
-        '${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}',
-        styles: SunmiStyles(align: SunmiAlign.center));
+    printer.text(myEncoding(timestamp),
+        styles: PosStyles(align: PosAlign.center));
+    printer.text(myEncoding(locator<Restaurant>().name!),
+        styles: PosStyles(
+            align: PosAlign.center,
+            height: PosTextSize.size2,
+            width: PosTextSize.size2,
+            bold: true));
+    printer.text(
+        myEncoding(
+            '${locator<Restaurant>().street} ${locator<Restaurant>().buildingNum}'),
+        styles: PosStyles(align: PosAlign.center));
+    printer.text(
+        myEncoding(
+            '${locator<Restaurant>().zipcode}, ${locator<Restaurant>().city}, ${locator<Restaurant>().country}'),
+        styles: PosStyles(align: PosAlign.center));
 
-    SunmiPrinter.text('Tel1: ${locator<Restaurant>().phone1 ?? ""}',
-        styles: SunmiStyles(align: SunmiAlign.center));
+    printer.text(myEncoding('Tel1: ${locator<Restaurant>().phone1 ?? ""}'),
+        styles: PosStyles(align: PosAlign.center));
 
-    SunmiPrinter.text('Tel2: ${locator<Restaurant>().phone2 ?? ""}',
-        styles: SunmiStyles(align: SunmiAlign.center));
+    printer.text(myEncoding('Tel2: ${locator<Restaurant>().phone2 ?? ""}'),
+        styles: PosStyles(align: PosAlign.center));
 
-    SunmiPrinter.text(
-        'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}',
-        styles: SunmiStyles(align: SunmiAlign.center));
+    printer.text(
+        myEncoding(
+            'Webseite: ${Uri.parse(await locator<SecureStorageService>().apiUrl).host}'),
+        styles: PosStyles(align: PosAlign.center));
 
-    SunmiPrinter.emptyLines(1);
+    printer.emptyLines(1);
 
-    SunmiPrinter.text('${widget.order.count}',
-        styles: SunmiStyles(align: SunmiAlign.center));
+    printer.text(myEncoding('${widget.order.count}'),
+        styles: PosStyles(align: PosAlign.center));
 
-    SunmiPrinter.text("${widget.order.slug}",
-        styles: SunmiStyles(align: SunmiAlign.center, bold: true));
+    printer.text(myEncoding("${widget.order.slug}"),
+        styles: PosStyles(align: PosAlign.center, bold: true));
 
-    SunmiPrinter.hr(ch: '=');
+    printer.hr(ch: '=');
 
     if (widget.order.dineTable != null) {
-      SunmiPrinter.text("Table: ${widget.order.dineTable}");
+      printer.text(myEncoding("Table: ${widget.order.dineTable}"));
     }
 
-    SunmiPrinter.text('${widget.order.firstName} ${widget.order.lastName}',
-        styles: SunmiStyles(
+    printer.text(
+        myEncoding('${widget.order.firstName} ${widget.order.lastName}'),
+        styles: PosStyles(
           bold: true,
         ));
 
-    // SunmiPrinter.row(cols: [
-    //   SunmiCol(text: "Name: ", width: 4),
-    //   SunmiCol(
-    //       text: "${widget.order.firstName} ${widget.order.lastName}", width: 8)
+    // printer.row([
+    //   PosColumn(text: myEncoding("Name: ", width: 4),
+    //   PosColumn(
+    //       text: myEncoding("${widget.order.firstName} ${widget.order.lastName}", width: 8)
     // ]);
 
     if (widget.order.delivery != null) {
-      SunmiPrinter.text(
-          "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}");
+      printer.text(myEncoding(
+          "${widget.order.delivery!.address} ${widget.order.delivery!.buildingNo}"));
       if (await widget.order.delivery!.getSection() != null) {
-        SunmiPrinter.text(
-            "${(await widget.order.delivery!.getSection())!.name} ${(await widget.order.delivery!.getSection())!.zipCode}");
+        printer.text(myEncoding(
+            "${(await widget.order.delivery!.getSection())!.name} ${(await widget.order.delivery!.getSection())!.zipCode}"));
       }
 
-      // SunmiPrinter.row(cols: [
-      //   SunmiCol(
-      //     text: 'Lieferpreis: ',
+      // printer.row([
+      //   PosColumn(
+      //     text: myEncoding('Lieferpreis: ',
       //     width: 6,
       //   ),
-      //   SunmiCol(
-      //     text: "${widget.order.deliveryPrice}",
+      //   PosColumn(
+      //     text: myEncoding("${widget.order.deliveryPrice}",
       //     width: 6,
       //   )
       // ]);
     }
 
-    SunmiPrinter.text('${widget.order.phone}');
+    printer.text(myEncoding('${widget.order.phone}'));
     // final String timestamp2 = formatter.format(
     //     widget.order.serveDateTime ?? DateTime.parse(widget.order.createdAt));
 
-    // SunmiPrinter.text("Datum: $timestamp2");
-    // SunmiPrinter.row(cols: [
-    //   SunmiCol(text: 'Bestell.ID: ', width: 6),
-    //   SunmiCol(text: "#${widget.order.id}", width: 6)
+    // printer.text(myEncoding("Datum: $timestamp2");
+    // printer.row([
+    //   PosColumn(text: myEncoding('Bestell.ID: ', width: 6),
+    //   PosColumn(text: myEncoding("#${widget.order.id}", width: 6)
     // ]);
 
-    // SunmiPrinter.row(cols: [
-    //   SunmiCol(
-    //     text: 'Bestell.Slug: ',
+    // printer.row([
+    //   PosColumn(
+    //     text: myEncoding('Bestell.Slug: ',
     //     width: 6,
     //   ),
-    //   SunmiCol(
-    //     text: "${widget.order.slug}",
+    //   PosColumn(
+    //     text: myEncoding("${widget.order.slug}",
     //     width: 6,
     //   )
     // ]);
-    if (widget.order.type == 2) SunmiPrinter.text("${widget.order.getType()}");
-    SunmiPrinter.hr(ch: "=");
+    if (widget.order.type == 2)
+      printer.text(myEncoding("${widget.order.getType()}"));
+    printer.hr(ch: "=");
 
     for (int i = 0; i < (await widget.order.items).length; i++) {
       var item = (await widget.order.items)[i];
-      SunmiPrinter.text("${await item.mealObject.getCategoryName()}",
-          styles: SunmiStyles(bold: true));
+      printer.text(myEncoding("${await item.mealObject.getCategoryName()}"),
+          styles: PosStyles(bold: true));
       var tmp =
           "${item.quantity}x ${item.mealObject.name}${(item.sizeId == null) ? "" : (" (" + item.sizeObject!.name + ")")} ${item.totalPrice}"
               .codeUnits;
@@ -163,107 +170,128 @@ class _PrintScreenState extends State<PrintScreen> {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
       for (var i = 0; i < chunks.length; i++) {
-        SunmiPrinter.row(
-            cols: [SunmiCol(text: String.fromCharCodes(chunks[i]), width: 12)],
-            bold: true);
+        printer.row(
+          [
+            PosColumn(
+                text: myEncoding(String.fromCharCodes(chunks[i])),
+                width: 12,
+                styles: PosStyles(bold: true))
+          ],
+        );
       }
       for (int j = 0; j < item.addons!.length; j++) {
         var itemAddon = item.addons![j];
-        SunmiPrinter.row(cols: [
-          SunmiCol(width: 1),
-          SunmiCol(
-            text: '+${itemAddon.addonObject.name}',
+        printer.row([
+          PosColumn(width: 1),
+          PosColumn(
+            text: myEncoding('+${itemAddon.addonObject.name}'),
             width: 7,
           ),
-          SunmiCol(
-            text: '${itemAddon.totalPrice}',
+          PosColumn(
+            text: myEncoding('${itemAddon.totalPrice}'),
             width: 4,
-            align: SunmiAlign.right,
+            styles: PosStyles(align: PosAlign.right),
           )
         ]);
       }
       if (item.notes != null && item.notes!.length > 0) {
-        SunmiPrinter.text('Anmerkung:');
-        SunmiPrinter.text(item.notes!);
+        printer.text(myEncoding('Anmerkung:'));
+        printer.text(myEncoding(item.notes!));
       }
       if (i < (await widget.order.items).length - 1) {
-        SunmiPrinter.hr(ch: "-");
+        printer.hr(ch: "-");
       }
     }
 
     if ((await widget.order.giftChoicess).length > 0) {
-      SunmiPrinter.hr(ch: '=');
-      SunmiPrinter.text('Gifts:',
-          styles: SunmiStyles(
+      printer.hr(ch: '=');
+      printer.text(myEncoding('Gifts:'),
+          styles: PosStyles(
             bold: true,
           ));
       for (int i = 0; i < (await widget.order.giftChoicess).length; i++) {
-        SunmiPrinter.text((await widget.order.giftChoicess)[i].description!);
+        printer.text(
+            myEncoding((await widget.order.giftChoicess)[i].description!));
       }
     }
 
-    SunmiPrinter.hr(ch: '=');
+    printer.hr(ch: '=');
 
     if (widget.order.payment.type == 1) {
-      SunmiPrinter.text("Bestellung wird Bar bezahlt",
-          styles: SunmiStyles(align: SunmiAlign.center, bold: true));
+      printer.text(myEncoding("Bestellung wird Bar bezahlt"),
+          styles: PosStyles(align: PosAlign.center, bold: true));
     } else if (widget.order.payment.type == 2) {
-      SunmiPrinter.text("Bestellung wurde online bezahlt",
-          styles: SunmiStyles(align: SunmiAlign.center, bold: true));
+      printer.text(myEncoding("Bestellung wurde online bezahlt"),
+          styles: PosStyles(align: PosAlign.center, bold: true));
     }
 
     if (widget.order.notes != null && widget.order.notes!.length > 0) {
-      SunmiPrinter.text('Anmerkung:');
-      SunmiPrinter.text(widget.order.notes!);
+      printer.text(myEncoding('Anmerkung:'));
+      printer.text(myEncoding(widget.order.notes!));
     }
 
-    SunmiPrinter.row(cols: [
-      SunmiCol(
+    printer.row([
+      PosColumn(
         width: 12,
-        text: "Gesamtpreis: ${(widget.order.beforePrice)!.toStringAsFixed(2)}",
+        text: myEncoding(
+            "Gesamtpreis: ${(widget.order.beforePrice)!.toStringAsFixed(2)}"),
       ),
     ]);
 
-    SunmiPrinter.row(cols: [
-      SunmiCol(
+    printer.row([
+      PosColumn(
         width: 12,
-        text:
-            "Rabatt: -${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}",
+        text: myEncoding(
+            "Rabatt: -${((widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice! == 0 ? 0 : -1) * (widget.order.beforePrice! - widget.order.totalPrice + widget.order.deliveryPrice!)).toStringAsFixed(2)}"),
       ),
     ]);
 
     if (widget.order.type == 1) {
-      SunmiPrinter.row(cols: [
-        SunmiCol(
+      printer.row([
+        PosColumn(
           width: 12,
-          text:
-              "Lieferkosten: ${(widget.order.deliveryPrice!).toStringAsFixed(2)}",
+          text: myEncoding(
+              "Lieferkosten: ${(widget.order.deliveryPrice!).toStringAsFixed(2)}"),
         ),
       ]);
     }
-    SunmiPrinter.hr(ch: "=");
-    SunmiPrinter.row(bold: true, cols: [
-      SunmiCol(
-        text: 'Total',
-        width: 6,
-      ),
-      SunmiCol(
-        text: '${widget.order.totalPrice}${locator<Restaurant>().currency}',
-        width: 6,
-        align: SunmiAlign.right,
-      ),
+    printer.hr(ch: "=");
+    printer.row([
+      PosColumn(
+          text: myEncoding('Total'), width: 6, styles: PosStyles(bold: true)),
+      PosColumn(
+          text: myEncoding(
+              '${widget.order.totalPrice}${locator<Restaurant>().currency}'),
+          width: 6,
+          styles: PosStyles(bold: true, align: PosAlign.right)),
     ]);
 
-    SunmiPrinter.hr(ch: '=', linesAfter: 1);
+    printer.hr(ch: '=', linesAfter: 1);
 
-    SunmiPrinter.emptyLines(2);
-    SunmiPrinter.text('Dies ist keine Rechnung!',
-        styles: SunmiStyles(align: SunmiAlign.center, bold: true));
-    SunmiPrinter.emptyLines(2);
+    printer.emptyLines(2);
+    printer.text(myEncoding('Dies ist keine Rechnung!'),
+        styles: PosStyles(align: PosAlign.center, bold: true));
+    printer.emptyLines(2);
+    printer.cut();
   }
 
   void _print() async {
-    await orderReceipt();
+    CapabilityProfile profile = await CapabilityProfile.load();
+    NetworkPrinter printer = NetworkPrinter(
+        (await locator<SecureStorageService>().paper == "58")
+            ? PaperSize.mm58
+            : PaperSize.mm80,
+        profile);
+    PosPrintResult res = await printer
+        .connect(await locator<SecureStorageService>().printerIp, port: 9100);
+    if (res != PosPrintResult.success) {
+      showToast("Es kann keine Verbindung zum Drucker hergestellt werden");
+    } else {
+      int cnt = await locator<SecureStorageService>().receiptCopies;
+      for (int i = 0; i < cnt; i++) {
+        await orderReceipt(printer);
+      }
+    }
     Navigator.of(context).pop();
   }
 

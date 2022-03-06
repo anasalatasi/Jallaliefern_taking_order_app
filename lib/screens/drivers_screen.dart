@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter_sunmi_printer/flutter_sunmi_printer.dart';
@@ -16,6 +15,7 @@ import 'package:jallaliefern_taking_orders_app/utils/service_locator.dart';
 import 'package:jallaliefern_taking_orders_app/Constants.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart' as PosBluetooth;
 
 class DriversScreen extends StatefulWidget {
   @override
@@ -29,10 +29,10 @@ class _DriversScreenState extends State<DriversScreen> {
     endDate = args.value.endDate;
   }
 
-  PrinterBluetoothManager printerManager =
+  PosBluetooth.PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
   NetworkPrinter? printerNetworkManager;
-  Uint8List myEncoding(String str) {
+  String myEncoding(String str) {
     str = str.replaceAll("Ä", "A");
     str = str.replaceAll("ä", "a");
     str = str.replaceAll("Ö", "O");
@@ -41,82 +41,82 @@ class _DriversScreenState extends State<DriversScreen> {
     str = str.replaceAll("Ü", "U");
     str = str.replaceAll("ẞ", "SS");
     str = str.replaceAll("ß", "ss");
-    return Uint8List.fromList(str.codeUnits);
+    return String.fromCharCodes(Uint8List.fromList(str.codeUnits));
   }
 
-  Future<void> ticketmm58(Driver receipt) async {
+  Future<void> ticket(Driver receipt, NetworkPrinter printer) async {
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    SunmiPrinter.text(timestamp,
-        styles: SunmiStyles(
-          align: SunmiAlign.center,
+    printer.text(myEncoding(timestamp),
+        styles: PosStyles(
+          align: PosAlign.center,
         ));
 
-    SunmiPrinter.text(
-      locator<Restaurant>().name!,
-      styles: SunmiStyles(
-        align: SunmiAlign.center,
+    printer.text(
+      myEncoding(locator<Restaurant>().name!),
+      styles: PosStyles(
+        align: PosAlign.center,
         bold: true,
       ),
     );
     final formatter2 = DateFormat('MM/dd/yyyy');
     String fromtimestamp = formatter2.format(startDate!);
     String totimestamp = formatter2.format(endDate!);
-    SunmiPrinter.text("$fromtimestamp -> $totimestamp",
-        styles: SunmiStyles(
-          align: SunmiAlign.center,
+    printer.text(myEncoding("$fromtimestamp -> $totimestamp"),
+        styles: PosStyles(
+          align: PosAlign.center,
         ),
         linesAfter: 1);
 
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Driver name: ',
+    printer.row([
+      PosColumn(
+        text: myEncoding('Driver name: '),
         width: 6,
       ),
-      SunmiCol(
-        text: "${receipt.firstName} ${receipt.lastName}",
+      PosColumn(
+        text: myEncoding("${receipt.firstName} ${receipt.lastName}"),
         width: 6,
       )
     ]);
 
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Phone Number: ',
+    printer.row([
+      PosColumn(
+        text: myEncoding('Phone Number: '),
         width: 6,
       ),
-      SunmiCol(
-        text: "${receipt.phoneNumber ?? ''}",
+      PosColumn(
+        text: myEncoding("${receipt.phoneNumber ?? ''}"),
         width: 6,
       )
     ]);
 
-    SunmiPrinter.text(
-      "Orders:",
-      styles: SunmiStyles(
+    printer.text(
+      myEncoding("Orders:"),
+      styles: PosStyles(
         bold: true,
       ),
     );
 
     for (int i = 0; i < receipt.orders!.length; i++) {
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'id: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('id: '),
           width: 4,
         ),
-        SunmiCol(
-          text: "#${receipt.orders![i].id}",
+        PosColumn(
+          text: myEncoding("#${receipt.orders![i].id}"),
           width: 8,
         )
       ]);
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'slug: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('slug: '),
           width: 4,
         ),
-        SunmiCol(
-          text: "${receipt.orders![i].slug}",
+        PosColumn(
+          text: myEncoding("${receipt.orders![i].slug}"),
           width: 8,
         )
       ]);
@@ -135,112 +135,126 @@ class _DriversScreenState extends State<DriversScreen> {
       for (var i = 0; i < tmp.length; i += 32) {
         chunks.add(tmp.sublist(i, min(tmp.length, i + 32)));
       }
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Adresse: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('Adresse: '),
           width: 4,
         ),
-        SunmiCol(
-          text: String.fromCharCodes(chunks[0]),
+        PosColumn(
+          text: myEncoding(String.fromCharCodes(chunks[0])),
           width: 8,
         )
       ]);
       for (var i = 1; i < chunks.length; i++) {
-        SunmiPrinter.row(cols: [
-          SunmiCol(
-            text: ' ',
+        printer.row([
+          PosColumn(
+            text: myEncoding(' '),
             width: 4,
           ),
-          SunmiCol(
-            text: String.fromCharCodes(chunks[i]),
+          PosColumn(
+            text: myEncoding(String.fromCharCodes(chunks[i])),
             width: 8,
           )
         ]);
       }
 
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Total price: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('Total price: '),
           width: 6,
         ),
-        SunmiCol(
-          text: "${receipt.orders![i].totalPrice}",
+        PosColumn(
+          text: myEncoding("${receipt.orders![i].totalPrice}"),
           width: 6,
         )
       ]);
 
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Delivery price: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('Delivery price: '),
           width: 6,
         ),
-        SunmiCol(
-          text: "${receipt.orders![i].deliveryPrice}",
+        PosColumn(
+          text: myEncoding("${receipt.orders![i].deliveryPrice}"),
           width: 6,
         )
       ]);
 
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Order Ended at: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('Order Ended at: '),
           width: 6,
         ),
-        SunmiCol(
-          text: formatter.format(DateTime.parse(receipt.orders![i].endedAt!)),
+        PosColumn(
+          text: myEncoding(
+              formatter.format(DateTime.parse(receipt.orders![i].endedAt!))),
           width: 6,
         )
       ]);
 
-      SunmiPrinter.row(cols: [
-        SunmiCol(
-          text: 'Payment type: ',
+      printer.row([
+        PosColumn(
+          text: myEncoding('Payment type: '),
           width: 6,
         ),
-        SunmiCol(
-          text: receipt.orders![i].paymentType == 1 ? "Cash" : "Paypal",
+        PosColumn(
+          text: myEncoding(
+              receipt.orders![i].paymentType == 1 ? "Cash" : "Paypal"),
           width: 6,
         )
       ]);
 
-      if (i != receipt.orders!.length - 1) SunmiPrinter.hr(ch: "-");
+      if (i != receipt.orders!.length - 1) printer.hr(ch: "-");
     }
 
-    SunmiPrinter.hr(ch: "=");
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Total Cash: ',
+    printer.hr(ch: "=");
+    printer.row([
+      PosColumn(
+        text: myEncoding('Total Cash: '),
         width: 6,
       ),
-      SunmiCol(
-        text: "${receipt.sumCash}",
+      PosColumn(
+        text: myEncoding("${receipt.sumCash}"),
         width: 6,
       )
     ]);
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Total Paypal: ',
+    printer.row([
+      PosColumn(
+        text: myEncoding('Total Paypal: '),
         width: 6,
       ),
-      SunmiCol(
-        text: "${receipt.sumPaypal ?? 0.0}",
+      PosColumn(
+        text: myEncoding("${receipt.sumPaypal ?? 0.0}"),
         width: 6,
       )
     ]);
-    SunmiPrinter.row(cols: [
-      SunmiCol(
-        text: 'Total sum: ',
+    printer.row([
+      PosColumn(
+        text: myEncoding('Total sum: '),
         width: 6,
       ),
-      SunmiCol(
-        text: "${receipt.sumTotal}",
+      PosColumn(
+        text: myEncoding("${receipt.sumTotal}"),
         width: 6,
       )
     ]);
-    SunmiPrinter.emptyLines(2);
+    printer.emptyLines(2);
   }
 
   Future<void> driverReceipt(Driver receipt) async {
-    await ticketmm58(receipt);
+    CapabilityProfile profile = await CapabilityProfile.load();
+    NetworkPrinter printer = NetworkPrinter(
+        (await locator<SecureStorageService>().paper == "58")
+            ? PaperSize.mm58
+            : PaperSize.mm80,
+        profile);
+    PosPrintResult res = await printer
+        .connect(await locator<SecureStorageService>().printerIp, port: 9100);
+    if (res != PosPrintResult.success) {
+      showToast("Es kann keine Verbindung zum Drucker hergestellt werden");
+    } else {
+      await ticket(receipt, printer);
+    }
   }
 
   void _onPrintAll() async {

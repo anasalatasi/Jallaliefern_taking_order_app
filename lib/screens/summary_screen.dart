@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
+import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart' as PosBluetooth;
 import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:intl/intl.dart';
@@ -31,10 +31,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
     endDate = args.value.endDate;
   }
 
-  PrinterBluetoothManager printerManager =
+  PosBluetooth.PrinterBluetoothManager printerManager =
       locator<PrinterService>().printerManager;
   NetworkPrinter? printerNetworkManager;
-  Uint8List myEncoding(String str) {
+  String myEncoding(String str) {
     str = str.replaceAll("Ä", "A");
     str = str.replaceAll("ä", "a");
     str = str.replaceAll("Ö", "O");
@@ -43,122 +43,98 @@ class _SummaryScreenState extends State<SummaryScreen> {
     str = str.replaceAll("Ü", "U");
     str = str.replaceAll("ẞ", "SS");
     str = str.replaceAll("ß", "ss");
-    return Uint8List.fromList(str.codeUnits);
+    return String.fromCharCodes(Uint8List.fromList(str.codeUnits));
   }
 
-  Future<void> ticketmm58(Summary summary) async {
+  Future<void> ticket(Summary summary, NetworkPrinter printer) async {
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
 
-    SunmiPrinter.text(timestamp,
-        styles: SunmiStyles(align: SunmiAlign.center, bold: true));
+    printer.text(timestamp,
+        styles: PosStyles(align: PosAlign.center, bold: true));
 
-    SunmiPrinter.text(
-      locator<Restaurant>().name!,
-      styles: SunmiStyles(
+    printer.text(
+      myEncoding(locator<Restaurant>().name!),
+      styles: PosStyles(
         bold: true,
       ),
     );
     final formatter2 = DateFormat('MM/dd/yyyy');
     String fromtimestamp = formatter2.format(startDate!);
     String totimestamp = formatter2.format(endDate!);
-    SunmiPrinter.text("$fromtimestamp -> $totimestamp",
-        styles: SunmiStyles(bold: true), linesAfter: 1);
+    printer.text("$fromtimestamp -> $totimestamp",
+        styles: PosStyles(bold: true), linesAfter: 1);
 
-    SunmiPrinter.hr(ch: "=");
+    printer.hr(ch: "=");
 
     for (int i = 0; i < summary.orders!.length; i++) {
-      SunmiPrinter.row(bold: true, cols: [
-        SunmiCol(
-          text: 'id: ',
-          width: 4,
-        ),
-        SunmiCol(
-          text: "#${summary.orders![i].id}",
-          width: 8,
-        )
+      printer.row([
+        PosColumn(text: 'id: ', width: 4, styles: PosStyles(bold: true)),
+        PosColumn(
+            text: "#${summary.orders![i].id}",
+            width: 8,
+            styles: PosStyles(bold: true))
       ]);
-      SunmiPrinter.row(bold: true, cols: [
-        SunmiCol(
-          text: 'slug: ',
-          width: 4,
-        ),
-        SunmiCol(
-          text: "${summary.orders![i].slug}",
-          width: 8,
-        )
+      printer.row([
+        PosColumn(text: 'slug: ', width: 4, styles: PosStyles(bold: true)),
+        PosColumn(
+            text: "${summary.orders![i].slug}",
+            width: 8,
+            styles: PosStyles(bold: true))
       ]);
 
-      SunmiPrinter.row(bold: true, cols: [
-        SunmiCol(
-          text: 'Total price: ',
-          width: 6,
-        ),
-        SunmiCol(
-          text: "${summary.orders![i].totalPrice}",
-          width: 6,
-        )
+      printer.row([
+        PosColumn(
+            text: 'Total price: ', width: 6, styles: PosStyles(bold: true)),
+        PosColumn(
+            text: "${summary.orders![i].totalPrice}",
+            width: 6,
+            styles: PosStyles(bold: true))
       ]);
 
-      SunmiPrinter.row(bold: true, cols: [
-        SunmiCol(
-          text: 'Order Ended at: ',
-          width: 6,
-        ),
-        SunmiCol(
-          text: formatter.format(DateTime.parse(summary.orders![i].endedAt!)),
-          width: 6,
-        )
+      printer.row([
+        PosColumn(
+            text: 'Order Ended at: ', width: 6, styles: PosStyles(bold: true)),
+        PosColumn(
+            text: formatter.format(DateTime.parse(summary.orders![i].endedAt!)),
+            width: 6,
+            styles: PosStyles(bold: true))
       ]);
 
-      SunmiPrinter.row(bold: true, cols: [
-        SunmiCol(
-          text: 'Payment type: ',
-          width: 6,
-        ),
-        SunmiCol(
-          text: summary.orders![i].paymentType == 1 ? "Cash" : "Paypal",
-          width: 6,
-        )
+      printer.row([
+        PosColumn(
+            text: 'Payment type: ', width: 6, styles: PosStyles(bold: true)),
+        PosColumn(
+            text: summary.orders![i].paymentType == 1 ? "Cash" : "Paypal",
+            width: 6,
+            styles: PosStyles(bold: true))
       ]);
 
-      if (i != summary.orders!.length - 1) SunmiPrinter.hr(ch: "-");
+      if (i != summary.orders!.length - 1) printer.hr(ch: "-");
     }
 
-    SunmiPrinter.hr(ch: "=");
-    SunmiPrinter.row(bold: true, cols: [
-      SunmiCol(
-        text: 'Total Cash: ',
-        width: 6,
-      ),
-      SunmiCol(
-        text: "${summary.sumCash}",
-        width: 6,
-      )
+    printer.hr(ch: "=");
+    printer.row([
+      PosColumn(text: 'Total Cash: ', width: 6, styles: PosStyles(bold: true)),
+      PosColumn(
+          text: "${summary.sumCash}", width: 6, styles: PosStyles(bold: true))
     ]);
-    SunmiPrinter.row(bold: true, cols: [
-      SunmiCol(
-        text: 'Total Paypal: ',
-        width: 6,
-      ),
-      SunmiCol(
-        text: "${summary.sumPaypal ?? 0.0}",
-        width: 6,
-      )
+    printer.row([
+      PosColumn(
+          text: 'Total Paypal: ', width: 6, styles: PosStyles(bold: true)),
+      PosColumn(
+          text: "${summary.sumPaypal ?? 0.0}",
+          width: 6,
+          styles: PosStyles(bold: true))
     ]);
-    SunmiPrinter.row(bold: true, cols: [
-      SunmiCol(
-        text: 'Total sum: ',
-        width: 6,
-      ),
-      SunmiCol(
-        text: "${summary.sumTotal}",
-        width: 6,
-      )
+    printer.row([
+      PosColumn(text: 'Total sum: ', width: 6, styles: PosStyles(bold: true)),
+      PosColumn(
+          text: "${summary.sumTotal}", width: 6, styles: PosStyles(bold: true))
     ]);
 
-    SunmiPrinter.emptyLines(2);
+    printer.emptyLines(2);
   }
 
   void _print() async {
@@ -170,8 +146,19 @@ class _SummaryScreenState extends State<SummaryScreen> {
         await locator<ApiService>().getSummaryReceipt(startDate!, endDate!);
 
     if (summary != null) {
-      print(summary.orders!);
-      await ticketmm58(summary);
+      CapabilityProfile profile = await CapabilityProfile.load();
+      NetworkPrinter printer = NetworkPrinter(
+          (await locator<SecureStorageService>().paper == "58")
+              ? PaperSize.mm58
+              : PaperSize.mm80,
+          profile);
+      PosPrintResult res = await printer
+          .connect(await locator<SecureStorageService>().printerIp, port: 9100);
+      if (res != PosPrintResult.success) {
+        showToast("Es kann keine Verbindung zum Drucker hergestellt werden");
+      } else {
+        await ticket(summary, printer);
+      }
     }
   }
 

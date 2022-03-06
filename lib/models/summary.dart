@@ -36,9 +36,9 @@ class Summary {
           ? List<DriverOrder>.from(
               map['orders']?.map((x) => DriverOrder.fromMap(x)))
           : null,
-      sumCash: map['sumCash']?.toDouble(),
-      sumPaypal: map['sumPaypal']?.toDouble(),
-      sumTotal: map['sumTotal']?.toDouble(),
+      sumCash: map['sum_cash']?.toDouble(),
+      sumPaypal: map['sum_paypal']?.toDouble(),
+      sumTotal: map['sum_total']?.toDouble(),
     );
   }
 
@@ -47,7 +47,7 @@ class Summary {
 
   @override
   String toString() {
-    return 'Summary(orders: $orders, sumCash: $sumCash, sumPaypal: $sumPaypal, sumTotal: $sumTotal)';
+    return 'Summary(orders: $orders, sum_cash: $sumCash, sum_paypal: $sumPaypal, sum_total: $sumTotal)';
   }
 
   @override
