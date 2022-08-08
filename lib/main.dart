@@ -30,9 +30,9 @@ void registerNotification() async {
 }
 
 void main() async {
+  registerNotification();
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
-  registerNotification();
   Wakelock.enable();
   runApp(App());
 }
